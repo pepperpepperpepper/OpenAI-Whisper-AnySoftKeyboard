@@ -576,6 +576,10 @@ public class KeyboardSwitcher {
     }
 
     Logger.w(TAG, "For some reason, I can't find keyboard with ID " + keyboardId);
+    Logger.d(TAG, "Available keyboard IDs:");
+    for (int i = 0; i < enabledKeyboardsBuilders.size(); i++) {
+      Logger.d(TAG, "  " + i + ": " + enabledKeyboardsBuilders.get(i).getId());
+    }
     return null;
   }
 
