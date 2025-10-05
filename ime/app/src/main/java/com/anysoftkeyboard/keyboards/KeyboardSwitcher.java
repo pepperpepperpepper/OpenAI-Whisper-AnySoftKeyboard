@@ -584,6 +584,32 @@ public class KeyboardSwitcher {
   }
 
   @Nullable
+  public AnyKeyboard switchToKeyboardById(EditorInfo currentEditorInfo, String keyboardId) {
+    AnyKeyboard current = getLockedKeyboard(currentEditorInfo);
+    if (current != null) return current;
+
+    final List<KeyboardAddOnAndBuilder> enabledKeyboardsBuilders = getEnabledKeyboardsBuilders();
+    final int keyboardsCount = enabledKeyboardsBuilders.size();
+    for (int keyboardIndex = 0; keyboardIndex < keyboardsCount; keyboardIndex++) {
+      if (TextUtils.equals(enabledKeyboardsBuilders.get(keyboardIndex).getId(), keyboardId)) {
+        current = getAlphabetKeyboard(keyboardIndex, currentEditorInfo);
+        mAlphabetMode = true;
+        current.setImeOptions(mContext.getResources(), currentEditorInfo);
+        mKeyboardSwitchedListener.onAlphabetKeyboardSet(current);
+        Logger.d(TAG, "Switched to keyboard by ID: " + keyboardId);
+        return current;
+      }
+    }
+
+    Logger.w(TAG, "Cannot find keyboard with ID: " + keyboardId);
+    Logger.d(TAG, "Available keyboard IDs:");
+    for (int i = 0; i < enabledKeyboardsBuilders.size(); i++) {
+      Logger.d(TAG, "  " + i + ": " + enabledKeyboardsBuilders.get(i).getId());
+    }
+    return null;
+  }
+
+  @Nullable
   private AnyKeyboard getLockedKeyboard(EditorInfo currentEditorInfo) {
     if (mKeyboardLocked) {
       AnyKeyboard current = getCurrentKeyboard();

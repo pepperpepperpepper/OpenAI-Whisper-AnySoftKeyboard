@@ -767,26 +767,14 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
           nextKeyboard(getCurrentInputEditorInfo(), NextKeyboardType.Alphabet);
         }
         break;
-      case KeyCodes.DIRECT_LAYOUT_MIKE_ROZOFF_MAIN:
-        android.util.Log.d("MikeRozoff", "Switching to main keyboard");
-        getKeyboardSwitcher().nextAlphabetKeyboard(getCurrentInputEditorInfo(), "mike-rozoff-main-001");
-        break;
-      case KeyCodes.DIRECT_LAYOUT_MIKE_ROZOFF_SYMBOLS:
-        android.util.Log.d("MikeRozoff", "Switching to symbols keyboard");
-        getKeyboardSwitcher().nextAlphabetKeyboard(getCurrentInputEditorInfo(), "mike-rozoff-symbols-001");
-        break;
-      case KeyCodes.DIRECT_LAYOUT_MIKE_ROZOFF_SYMBOLS_EXTENDED:
-        android.util.Log.d("MikeRozoff", "Switching to symbols extended keyboard");
-        getKeyboardSwitcher().nextAlphabetKeyboard(getCurrentInputEditorInfo(), "mike-rozoff-symbols-ext-001");
-        break;
+      
       case KeyCodes.CUSTOM_KEYBOARD_SWITCH:
-        // Custom keyboard switching - the target keyboard ID should be stored in the key's popupCharacters
-        if (key != null && !TextUtils.isEmpty(key.popupCharacters)) {
-          String targetKeyboardId = key.popupCharacters.toString();
-          android.util.Log.d("CustomKeyboardSwitch", "Switching to keyboard: " + targetKeyboardId);
-          getKeyboardSwitcher().nextAlphabetKeyboard(getCurrentInputEditorInfo(), targetKeyboardId);
+        if (key != null && !TextUtils.isEmpty(key.subKeyboard)) {
+          String targetKeyboardId = key.subKeyboard.toString();
+          android.util.Log.d("SubKeyboardSwitch", "Switching to keyboard: " + targetKeyboardId);
+          getKeyboardSwitcher().switchToKeyboardById(getCurrentInputEditorInfo(), targetKeyboardId);
         } else {
-          android.util.Log.w("CustomKeyboardSwitch", "No target keyboard ID specified in key.popupCharacters");
+          android.util.Log.w("SubKeyboardSwitch", "No target keyboard ID specified in key.subKeyboard");
         }
         break;
       case KeyCodes.UTILITY_KEYBOARD:

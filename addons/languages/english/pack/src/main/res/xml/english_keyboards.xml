@@ -61,16 +61,4 @@
               layoutResId="@xml/minimal_qwerty" id="a59067bb-46d3-48a6-9ede-ccc3ace13a04"
               defaultDictionaryLocale="en" description="@string/minimal_qwerty_keyboard_description"
               index="13"/>
-    <Keyboard name="Mike Rozoff Layout" iconResId="@drawable/ic_status_english"
-              layoutResId="@xml/mike_rozoff_layout" id="mike-rozoff-main-001"
-              defaultDictionaryLocale="en" description="Mike Rozoff custom QWERTY layout with arrow keys"
-              index="14" defaultEnabled="true"/>
-    <Keyboard name="Mike Rozoff Symbols" iconResId="@drawable/ic_status_english"
-              layoutResId="@xml/mike_rozoff_symbols" id="mike-rozoff-symbols-001"
-              defaultDictionaryLocale="en" description="Mike Rozoff symbols layout"
-              index="15" defaultEnabled="true"/>
-    <Keyboard name="Mike Rozoff Symbols Extended" iconResId="@drawable/ic_status_english"
-              layoutResId="@xml/mike_rozoff_symbols_extended" id="mike-rozoff-symbols-ext-001"
-              defaultDictionaryLocale="en" description="Mike Rozoff extended symbols layout"
-              index="16" defaultEnabled="true"/>
 </Keyboards>

@@ -366,6 +366,9 @@ public abstract class Keyboard {
     /** Popup characters */
     public CharSequence popupCharacters;
 
+    /** Sub-keyboard ID to switch to when this key is pressed */
+    public CharSequence subKeyboard;
+
     /**
      * Flags that specify the anchoring to edges of the mKeyboard for detecting touch events that
      * are just out of the boundary of the key. This is a bit mask of {@link Keyboard#EDGE_LEFT},
@@ -526,6 +529,10 @@ public abstract class Keyboard {
           break;
         case android.R.attr.popupKeyboard:
           popupResId = a.getResourceId(remoteIndex, 0);
+          break;
+        case R.attr.subKeyboard:
+          subKeyboard = a.getText(remoteIndex);
+          android.util.Log.d("KeyParsing", "Parsed subKeyboard: " + subKeyboard + " for key with label: " + label);
           break;
         case android.R.attr.isRepeatable:
           repeatable = a.getBoolean(remoteIndex, false);

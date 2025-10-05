@@ -116,5 +116,8 @@ Copyright (C) 2013 Menny Even-Danan
         <attr name="skinTones" format="reference|string"/>
 
         <attr name="extra_key_data" format="reference|string"/>
+        
+        <!-- The keyboard ID to switch to when this key is pressed. Used for sub-keyboard switching. -->
+        <attr name="subKeyboard" format="string"/>
     </declare-styleable>
 </resources>
