@@ -114,6 +114,16 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
+        <!-- Add-on UI Card broadcast receiver -->
+        <receiver
+            android:name="com.anysoftkeyboard.addons.AddOnUICardReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.anysoftkeyboard.UI_CARD_UPDATE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
     <queries>

@@ -13,6 +13,8 @@ include ':junit-sharding'
 include ':addons:base', ':addons:base:apk'
 include ':addons:languages'
 include ':addons:languages:english', ':addons:languages:english:pack'
+include ':addons:languages:demo_ui_card_addon', ':addons:languages:demo_ui_card_addon:pack', ':addons:languages:demo_ui_card_addon:apk'
+include ':addons:themes:demo_ui_theme'
 
 include ':ime'
 include ':ime:base', ':ime:base-rx', ':ime:base-test', ':ime:prefs'

@@ -129,6 +129,15 @@
                 app:drawableTopCompat="@drawable/ic_notification_perm_required" />
         </androidx.cardview.widget.CardView>
 
+        <!-- Container for add-on UI cards -->
+        <LinearLayout
+            android:id="@+id/addon_ui_cards_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="4dp"
+            android:layout_marginTop="8dp" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/latest_change_log_card"
             android:layout_width="match_parent"

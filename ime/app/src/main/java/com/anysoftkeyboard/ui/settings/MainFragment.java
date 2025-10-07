@@ -79,6 +79,8 @@ public class MainFragment extends Fragment {
   @NonNull private Disposable mPaletteDisposable = Disposables.empty();
   private DemoAnyKeyboardView mDemoAnyKeyboardView;
   private GeneralDialogController mDialogController;
+  private ViewGroup mAddOnUICardsContainer;
+  private AddOnUICardManager mAddOnUICardManager;
 
   public MainFragment() {
     this(BuildConfig.TESTING_BUILD);
@@ -122,7 +124,96 @@ public class MainFragment extends Fragment {
     mNoNotificationPermissionView.setOnClickListener(
         v -> AnyApplication.notifier(requireContext()).askForNotificationPostPermission(this));
 
+    // Initialize add-on UI cards
+    mAddOnUICardsContainer = view.findViewById(R.id.addon_ui_cards_container);
+    mAddOnUICardManager = new AddOnUICardManager(requireContext());
+    refreshAddOnUICards();
+
     setHasOptionsMenu(true);
+  }
+
+  private void refreshAddOnUICards() {
+    Logger.d(TAG, "refreshAddOnUICards() called");
+    
+    if (mAddOnUICardsContainer == null || mAddOnUICardManager == null) {
+      Logger.w(TAG, "refreshAddOnUICards() - container or manager is null");
+      return;
+    }
+
+    Logger.d(TAG, "Container exists: " + (mAddOnUICardsContainer != null) + 
+               ", Manager exists: " + (mAddOnUICardManager != null));
+    Logger.d(TAG, "Container visibility before refresh: " + mAddOnUICardsContainer.getVisibility());
+
+    // Clear existing add-on UI cards
+    mAddOnUICardsContainer.removeAllViews();
+
+    // Get all active UI cards
+    List<AddOnUICard> activeCards = mAddOnUICardManager.getActiveUICards();
+    Logger.d(TAG, "Found " + activeCards.size() + " active UI cards");
+    
+    for (int i = 0; i < activeCards.size(); i++) {
+      AddOnUICard card = activeCards.get(i);
+      Logger.d(TAG, "Processing card " + i + ": " + card.getTitle() + " - " + card.getMessage());
+      View cardView = createAddOnUICardView(card);
+      if (cardView != null) {
+        mAddOnUICardsContainer.addView(cardView);
+        Logger.d(TAG, "Added card view to container for " + card.getTitle());
+      } else {
+        Logger.w(TAG, "Failed to create card view for " + card.getTitle());
+      }
+    }
+
+    // Hide the container if no cards to show
+    int newVisibility = activeCards.isEmpty() ? View.GONE : View.VISIBLE;
+    mAddOnUICardsContainer.setVisibility(newVisibility);
+    Logger.d(TAG, "Set container visibility to " + newVisibility + 
+               " (GONE=" + View.GONE + ", VISIBLE=" + View.VISIBLE + ")");
+  }
+
+  private View createAddOnUICardView(AddOnUICard card) {
+    Logger.d(TAG, "createAddOnUICardView() called for: " + card.getTitle());
+    
+    try {
+      // Create a CardView
+      androidx.cardview.widget.CardView cardView = new androidx.cardview.widget.CardView(requireContext());
+      cardView.setLayoutParams(new ViewGroup.LayoutParams(
+          ViewGroup.LayoutParams.MATCH_PARENT,
+          ViewGroup.LayoutParams.WRAP_CONTENT));
+      cardView.setCardBackgroundColor(Color.parseColor("#FFF3E0")); // Light orange background for visibility
+      cardView.setRadius(8f);
+      cardView.setCardElevation(8f); // Higher elevation
+      cardView.setContentPadding(16, 16, 16, 16);
+
+      // Create a TextView for the card content
+      TextView textView = new TextView(requireContext());
+      textView.setTextAppearance(android.R.style.TextAppearance_Medium);
+      textView.setTextColor(Color.parseColor("#D84315")); // Dark orange text for contrast
+      textView.setText("🎯 " + card.getTitle() + "\n" + card.getMessage());
+      textView.setPadding(8, 8, 8, 8);
+
+      // Set click listener if target fragment is specified
+      if (card.getTargetFragment() != null) {
+        Logger.d(TAG, "Card has target fragment: " + card.getTargetFragment());
+        cardView.setOnClickListener(v -> {
+          try {
+            Navigation.findNavController(requireView())
+                .navigate(card.getTargetFragment());
+          } catch (Exception e) {
+            Logger.w(TAG, "Failed to navigate to target fragment: " + card.getTargetFragment(), e);
+          }
+        });
+        cardView.setClickable(true);
+      } else {
+        Logger.d(TAG, "Card has no target fragment");
+      }
+
+      cardView.addView(textView);
+      Logger.d(TAG, "Successfully created card view for: " + card.getTitle());
+      return cardView;
+    } catch (Exception e) {
+      Logger.e(TAG, "Exception creating card view for " + card.getTitle(), e);
+      return null;
+    }
   }
 
   @Override
@@ -151,6 +242,12 @@ public class MainFragment extends Fragment {
       default:
         return super.onOptionsItemSelected(item);
     }
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    refreshAddOnUICards();
   }
 
   @Override

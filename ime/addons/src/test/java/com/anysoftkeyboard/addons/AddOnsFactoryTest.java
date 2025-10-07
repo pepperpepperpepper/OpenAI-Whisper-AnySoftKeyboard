@@ -112,17 +112,16 @@ public class AddOnsFactoryTest {
           public void setAddOnEnabled(String addOnId, boolean enabled) {}
 
           @Override
-          protected TestAddOn createConcreteAddOn(
-              Context askContext,
-              Context context,
-              int apiVersion,
-              CharSequence prefId,
-              CharSequence name,
-              CharSequence description,
-              boolean isHidden,
-              int sortIndex,
-              AttributeSet attrs) {
-            return null;
+    protected TestAddOn createConcreteAddOn(
+        Context askContext,
+        Context context,
+        int apiVersion,
+        CharSequence prefId,
+        CharSequence name,
+        CharSequence description,
+        boolean isHidden,
+        int sortIndex,
+        AttributeSet attrs) {            return null;
           }
         };
 
