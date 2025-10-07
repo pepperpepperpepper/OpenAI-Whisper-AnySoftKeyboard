@@ -542,3 +542,200 @@ The research shows that the existing UI card system already has robust click han
 
 ### Final Recommendation
 **Do not implement the ClickAction class.** Instead, focus on fixing the demo add-on and documenting the existing, working system. The current implementation already provides the necessary functionality for UI card click handling.
+
+## Android Settings Navigation Research
+
+### **Requirement Analysis**
+The user requested research on how to redirect users from a UI card to Android's app settings, specifically the permissions screen for AnySoftKeyboard.
+
+### **Existing Settings Navigation Patterns in Codebase**
+
+#### **1. Input Method Settings (Current Implementation)**
+**Location**: `WizardPageEnableKeyboardFragment.java:99-104`
+```java
+Intent startSettings = new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS);
+startSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+startSettings.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+startSettings.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+try {
+  context.startActivity(startSettings);
+} catch (ActivityNotFoundException notFoundEx) {
+  // Error handling for devices without IME settings
+  Toast.makeText(context, R.string.setup_wizard_step_one_action_error_no_settings_activity, 
+                 Toast.LENGTH_LONG).show();
+}
+```
+
+#### **2. Package URI Pattern (For App-Specific Settings)**
+**Location**: `AnySoftKeyboardPackageChangedTest.java:89`
+```java
+intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+```
+
+#### **3. Application ID Access Pattern**
+**Location**: Multiple files use `BuildConfig.APPLICATION_ID`
+```java
+// Example from AboutAnySoftKeyboardFragment.java:75
+Uri.parse(getString(R.string.rate_app_in_store_url, BuildConfig.APPLICATION_ID))
+```
+
+### **Recommended Android Settings Navigation Implementation**
+
+#### **For App Details/Permissions Settings**
+```java
+// Standard Android pattern to open app's settings page
+Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+intent.setData(uri);
+intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+startActivity(intent);
+```
+
+#### **For Specific Permission Settings**
+```java
+// For Android 13+ (API 33+) - direct permission settings
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+    intent.setData(uri);
+    startActivity(intent);
+} else {
+    // For older versions - general app settings
+    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+    startActivity(intent);
+}
+```
+
+### **Integration with UI Card System**
+
+#### **Option 1: Fragment Navigation (Recommended)**
+Create a new fragment that handles settings navigation:
+
+```java
+// New fragment: AppSettingsFragment
+public class AppSettingsFragment extends Fragment {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
+        intent.setData(uri);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(requireContext(), 
+                         "Unable to open app settings", Toast.LENGTH_SHORT).show();
+        }
+        
+        // Close fragment after opening settings
+        if (getFragmentManager() != null) {
+            getFragmentManager().popBackStack();
+        }
+    }
+}
+```
+
+**Usage in UI Card:**
+```java
+// In DemoUIAddOn.java
+AddOnUICard card = new AddOnUICard(
+    getPackageName(),
+    "Demo Add-on Active", 
+    "Click here to manage app permissions and settings",
+    "AppSettingsFragment" // targetFragment
+);
+```
+
+#### **Option 2: Direct Intent from Click Handler**
+Extend `MainFragment` click handler to detect special patterns:
+
+```java
+// In MainFragment.java click handler
+if (url.startsWith("settings://")) {
+    // Handle custom settings scheme
+    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+    Uri uri = Uri.fromParts("package", getContext().getPackageName(), null);
+    intent.setData(uri);
+    startActivity(intent);
+    return;
+}
+```
+
+**Usage in UI Card:**
+```java
+// In DemoUIAddOn.java
+AddOnUICard card = new AddOnUICard(
+    getPackageName(),
+    "Demo Add-on Active",
+    "Click <a href=\"settings://app\">here</a> to manage app permissions",
+    null // No targetFragment needed
+);
+```
+
+### **Recommended Implementation for Demo Add-on**
+
+#### **Updated DemoUIAddOn.java**
+```java
+@Override
+public AddOnUICard getUICard() {
+    String message = "This card demonstrates UI card functionality. " +
+                    "Click <a href=\"settings://app\">here</a> to open " +
+                    "AnySoftKeyboard's app settings and manage permissions.";
+    
+    return new AddOnUICard(
+        getPackageName(),
+        "Demo Add-on Active",
+        message,
+        null // Using inline link instead of fragment navigation
+    );
+}
+```
+
+#### **Corresponding MainFragment.java Enhancement**
+```java
+// In the click handler method
+if (url.startsWith("settings://")) {
+    try {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
+        intent.setData(uri);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    } catch (ActivityNotFoundException e) {
+        Toast.makeText(getContext(), "Unable to open app settings", 
+                     Toast.LENGTH_SHORT).show();
+    }
+    return true; // Handled
+}
+```
+
+### **Benefits of This Approach**
+
+1. **Uses Existing Infrastructure**: Leverages current UI card click handling
+2. **Standard Android Pattern**: Follows Android's recommended app settings navigation
+3. **Error Handling**: Proper exception handling for unsupported devices
+4. **Backward Compatible**: Works across all Android versions
+5. **No New Infrastructure**: Doesn't require additional classes or complex systems
+6. **User-Friendly**: Direct navigation to the exact settings screen needed
+
+### **Updated Implementation Priority**
+
+#### **HIGH PRIORITY: Fix Demo Add-on with Settings Navigation**
+- Update `DemoUIAddOn.java` to use existing `AddOnUICard` API
+- Add settings://app link for permissions navigation
+- Enhance `MainFragment` click handler to support settings:// scheme
+- Remove references to non-existent `UICardData` and `Builder` classes
+
+#### **MEDIUM PRIORITY: Enhanced Click Handling (If Needed)**
+- Extend `MainFragment` click handler for additional custom actions
+- Add support for other settings:// schemes (e.g., settings://notifications)
+- Maintain backward compatibility
+
+#### **LOW PRIORITY: Advanced Features (Future)**
+- Add card priority and icon support
+- Implement custom action handling
+- Add analytics and tracking for settings navigation
