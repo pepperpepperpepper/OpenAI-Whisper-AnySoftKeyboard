@@ -72,6 +72,7 @@ public class KeyboardThemeFactory extends AddOnsFactory.SingleAddOnsFactory<Keyb
       CharSequence description,
       boolean isHidden,
       int sortIndex,
+      boolean hasUICard,
       AttributeSet attrs) {
     final int keyboardThemeResId =
         attrs.getAttributeResourceValue(

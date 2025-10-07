@@ -76,6 +76,7 @@ public class KeyboardExtensionFactory extends AddOnsFactory.SingleAddOnsFactory<
       CharSequence description,
       boolean isHidden,
       int sortIndex,
+      boolean hasUICard,
       AttributeSet attrs) {
     int keyboardResId =
         attrs.getAttributeResourceValue(

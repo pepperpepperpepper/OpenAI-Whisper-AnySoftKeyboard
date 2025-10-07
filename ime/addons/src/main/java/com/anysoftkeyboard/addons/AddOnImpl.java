@@ -42,6 +42,7 @@ public abstract class AddOnImpl implements AddOn {
   private final int mSortIndex;
   private final AddOnResourceMapping mAddOnResourceMapping;
   private final boolean mHiddenAddOn;
+  private final boolean mHasUICard;
   private final int mApiVersion;
 
   protected AddOnImpl(
@@ -53,6 +54,19 @@ public abstract class AddOnImpl implements AddOn {
       CharSequence description,
       boolean hidden,
       int sortIndex) {
+    this(askContext, packageContext, apiVersion, id, name, description, hidden, sortIndex, false);
+  }
+
+  protected AddOnImpl(
+      Context askContext,
+      Context packageContext,
+      int apiVersion,
+      CharSequence id,
+      CharSequence name,
+      CharSequence description,
+      boolean hidden,
+      int sortIndex,
+      boolean hasUICard) {
     mId = id.toString();
     mAskAppContext = askContext;
     mApiVersion = apiVersion;
@@ -68,6 +82,7 @@ public abstract class AddOnImpl implements AddOn {
       mAddOnResourceMapping = new AddOnResourceMappingImpl(this);
     }
     mHiddenAddOn = hidden;
+    mHasUICard = hasUICard;
   }
 
   @Override
@@ -211,6 +226,14 @@ public abstract class AddOnImpl implements AddOn {
   /*package*/
   final boolean isHiddenAddon() {
     return mHiddenAddOn;
+  }
+
+  /**
+   * Returns true if this add-on has UI card capability.
+   * This can be set via XML declaration or by implementing AddOnUICardPublisher.
+   */
+  public boolean hasUICard() {
+    return mHasUICard;
   }
 
   @Override

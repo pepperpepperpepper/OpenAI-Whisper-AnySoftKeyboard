@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dictionaries>
+    <Dictionary
+        autoTextResourceId="@xml/empty_autotext"
+        description="@string/demo_dictionary_description"
+        dictionaryResourceId="@array/demo_words_dict_array"
+        id="demo-ui-card-addon-dict-1"
+        locale="en"
+        nameResId="@string/demo_dictionary"
+        type="binary_resource" />
+</Dictionaries>

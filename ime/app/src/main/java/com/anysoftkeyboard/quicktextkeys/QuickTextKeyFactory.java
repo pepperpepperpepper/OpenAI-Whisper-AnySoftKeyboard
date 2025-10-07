@@ -64,6 +64,7 @@ public class QuickTextKeyFactory extends AddOnsFactory.MultipleAddOnsFactory<Qui
       CharSequence description,
       boolean isHidden,
       int sortIndex,
+      boolean hasUICard,
       AttributeSet attrs) {
     final int popupKeyboardResId =
         attrs.getAttributeResourceValue(

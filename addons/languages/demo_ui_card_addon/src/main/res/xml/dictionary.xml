@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Dictionary
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:name="@string/demo_dictionary_name"
+    android:description="@string/demo_dictionary_description"
+    android:dictionaryResId="@array/empty_words_array"
+    android:autoText=""
+    android:quickFixes="false"
+    android:sort="false"
+    android:uiCard="true" />

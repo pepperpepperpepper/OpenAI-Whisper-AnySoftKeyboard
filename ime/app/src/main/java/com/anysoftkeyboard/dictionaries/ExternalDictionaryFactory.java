@@ -126,6 +126,7 @@ public class ExternalDictionaryFactory extends AddOnsFactory<DictionaryAddOnAndB
       CharSequence description,
       boolean isHidden,
       int sortIndex,
+      boolean hasUICard,
       AttributeSet attrs) {
     final String language = attrs.getAttributeValue(null, XML_LANGUAGE_ATTRIBUTE);
     final String assets = attrs.getAttributeValue(null, XML_ASSETS_ATTRIBUTE);

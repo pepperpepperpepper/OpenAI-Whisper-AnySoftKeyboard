@@ -1,0 +1,23 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <receiver
+            android:name="com.anysoftkeyboard.demo.DemoPackBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.menny.android.anysoftkeyboard.DICTIONARY" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.ALTERNATIVE" />
+                <category android:name="android.intent.category.SELECTED_ALTERNATIVE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.anysoftkeyboard.languagepack.demo_ui_card_addon.DEMO_UI_CARD_UPDATE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <meta-data
+                android:name="com.anysoftkeyboard.dictionaries"
+                android:resource="@xml/demo_dictionaries" />
+        </receiver>
+    </application>
+</manifest>

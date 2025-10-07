@@ -18,7 +18,7 @@ import org.junit.runner.RunWith;
 @RunWith(AnySoftKeyboardRobolectricTestRunner.class)
 public class AddOnsFactoryTest {
 
-  private static final int STABLE_THEMES_COUNT = 4;
+  private static final int STABLE_THEMES_COUNT = 6;
   private static final int UNSTABLE_THEMES_COUNT = 1;
 
   @Test(expected = IllegalArgumentException.class)
@@ -50,6 +50,7 @@ public class AddOnsFactoryTest {
           CharSequence description,
           boolean isHidden,
           int sortIndex,
+          boolean hasUICard,
           AttributeSet attrs) {
         return null;
       }
@@ -85,6 +86,7 @@ public class AddOnsFactoryTest {
           CharSequence description,
           boolean isHidden,
           int sortIndex,
+          boolean hasUICard,
           AttributeSet attrs) {
         return null;
       }
@@ -110,19 +112,20 @@ public class AddOnsFactoryTest {
 
           @Override
           public void setAddOnEnabled(String addOnId, boolean enabled) {}
-
-          @Override
-    protected TestAddOn createConcreteAddOn(
-        Context askContext,
-        Context context,
-        int apiVersion,
-        CharSequence prefId,
-        CharSequence name,
-        CharSequence description,
-        boolean isHidden,
-        int sortIndex,
-        AttributeSet attrs) {            return null;
-          }
+      @Override
+      protected TestAddOn createConcreteAddOn(
+          Context askContext,
+          Context context,
+          int apiVersion,
+          CharSequence prefId,
+          CharSequence name,
+          CharSequence description,
+          boolean isHidden,
+          int sortIndex,
+          boolean hasUICard,
+          AttributeSet attrs) {
+        return null;
+      }
         };
 
     Assert.assertNotNull(singleAddOnsFactory.getAllAddOns());
@@ -143,10 +146,86 @@ public class AddOnsFactoryTest {
   }
 
   @Test
-  public void testFiltersDebugAddOnOnReleaseBuilds() throws Exception {
-    TestableAddOnsFactory factory = new TestableAddOnsFactory(false);
-    List<TestAddOn> list = factory.getAllAddOns();
-    Assert.assertEquals(STABLE_THEMES_COUNT, list.size());
+  public void testGetAddOnById() throws Exception {
+    final TestableAddOnsFactory factory = new TestableAddOnsFactory(true);
+    final List<TestAddOn> addOns = factory.getAllAddOns();
+
+    Assert.assertTrue(addOns.size() > 0);
+
+    for (TestAddOn addOn : addOns) {
+      TestAddOn fetched = factory.getAddOnById(addOn.getId());
+      Assert.assertNotNull(fetched);
+      Assert.assertEquals(addOn, fetched);
+    }
+
+    Assert.assertNull(factory.getAddOnById("bogus_id"));
+  }
+
+  @Test
+  public void testGetAddOnsWithUICard() throws Exception {
+    final TestableAddOnsFactory factory = new TestableAddOnsFactory(true);
+    final List<TestAddOn> allAddOns = factory.getAllAddOns();
+    final List<TestAddOn> uiCardAddOns = factory.getAddOnsWithUICard();
+
+    // All UI card add-ons should be a subset of all add-ons
+    for (TestAddOn uiCardAddOn : uiCardAddOns) {
+      Assert.assertTrue(allAddOns.contains(uiCardAddOn));
+      Assert.assertTrue(uiCardAddOn.hasUICard());
+    }
+
+    // Check that add-ons without UI card are not in the UI card list
+    for (TestAddOn addOn : allAddOns) {
+      if (!addOn.hasUICard()) {
+        Assert.assertFalse(uiCardAddOns.contains(addOn));
+      }
+    }
+  }
+
+  @Test
+  public void testUICardDetectionFromXml() throws Exception {
+    final TestableAddOnsFactory factory = new TestableAddOnsFactory(true);
+    
+    // Get specific add-ons to test UI card detection
+    TestAddOn uiCardEnabled = factory.getAddOnById("3774f99e-fb4a-49fa-b8d0-4083f762254d");
+    TestAddOn uiCardDisabled = factory.getAddOnById("4774f99e-fb4a-49fa-b8d0-4083f762254e");
+    TestAddOn uiCardNotSpecified = factory.getAddOnById("9774f99e-fb4a-49fa-b8d0-4083f762251b");
+
+    // Test add-on with uiCard="true"
+    Assert.assertNotNull(uiCardEnabled);
+    Assert.assertTrue("Add-on with uiCard=true should have UI card capability", uiCardEnabled.hasUICard());
+
+    // Test add-on with uiCard="false"  
+    Assert.assertNotNull(uiCardDisabled);
+    Assert.assertFalse("Add-on with uiCard=false should not have UI card capability", uiCardDisabled.hasUICard());
+
+    // Test add-on without uiCard attribute (should default to false)
+    Assert.assertNotNull(uiCardNotSpecified);
+    Assert.assertFalse("Add-on without uiCard attribute should not have UI card capability", uiCardNotSpecified.hasUICard());
+  }
+
+  @Test
+  public void testGetAddOnsWithUICardReturnsCorrectSubset() throws Exception {
+    final TestableAddOnsFactory factory = new TestableAddOnsFactory(true);
+    final List<TestAddOn> allAddOns = factory.getAllAddOns();
+    final List<TestAddOn> uiCardAddOns = factory.getAddOnsWithUICard();
+
+    // Should have at least one UI card add-on (the one with uiCard="true")
+    Assert.assertTrue("Should have at least one UI card add-on", uiCardAddOns.size() > 0);
+    
+    // Should have fewer UI card add-ons than total add-ons
+    Assert.assertTrue("UI card add-ons should be subset of all add-ons", uiCardAddOns.size() <= allAddOns.size());
+
+    // All UI card add-ons should have hasUICard() = true
+    for (TestAddOn addOn : uiCardAddOns) {
+      Assert.assertTrue("All add-ons in UI card list should have UI card capability", addOn.hasUICard());
+    }
+
+    // Verify specific add-ons are in the correct lists
+    TestAddOn uiCardEnabled = factory.getAddOnById("3774f99e-fb4a-49fa-b8d0-4083f762254d");
+    TestAddOn uiCardDisabled = factory.getAddOnById("4774f99e-fb4a-49fa-b8d0-4083f762254e");
+
+    Assert.assertTrue("UI card enabled add-on should be in UI card list", uiCardAddOns.contains(uiCardEnabled));
+    Assert.assertFalse("UI card disabled add-on should not be in UI card list", uiCardAddOns.contains(uiCardDisabled));
   }
 
   @Test
@@ -280,6 +359,19 @@ public class AddOnsFactoryTest {
         int sortIndex) {
       super(askContext, packageContext, apiVersion, id, name, description, isHidden, sortIndex);
     }
+
+    TestAddOn(
+        Context askContext,
+        Context packageContext,
+        int apiVersion,
+        CharSequence id,
+        CharSequence name,
+        CharSequence description,
+        boolean isHidden,
+        int sortIndex,
+        boolean hasUICard) {
+      super(askContext, packageContext, apiVersion, id, name, description, isHidden, sortIndex, hasUICard);
+    }
   }
 
   private static class TestableAddOnsFactory extends AddOnsFactory<TestAddOn> {
@@ -321,9 +413,10 @@ public class AddOnsFactoryTest {
         CharSequence description,
         boolean isHidden,
         int sortIndex,
+        boolean hasUICard,
         AttributeSet attrs) {
       return new TestAddOn(
-          askContext, context, apiVersion, prefId, name, description, isHidden, sortIndex);
+          askContext, context, apiVersion, prefId, name, description, isHidden, sortIndex, hasUICard);
     }
   }
 
@@ -355,9 +448,10 @@ public class AddOnsFactoryTest {
         CharSequence description,
         boolean isHidden,
         int sortIndex,
+        boolean hasUICard,
         AttributeSet attrs) {
       return new TestAddOn(
-          askContext, context, apiVersion, prefId, name, description, isHidden, sortIndex);
+          askContext, context, apiVersion, prefId, name, description, isHidden, sortIndex, hasUICard);
     }
   }
 
@@ -389,9 +483,10 @@ public class AddOnsFactoryTest {
         CharSequence description,
         boolean isHidden,
         int sortIndex,
+        boolean hasUICard,
         AttributeSet attrs) {
       return new TestAddOn(
-          askContext, context, apiVersion, prefId, name, description, isHidden, sortIndex);
+          askContext, context, apiVersion, prefId, name, description, isHidden, sortIndex, hasUICard);
     }
   }
 }

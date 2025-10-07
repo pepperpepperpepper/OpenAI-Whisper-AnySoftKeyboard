@@ -1,0 +1,1 @@
+A simple demonstration add-on that shows UI card functionality in AnySoftKeyboard. This add-on demonstrates how add-ons can publish UI cards to the main settings screen.

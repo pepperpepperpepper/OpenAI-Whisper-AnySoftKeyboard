@@ -45,4 +45,20 @@
         id="2774f99e-fb4a-49fa-b8d0-4083f762253c"
         index="3"
         nameResId="@string/addon_3_name" />
+    <TestAddOn
+        dataInt="777"
+        dataString="this is text with UI card"
+        description="UI card enabled"
+        id="3774f99e-fb4a-49fa-b8d0-4083f762254d"
+        index="5"
+        nameResId="@string/addon_3_name"
+        uiCard="true" />
+    <TestAddOn
+        dataInt="888"
+        dataString="this is text without UI card"
+        description="UI card disabled"
+        id="4774f99e-fb4a-49fa-b8d0-4083f762254e"
+        index="6"
+        nameResId="@string/addon_3_name"
+        uiCard="false" />
 </TestAddOns>

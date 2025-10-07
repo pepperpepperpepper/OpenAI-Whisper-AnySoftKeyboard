@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Theme
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:name="@string/demo_ui_theme_name"
+    android:description="@string/demo_ui_theme_description"
+    android:themeIcon="@drawable/ic_theme_demo"
+    android:keyboardTheme="@style/DemoUITheme"
+    android:popupTheme="@style/DemoUIPopupTheme"
+    android:generalTheme="@style/DemoUIGeneralTheme" />

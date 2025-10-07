@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- Demo Add-on with UI Card functionality -->
+        <receiver
+            android:name=".DemoUIAddOn"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.menny.android.anysoftkeyboard.DICTIONARY" />
+            </intent-filter>
+            <meta-data
+                android:name="com.anysoftkeyboard.addon"
+                android:resource="@xml/dictionary" />
+        </receiver>
+    </application>
+
+</manifest>

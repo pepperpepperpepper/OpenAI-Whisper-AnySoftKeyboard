@@ -69,6 +69,7 @@ public class KeyboardFactory extends AddOnsFactory.MultipleAddOnsFactory<Keyboar
       CharSequence description,
       boolean isHidden,
       int sortIndex,
+      boolean hasUICard,
       AttributeSet attrs) {
     final int layoutResId =
         attrs.getAttributeResourceValue(null, XML_LAYOUT_RES_ID_ATTRIBUTE, AddOn.INVALID_RES_ID);

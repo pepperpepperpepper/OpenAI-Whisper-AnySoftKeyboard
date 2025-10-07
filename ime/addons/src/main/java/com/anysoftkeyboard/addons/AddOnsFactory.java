@@ -58,6 +58,7 @@ public abstract class AddOnsFactory<E extends AddOn> {
   private static final String XML_SORT_INDEX_ATTRIBUTE = "index";
   private static final String XML_DEV_ADD_ON_ATTRIBUTE = "devOnly";
   private static final String XML_HIDDEN_ADD_ON_ATTRIBUTE = "hidden";
+  private static final String XML_UI_CARD_ATTRIBUTE = "uiCard";
   @NonNull protected final Context mContext;
   protected final String mTag;
   protected final SharedPreferences mSharedPreferences;
@@ -332,6 +333,41 @@ public abstract class AddOnsFactory<E extends AddOn> {
     return unmodifiableList(mAddOns);
   }
 
+  /**
+   * Returns a list of add-ons that support UI card functionality.
+   * An add-on supports UI cards if it implements AddOnUICardPublisher interface
+   * or has the uiCard attribute set to true in its XML declaration.
+   */
+  public final synchronized List<E> getAddOnsWithUICard() {
+    List<E> allAddOns = getAllAddOns();
+    List<E> uiCardAddOns = new ArrayList<>();
+    
+    for (E addOn : allAddOns) {
+      if (hasUICardCapability(addOn)) {
+        uiCardAddOns.add(addOn);
+      }
+    }
+    
+    return Collections.unmodifiableList(uiCardAddOns);
+  }
+
+  /**
+   * Checks if an add-on has UI card capability.
+   * This can be determined by:
+   * 1. The add-on implementing AddOnUICardPublisher interface (checked in subclass)
+   * 2. The add-on having uiCard="true" in its XML declaration
+   * 
+   * Subclasses should override this method to check for AddOnUICardPublisher interface.
+   */
+  protected boolean hasUICardCapability(E addOn) {
+    // Check if the add-on has UI card attribute set (for AddOnImpl instances)
+    if (addOn instanceof AddOnImpl) {
+      return ((AddOnImpl) addOn).hasUICard();
+    }
+    
+    return false;
+  }
+
   @CallSuper
   protected void loadAddOns() {
     clearAddOnList();
@@ -492,6 +528,7 @@ public abstract class AddOnsFactory<E extends AddOn> {
         getTextFromResourceOrText(packContext, attrs, XML_DESCRIPTION_ATTRIBUTE);
 
     final int sortIndex = attrs.getAttributeUnsignedIntValue(null, XML_SORT_INDEX_ATTRIBUTE, 1);
+    final boolean hasUICard = attrs.getAttributeBooleanValue(null, XML_UI_CARD_ATTRIBUTE, false);
 
     // asserting
     if (TextUtils.isEmpty(prefId) || TextUtils.isEmpty(name)) {
@@ -500,9 +537,9 @@ public abstract class AddOnsFactory<E extends AddOn> {
           "External add-on does not include all mandatory details! Will not create" + " add-on.");
       return null;
     } else {
-      Logger.d(mTag, "External addon details: prefId:" + prefId + " name:" + name);
+      Logger.d(mTag, "External addon details: prefId:" + prefId + " name:" + name + " hasUICard:" + hasUICard);
       return createConcreteAddOn(
-          mContext, packContext, apiVersion, prefId, name, description, isHidden, sortIndex, attrs);
+          mContext, packContext, apiVersion, prefId, name, description, isHidden, sortIndex, hasUICard, attrs);
     }
   }
 
@@ -530,6 +567,7 @@ public abstract class AddOnsFactory<E extends AddOn> {
       CharSequence description,
       boolean isHidden,
       int sortIndex,
+      boolean hasUICard,
       AttributeSet attrs);
 
   private static final class AddOnsComparator implements Comparator<AddOn>, Serializable {

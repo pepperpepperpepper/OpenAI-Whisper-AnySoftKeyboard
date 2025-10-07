@@ -7,12 +7,14 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.provider.Settings;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -188,8 +190,43 @@ public class MainFragment extends Fragment {
       TextView textView = new TextView(requireContext());
       textView.setTextAppearance(android.R.style.TextAppearance_Medium);
       textView.setTextColor(Color.parseColor("#D84315")); // Dark orange text for contrast
-      textView.setText("🎯 " + card.getTitle() + "\n" + card.getMessage());
       textView.setPadding(8, 8, 8, 8);
+
+      // Handle clickable links in the message
+      String fullText = "🎯 " + card.getTitle() + "\n" + card.getMessage();
+      if (card.getMessage().contains("<a href=\"")) {
+        // Handle HTML links in the message
+        SpannableStringBuilder sb = new SpannableStringBuilder(android.text.Html.fromHtml(fullText, Html.FROM_HTML_MODE_COMPACT).toString());
+        
+        // Find and make settings:// links clickable
+        String originalMessage = card.getMessage();
+        int linkStart = originalMessage.indexOf("<a href=\"settings://");
+        if (linkStart != -1) {
+          int linkEnd = originalMessage.indexOf("\">", linkStart);
+          int textEnd = originalMessage.indexOf("</a>", linkEnd);
+          
+          if (linkEnd != -1 && textEnd != -1) {
+            String linkText = originalMessage.substring(linkEnd + 2, textEnd);
+            int fullTextStart = fullText.indexOf(linkText);
+            if (fullTextStart != -1) {
+              ClickableSpan settingsLink = new ClickableSpan() {
+                @Override
+                public void onClick(@NonNull View v) {
+                  handleSettingsLink();
+                }
+              };
+              sb.setSpan(settingsLink, fullTextStart, fullTextStart + linkText.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+              textView.setMovementMethod(LinkMovementMethod.getInstance());
+            }
+          }
+        }
+        
+        textView.setText(sb);
+        Logger.d(TAG, "Processed HTML links in card message");
+      } else {
+        // No HTML links, just set the text
+        textView.setText(fullText);
+      }
 
       // Set click listener if target fragment is specified
       if (card.getTargetFragment() != null) {
@@ -213,6 +250,23 @@ public class MainFragment extends Fragment {
     } catch (Exception e) {
       Logger.e(TAG, "Exception creating card view for " + card.getTitle(), e);
       return null;
+    }
+  }
+
+  private void handleSettingsLink() {
+    try {
+      Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+      Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
+      intent.setData(uri);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      startActivity(intent);
+      Logger.d(TAG, "Opened app settings for package: " + requireContext().getPackageName());
+    } catch (ActivityNotFoundException e) {
+      Logger.w(TAG, "Unable to open app settings", e);
+      Toast.makeText(requireContext(), "Unable to open app settings", Toast.LENGTH_SHORT).show();
+    } catch (Exception e) {
+      Logger.e(TAG, "Error opening app settings", e);
+      Toast.makeText(requireContext(), "Error opening app settings", Toast.LENGTH_SHORT).show();
     }
   }
 

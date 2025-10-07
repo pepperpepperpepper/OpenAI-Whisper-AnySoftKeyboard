@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="demo_addon_name">Demo UI Card Add-on</string>
+    <string name="demo_addon_description">A simple demonstration add-on that shows UI card functionality</string>
+    <string name="demo_dictionary">Demo Dictionary</string>
+    <string name="demo_dictionary_description">Demo dictionary for UI card testing</string>
+</resources>
