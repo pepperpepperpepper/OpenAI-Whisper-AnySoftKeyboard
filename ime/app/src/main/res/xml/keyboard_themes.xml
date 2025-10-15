@@ -156,4 +156,12 @@
         nameResId="@string/power_saving_keyboard_theme_name"
         popupThemeRes="@style/PowerSavingAnySoftKeyboardPopup"
         themeRes="@style/PowerSavingAnySoftKeyboard" />
+    <KeyboardTheme
+        description="@string/mike_rozoff_keyboard_theme_description"
+        iconsThemeRes="@style/MikeRozoffKeyIconTheme"
+        id="43cad3d9-83fa-4c27-b849-7e4d7c78e6b2"
+        index="19"
+        nameResId="@string/mike_rozoff_keyboard_theme_name"
+        popupThemeRes="@style/MikeRozoffPopup"
+        themeRes="@style/MikeRozoffTheme" />
 </KeyboardThemes>
