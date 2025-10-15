@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MikeRozoffKeyIconTheme" parent="@style/YocheesDarkKeyIconTheme" />
+
+    <style name="MikeRozoffTheme" parent="@style/YocheesDarkTheme">
+        <item name="keyBackground">@drawable/mike_rozoff_key</item>
+        <item name="keyTextColor">#FFFFFFFF</item>
+        <item name="hintTextColor">#FFB8C4FF</item>
+        <item name="shadowColor">#660000FF</item>
+        <item name="backgroundDimAmount">0.45</item>
+    </style>
+
+    <style name="MikeRozoffPopup" parent="@style/YocheesDarkPopup">
+        <item name="keyBackground">@drawable/mike_rozoff_popup_key</item>
+        <item name="keyPreviewTextColor">#FFFFFFFF</item>
+    </style>
+</resources>
