@@ -51,6 +51,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
+import androidx.core.graphics.drawable.DrawableCompat;
 import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.addons.DefaultAddOn;
 import com.anysoftkeyboard.api.KeyCodes;
@@ -1256,7 +1257,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
         }
 
         if (EmojiUtils.isLabelOfEmoji(label)) {
-          paint.setTextSize(2f * paint.getTextSize());
+          paint.setTextSize(1.35f * paint.getTextSize());
         }
 
         final float labelHeight = -fm.top;
@@ -1324,6 +1325,11 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
               || (key.longPressCode != 0))) {
         Align oldAlign = paint.getTextAlign();
 
+        Drawable hintIconDrawable = null;
+        if (key instanceof AnyKeyboard.AnyKey) {
+          hintIconDrawable = ((AnyKeyboard.AnyKey) key).hintIcon;
+        }
+
         String hintText = "";
 
         if (key.hintLabel != null && key.hintLabel.length() > 0) {
@@ -1345,7 +1351,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
           }
         }
 
-        if (mKeyboard.isShifted()) {
+        if (hintText.length() > 0 && mKeyboard.isShifted()) {
           hintText = hintText.toUpperCase(getKeyboard().getLocale());
         }
 
@@ -1392,7 +1398,43 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
           hintY = key.height - mKeyBackgroundPadding.bottom - mHintTextFontMetrics.bottom - 0.5f;
         }
 
-        canvas.drawText(hintText, hintX, hintY, paint);
+        if (hintText.length() > 0) {
+          canvas.drawText(hintText, hintX, hintY, paint);
+        } else if (hintIconDrawable != null) {
+          final Drawable drawable = hintIconDrawable.mutate();
+          DrawableCompat.setTint(drawable, themeResourcesHolder.getHintTextColor());
+          final int iconWidth = drawable.getIntrinsicWidth();
+          final int iconHeight = drawable.getIntrinsicHeight();
+          final int iconLeft;
+          if (hintAlign == Gravity.START) {
+            iconLeft = (int) (mKeyBackgroundPadding.left + 0.5f);
+          } else if (hintAlign == Gravity.CENTER_HORIZONTAL) {
+            iconLeft =
+                (int)
+                    (mKeyBackgroundPadding.left
+                        + (key.width
+                                - mKeyBackgroundPadding.left
+                                - mKeyBackgroundPadding.right
+                                - iconWidth)
+                            / 2f);
+          } else {
+            iconLeft =
+                (int) (key.width - mKeyBackgroundPadding.right - iconWidth - 0.5f);
+          }
+          final int iconTop;
+          if (hintVAlign == Gravity.TOP) {
+            iconTop = (int) (mKeyBackgroundPadding.top + 0.5f);
+          } else {
+            iconTop =
+                (int)
+                    (key.height
+                        - mKeyBackgroundPadding.bottom
+                        - iconHeight
+                        - 0.5f);
+          }
+          drawable.setBounds(iconLeft, iconTop, iconLeft + iconWidth, iconTop + iconHeight);
+          drawable.draw(canvas);
+        }
         paint.setTextAlign(oldAlign);
       }
 

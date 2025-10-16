@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Xml;
 import android.view.inputmethod.EditorInfo;
@@ -826,6 +827,7 @@ boolean stateChanged = mVoiceState != initialState;
     public static final int SHOW_KEY_NEVER = 2;
     public CharSequence shiftedKeyLabel;
     public CharSequence hintLabel;
+    @Nullable public Drawable hintIcon;
     public int longPressCode;
     @ShowKeyInLayoutType public int showKeyInLayout;
     @NonNull int[] mShiftedCodes = EMPTY_INT_ARRAY;
@@ -856,6 +858,7 @@ boolean stateChanged = mVoiceState != initialState;
       longPressCode = 0;
       shiftedKeyLabel = null;
       hintLabel = null;
+      hintIcon = null;
       boolean mShiftCodesAlwaysOverride = false;
 
       final int[] remoteStyleableArrayFromLocal =
@@ -889,6 +892,12 @@ boolean stateChanged = mVoiceState != initialState;
               break;
             case R.attr.hintLabel:
               hintLabel = a.getString(remoteIndex);
+              break;
+            case R.attr.hintIcon:
+              hintIcon = a.getDrawable(remoteIndex);
+              if (hintIcon != null) {
+                KeyboardSupport.updateDrawableBounds(hintIcon);
+              }
               break;
             case R.attr.showInLayout:
               //noinspection WrongConstant

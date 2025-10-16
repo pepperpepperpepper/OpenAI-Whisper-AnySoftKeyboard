@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/autofill_strip_action_root"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/candidate_strip_height"
+    android:layout_gravity="center"
+    android:background="@drawable/inline_strip_action_background"
+    android:clickable="true"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp">
+
+    <ImageView
+        android:id="@+id/autofill_strip_action_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/hint_click_for_autofill"
+        android:paddingEnd="4dp"
+        android:paddingRight="4dp"
+        android:src="@drawable/ic_autofill_strip" />
+
+    <TextView
+        android:id="@+id/autofill_strip_text"
+        style="@style/Ask.Text.SuggestionsAction.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/autofill_action_label" />
+
+</LinearLayout>

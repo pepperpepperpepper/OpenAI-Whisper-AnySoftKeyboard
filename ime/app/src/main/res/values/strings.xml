@@ -46,6 +46,8 @@
     <string name="hint_double_tap_to_close">Again to remove suggestions</string>
 
     <string name="hint_click_for_inline_suggestions">Available auto-fill suggestions</string>
+    <string name="hint_click_for_autofill">Request autofill suggestions</string>
+    <string name="autofill_action_label">Autofill</string>
 
     <!-- voice -->
     <string name="voice_input_not_installed_title">Voice Is Not Installed</string>

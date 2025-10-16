@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -17,6 +18,7 @@ import android.view.inputmethod.InputMethodSubtype;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.RequiresApi;
 import androidx.core.view.inputmethod.InputContentInfoCompat;
 import androidx.test.core.app.ApplicationProvider;
 import com.anysoftkeyboard.addons.AddOn;
@@ -80,6 +82,8 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
   private InputContentInfoCompat mInputContentInfo;
 
   private long mDelayBetweenTyping = DELAY_BETWEEN_TYPING;
+  private boolean mAutofillRequested;
+  @Nullable private Boolean mAutofillAvailableOverride;
 
   public static EditorInfo createEditorInfoTextWithSuggestions() {
     return createEditorInfo(EditorInfo.IME_ACTION_NONE, EditorInfo.TYPE_CLASS_TEXT);
@@ -175,6 +179,34 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
   @Override
   public QuickKeyHistoryRecords getQuickKeyHistoryRecords() {
     return super.getQuickKeyHistoryRecords();
+  }
+
+  @Override
+  @RequiresApi(Build.VERSION_CODES.O)
+  protected boolean shouldOfferAutofill(@NonNull EditorInfo attribute) {
+    if (mAutofillAvailableOverride != null) {
+      return mAutofillAvailableOverride;
+    }
+    return super.shouldOfferAutofill(attribute);
+  }
+
+  @Override
+  @RequiresApi(Build.VERSION_CODES.O)
+  protected boolean requestAutofillFromIme() {
+    mAutofillRequested = true;
+    return true;
+  }
+
+  public void setAutofillAvailableOverride(@Nullable Boolean available) {
+    mAutofillAvailableOverride = available;
+  }
+
+  public boolean wasAutofillRequested() {
+    return mAutofillRequested;
+  }
+
+  public void resetAutofillRequestFlag() {
+    mAutofillRequested = false;
   }
 
   @Override

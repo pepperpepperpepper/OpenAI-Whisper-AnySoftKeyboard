@@ -574,7 +574,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
         if (key.getPrimaryCode() == KeyCodes.SPACE) {
           android.util.Log.d("VoiceKeyDebug", "updateVoiceInputStatus - Found space bar key!");
           
-          String statusText = getStatusTextForState(mVoiceInputState);
+          CharSequence statusText = getStatusTextForState(mVoiceInputState);
           key.label = statusText;
           android.util.Log.d("VoiceKeyDebug", "updateVoiceInputStatus - Set space bar to: " + statusText);
           
@@ -596,7 +596,8 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
     }
   }
   
-  private String getStatusTextForState(VoiceInputState state) {
+  @Nullable
+  private CharSequence getStatusTextForState(VoiceInputState state) {
     switch (state) {
       case RECORDING:
         return "🎤 Recording";
@@ -606,7 +607,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
         return mErrorFlashState ? "❌ Error" : "❌";
       case IDLE:
       default:
-        return ""; // Default space bar text stays empty when idle
+        return null; // Allow default keyboard label to render when idle
     }
   }
   

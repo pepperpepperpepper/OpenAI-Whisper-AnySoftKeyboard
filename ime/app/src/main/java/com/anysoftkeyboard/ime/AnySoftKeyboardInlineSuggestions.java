@@ -7,6 +7,8 @@ import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.autofill.AutofillManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InlineSuggestion;
 import android.view.inputmethod.InlineSuggestionsRequest;
 import android.view.inputmethod.InlineSuggestionsResponse;
@@ -32,6 +34,8 @@ import net.evendanan.pixel.ScrollViewAsMainChild;
 public abstract class AnySoftKeyboardInlineSuggestions extends AnySoftKeyboardSuggestions {
 
   private final InlineSuggestionsAction mInlineSuggestionAction;
+  @Nullable private final AutofillStripAction mAutofillStripAction;
+  private boolean mAutofillRequestIssuedForCurrentEditor;
 
   public AnySoftKeyboardInlineSuggestions() {
     super();
@@ -41,6 +45,11 @@ public abstract class AnySoftKeyboardInlineSuggestions extends AnySoftKeyboardSu
     } else {
       mInlineSuggestionAction = new InlineSuggestionsAction(l -> null, this::removeActionStrip);
     }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      mAutofillStripAction = new AutofillStripAction(this);
+    } else {
+      mAutofillStripAction = null;
+    }
   }
 
   @Override
@@ -48,6 +57,29 @@ public abstract class AnySoftKeyboardInlineSuggestions extends AnySoftKeyboardSu
     super.onFinishInputView(finishingInput);
     cleanUpInlineLayouts(true);
     removeActionStrip();
+    removeAutofillStripAction();
+  }
+
+  @Override
+  public void onFinishInput() {
+    super.onFinishInput();
+    mAutofillRequestIssuedForCurrentEditor = false;
+  }
+
+  @Override
+  public void onStartInput(EditorInfo attribute, boolean restarting) {
+    super.onStartInput(attribute, restarting);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      mAutofillRequestIssuedForCurrentEditor = false;
+    }
+  }
+
+  @Override
+  public void onStartInputView(EditorInfo attribute, boolean restarting) {
+    super.onStartInputView(attribute, restarting);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      maybeAttachAutofillStripAction(attribute, restarting);
+    }
   }
 
   @Override
@@ -175,6 +207,78 @@ public abstract class AnySoftKeyboardInlineSuggestions extends AnySoftKeyboardSu
     return null;
   }
 
+  @RequiresApi(Build.VERSION_CODES.O)
+  private void maybeAttachAutofillStripAction(
+      @Nullable EditorInfo attribute, boolean restarting) {
+    if (mAutofillStripAction == null) return;
+    var inputViewContainer = getInputViewContainer();
+    if (inputViewContainer == null) return;
+    if (attribute == null || !shouldOfferAutofill(attribute)) {
+      inputViewContainer.removeStripAction(mAutofillStripAction);
+      return;
+    }
+    inputViewContainer.addStripAction(mAutofillStripAction, true);
+    inputViewContainer.setActionsStripVisibility(true);
+    if (!restarting && !mAutofillRequestIssuedForCurrentEditor) {
+      if (requestAutofillFromIme()) {
+        mAutofillRequestIssuedForCurrentEditor = true;
+      }
+    }
+  }
+
+  private void removeAutofillStripAction() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && mAutofillStripAction != null) {
+      var inputViewContainer = getInputViewContainer();
+      if (inputViewContainer != null) {
+        inputViewContainer.removeStripAction(mAutofillStripAction);
+      }
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.O)
+  protected boolean shouldOfferAutofill(@NonNull EditorInfo attribute) {
+    AutofillManager manager = getSystemService(AutofillManager.class);
+    if (manager == null || !manager.isEnabled()) return false;
+    final int inputClass = attribute.inputType & EditorInfo.TYPE_MASK_CLASS;
+    return inputClass == EditorInfo.TYPE_CLASS_TEXT
+        || inputClass == EditorInfo.TYPE_CLASS_NUMBER
+        || inputClass == EditorInfo.TYPE_CLASS_PHONE
+        || inputClass == EditorInfo.TYPE_CLASS_DATETIME;
+  }
+
+  @RequiresApi(Build.VERSION_CODES.O)
+  protected boolean requestAutofillFromIme() {
+    AutofillManager manager = getSystemService(AutofillManager.class);
+    if (manager == null) return false;
+    View anchor = null;
+    var dialog = getWindow();
+    if (dialog != null) {
+      var window = dialog.getWindow();
+      if (window != null) {
+        anchor = window.getDecorView();
+      }
+    }
+    if (anchor == null) return false;
+    try {
+      if (manager.showAutofillDialog(anchor)) {
+        return true;
+      }
+      manager.requestAutofill(anchor);
+      return true;
+    } catch (RuntimeException exception) {
+      Logger.w(
+          "ASK_Autofill",
+          "requestAutofill failed for %s",
+          exception.getMessage() == null ? "unknown reason" : exception.getMessage());
+      return false;
+    }
+  }
+
+  @RequiresApi(Build.VERSION_CODES.O)
+  private void onAutofillStripActionPressed() {
+    requestAutofillFromIme();
+  }
+
   @RequiresApi(Build.VERSION_CODES.R)
   private void addInlineSuggestionToList(
       @NonNull Context viewContext,
@@ -197,6 +301,29 @@ public abstract class AnySoftKeyboardInlineSuggestions extends AnySoftKeyboardSu
           v.setOnClickListener(v1 -> cleanUpInlineLayouts(true));
           lister.addListItem(v);
         });
+  }
+
+  @RequiresApi(Build.VERSION_CODES.O)
+  private static class AutofillStripAction
+      implements KeyboardViewContainerView.StripActionProvider {
+    private final AnySoftKeyboardInlineSuggestions mIme;
+
+    AutofillStripAction(@NonNull AnySoftKeyboardInlineSuggestions ime) {
+      mIme = ime;
+    }
+
+    @NonNull
+    @Override
+    public View inflateActionView(@NonNull ViewGroup parent) {
+      var root =
+          LayoutInflater.from(parent.getContext())
+              .inflate(R.layout.autofill_strip_action, parent, false);
+      root.setOnClickListener(v -> mIme.onAutofillStripActionPressed());
+      return root;
+    }
+
+    @Override
+    public void onRemoved() {}
   }
 
   static class InlineSuggestionsAction implements KeyboardViewContainerView.StripActionProvider {

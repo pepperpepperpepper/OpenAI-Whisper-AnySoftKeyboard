@@ -100,6 +100,8 @@ Copyright (C) 2013 Menny Even-Danan
 
         <!-- The characters to display as a hint for the popup keyboard -->
         <attr name="hintLabel" format="reference|string"/>
+        <!-- The icon to display as a hint for the popup keyboard -->
+        <attr name="hintIcon" format="reference"/>
 
         <attr name="showInLayout">
             <!--default value-->

@@ -36,6 +36,7 @@
     <dimen name="lean_big_key_text_size">24sp</dimen>
     <dimen name="key_label_text_size">14sp</dimen>
     <dimen name="key_hint_text_size">7sp</dimen>
+    <dimen name="mike_rozoff_hint_text_size">10.5sp</dimen>
     <dimen name="keyboard_name_text_size">10sp</dimen>
 
     <dimen name="inline_suggestion_min_width">44dp</dimen>

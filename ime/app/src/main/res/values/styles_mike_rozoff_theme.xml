@@ -6,6 +6,9 @@
         <item name="keyBackground">@drawable/mike_rozoff_key</item>
         <item name="keyTextColor">#FFFFFFFF</item>
         <item name="hintTextColor">#FFB8C4FF</item>
+        <item name="hintTextSize">@dimen/mike_rozoff_hint_text_size</item>
+        <item name="hintLabelAlign">center</item>
+        <item name="hintLabelVAlign">top</item>
         <item name="shadowColor">#660000FF</item>
         <item name="backgroundDimAmount">0.45</item>
     </style>

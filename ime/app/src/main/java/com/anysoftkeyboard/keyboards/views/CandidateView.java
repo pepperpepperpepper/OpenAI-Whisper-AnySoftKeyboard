@@ -39,6 +39,7 @@ import androidx.core.content.ContextCompat;
 import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.ime.AnySoftKeyboardSuggestions;
+import com.anysoftkeyboard.keyboards.KeyboardSupport;
 import com.anysoftkeyboard.overlay.OverlayData;
 import com.anysoftkeyboard.overlay.OverlayDataNormalizer;
 import com.anysoftkeyboard.overlay.ThemeOverlayCombiner;
@@ -47,8 +48,7 @@ import com.anysoftkeyboard.rx.GenericOnError;
 import com.anysoftkeyboard.theme.KeyboardTheme;
 import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.R;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.Disposables;
+import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -86,7 +86,9 @@ public class CandidateView extends View implements ThemeableChild {
   private int mTotalWidth;
 
   private boolean mAlwaysUseDrawText;
-  @NonNull private Disposable mDisposable = Disposables.empty();
+  private final CompositeDisposable mDisposables = new CompositeDisposable();
+  private float mKeyboardHeightFactor = 1f;
+  private float mBaseSuggestionTextSizePx = 0f;
 
   public CandidateView(Context context, AttributeSet attrs) {
     this(context, attrs, 0);
@@ -145,8 +147,11 @@ public class CandidateView extends View implements ThemeableChild {
     mSelectionHighlight = null;
     setBackgroundDrawable(null);
     setBackgroundColor(Color.BLACK);
-    float fontSizePixel =
+    float defaultFontSizePixel =
         context.getResources().getDimensionPixelSize(R.dimen.candidate_font_height);
+    float fontSizePixel = defaultFontSizePixel;
+    float keyTextSizePixel = Float.NaN;
+    float suggestionTextSizePixel = Float.NaN;
 
     final int resolvedAttrsCount = a.getIndexCount();
     for (int attrIndex = 0; attrIndex < resolvedAttrsCount; attrIndex++) {
@@ -178,7 +183,10 @@ public class CandidateView extends View implements ThemeableChild {
             mCloseDrawable = a.getDrawable(remoteIndex);
             break;
           case R.attr.suggestionTextSize:
-            fontSizePixel = a.getDimension(remoteIndex, fontSizePixel);
+            suggestionTextSizePixel = a.getDimension(remoteIndex, defaultFontSizePixel);
+            break;
+          case R.attr.keyTextSize:
+            keyTextSizePixel = a.getDimension(remoteIndex, defaultFontSizePixel);
             break;
           case R.attr.suggestionWordXGap:
             mHorizontalGap = a.getDimension(remoteIndex, mHorizontalGap);
@@ -202,6 +210,14 @@ public class CandidateView extends View implements ThemeableChild {
     }
     a.recycle();
 
+    if (!Float.isNaN(keyTextSizePixel)) {
+      fontSizePixel = keyTextSizePixel;
+    } else if (!Float.isNaN(suggestionTextSizePixel)) {
+      fontSizePixel = suggestionTextSizePixel;
+    } else {
+      fontSizePixel = defaultFontSizePixel;
+    }
+
     if (mDivider == null) {
       mDivider = ContextCompat.getDrawable(context, R.drawable.dark_suggestions_divider);
     }
@@ -214,16 +230,26 @@ public class CandidateView extends View implements ThemeableChild {
     }
     mPaint.setColor(mThemeOverlayCombiner.getThemeResources().getKeyTextColor().getDefaultColor());
     mPaint.setAntiAlias(true);
-    mPaint.setTextSize(fontSizePixel);
+    mBaseSuggestionTextSizePx = fontSizePixel;
+    applyTextSize();
     mPaint.setStrokeWidth(0);
     mPaint.setTextAlign(Align.CENTER);
     mTextPaint.set(mPaint);
   }
 
+  private void applyTextSize() {
+    if (mBaseSuggestionTextSizePx <= 0f) {
+      return;
+    }
+    final float textSize = mBaseSuggestionTextSizePx * mKeyboardHeightFactor;
+    mPaint.setTextSize(textSize);
+    mTextPaint.setTextSize(textSize);
+  }
+
   @Override
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    mDisposable =
+    mDisposables.add(
         AnyApplication.prefs(getContext())
             .getBoolean(
                 R.string.settings_key_workaround_disable_rtl_fix,
@@ -232,14 +258,23 @@ public class CandidateView extends View implements ThemeableChild {
             .subscribe(
                 value -> mAlwaysUseDrawText = value,
                 GenericOnError.onError(
-                    "Failed reading settings_key_workaround_disable_rtl_fix in"
-                        + " CandidateView."));
+                    "Failed reading settings_key_workaround_disable_rtl_fix in CandidateView.")));
+    mDisposables.add(
+        KeyboardSupport.getKeyboardHeightFactor(getContext())
+            .subscribe(
+                factor -> {
+                  mKeyboardHeightFactor = Math.max(factor, 0.1f);
+                  applyTextSize();
+                  invalidate();
+                },
+                GenericOnError.onError(
+                    "Failed to observe keyboard height factor in CandidateView")));
   }
 
   @Override
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
-    mDisposable.dispose();
+    mDisposables.clear();
   }
 
   /** A connection back to the service to communicate with the text field */
