@@ -1,4 +1,4 @@
-New Soft Keyboard 13.8.16
+New Soft Keyboard 13.8.17
 - Mike Rozoff Blue: Ctrl/Alt/Fn are back to full-size mixed-case labels and tint blue when active just like Shift.
 
 New Soft Keyboard 13.8.7

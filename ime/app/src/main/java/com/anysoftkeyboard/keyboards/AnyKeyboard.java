@@ -203,7 +203,9 @@ public abstract class AnyKeyboard extends Keyboard {
         }
 
         // detecting LTR languages
-        if (mRightToLeftLayout || Workarounds.isRightToLeftCharacter((char) primaryCode)) {
+        if (!mRightToLeftLayout
+            && primaryCode >= 0
+            && Workarounds.isRightToLeftCharacter((char) primaryCode)) {
           mRightToLeftLayout = true; // one is enough
         }
         switch (primaryCode) {
@@ -537,7 +539,9 @@ public abstract class AnyKeyboard extends Keyboard {
       }
 
       // detecting LTR languages
-      if (mRightToLeftLayout || Workarounds.isRightToLeftCharacter((char) primaryCode)) {
+      if (!mRightToLeftLayout
+          && primaryCode >= 0
+          && Workarounds.isRightToLeftCharacter((char) primaryCode)) {
         mRightToLeftLayout = true; // one is enough
       }
       switch (primaryCode) {

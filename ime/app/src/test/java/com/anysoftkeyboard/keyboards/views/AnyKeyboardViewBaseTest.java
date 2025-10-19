@@ -10,6 +10,8 @@ import android.graphics.Point;
 import android.os.SystemClock;
 import android.view.Gravity;
 import android.view.MotionEvent;
+import android.view.View;
+import android.graphics.drawable.Drawable;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,11 +22,14 @@ import com.anysoftkeyboard.keyboards.Keyboard;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
 import com.anysoftkeyboard.theme.KeyboardThemeFactory;
+import com.anysoftkeyboard.keyboards.views.preview.KeyPreviewsController;
+import com.anysoftkeyboard.keyboards.views.preview.PreviewPopupTheme;
 import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -355,6 +360,48 @@ public class AnyKeyboardViewBaseTest {
     Assert.assertEquals(0, mUnderTest.mHintTextSizeMultiplier, 0);
   }
 
+  @Test
+  public void testFunctionPreviewUsesFunctionLabels() {
+    SharedPrefsHelper.setPrefsValue(
+        "settings_key_ext_kbd_top_row_key", "1fae0220-ded6-11e0-9572-0800200c9a66");
+    AnyKeyboard numericKeyboard =
+        AnyApplication.getKeyboardFactory(getApplicationContext())
+            .getEnabledAddOn()
+            .createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
+    numericKeyboard.loadKeyboard(mUnderTest.getThemedKeyboardDimens());
+    mUnderTest.setKeyboard(numericKeyboard, 0);
+
+    CapturingPreviewController previewController = new CapturingPreviewController();
+    mUnderTest.setKeyPreviewController(previewController);
+
+    AnyKeyboard.AnyKey digitKey = null;
+    int digitIndex = -1;
+    List<Keyboard.Key> allKeys = mUnderTest.getKeyboard().getKeys();
+    for (int i = 0; i < allKeys.size(); i++) {
+      Keyboard.Key candidate = allKeys.get(i);
+      if (candidate.getPrimaryCode() >= '0' && candidate.getPrimaryCode() <= '9') {
+        digitKey = (AnyKeyboard.AnyKey) candidate;
+        digitIndex = i;
+        break;
+      }
+    }
+    Assume.assumeNotNull(digitKey);
+    digitKey.showPreview = true;
+    PointerTracker tracker = Mockito.mock(PointerTracker.class);
+    Mockito.when(tracker.getKey(digitIndex)).thenReturn(digitKey);
+    Mockito.when(tracker.getPreviewText(digitKey)).thenReturn("1");
+
+    mUnderTest.setFunction(false, false);
+    mUnderTest.showPreview(digitIndex, tracker);
+    Assert.assertEquals("1", previewController.lastLabel);
+
+    previewController.lastLabel = null;
+
+    mUnderTest.setFunction(true, false);
+    mUnderTest.showPreview(digitIndex, tracker);
+    Assert.assertEquals("F1", previewController.lastLabel);
+  }
+
   @NonNull
   protected AnyKeyboard.AnyKey requireFindKey(int codeToFind) {
     AnyKeyboard.AnyKey key = findKey(codeToFind);
@@ -372,6 +419,34 @@ public class AnyKeyboardViewBaseTest {
     }
   }
 
+  private static class CapturingPreviewController implements KeyPreviewsController {
+    @Nullable CharSequence lastLabel;
+
+    @Override
+    public void hidePreviewForKey(Keyboard.Key key) {}
+
+    @Override
+    public void showPreviewForKey(
+        Keyboard.Key key,
+        Drawable icon,
+        View parentView,
+        PreviewPopupTheme previewPopupTheme) {}
+
+    @Override
+    public void showPreviewForKey(
+        Keyboard.Key key,
+        CharSequence label,
+        View parentView,
+        PreviewPopupTheme previewPopupTheme) {
+      lastLabel = label;
+    }
+
+    @Override
+    public void cancelAllPreviews() {}
+
+    @Override
+    public void destroy() {}
+  }
   protected int findKeyIndex(int codeToFind) {
     Keyboard keyboard = mUnderTest.getKeyboard();
     if (keyboard == null) return -1;

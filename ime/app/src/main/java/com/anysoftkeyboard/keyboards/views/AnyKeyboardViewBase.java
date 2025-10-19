@@ -36,9 +36,12 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.text.Layout.Alignment;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.style.UnderlineSpan;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.Gravity;
@@ -78,6 +81,7 @@ import com.anysoftkeyboard.theme.KeyboardTheme;
 import com.anysoftkeyboard.utils.EmojiUtils;
 import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.BuildConfig;
+import java.util.Locale;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -1093,12 +1097,21 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       return currentLabel;
     }
     final AnyKeyboard anyKeyboard = (AnyKeyboard) mKeyboard;
-    final boolean functionActive = anyKeyboard.isFunctionActive();
-    final boolean shiftActive = anyKeyboard.isShifted();
-    if (!functionActive && !shiftActive) {
+    final boolean functionLocked = anyKeyboard.isFunctionLocked();
+    final boolean functionEngaged = anyKeyboard.isFunctionActive() || functionLocked;
+    if (!functionEngaged) {
       return currentLabel;
     }
     final int primaryCode = key.getCodeAtIndex(0, false);
+    if (primaryCode == KeyCodes.FUNCTION && functionLocked) {
+      final CharSequence baseLabel = currentLabel != null ? currentLabel : key.label;
+      if (!TextUtils.isEmpty(baseLabel)) {
+        final SpannableString underlined = new SpannableString("Fn");
+        underlined.setSpan(
+            new UnderlineSpan(), 0, underlined.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        return underlined;
+      }
+    }
     final String fnLabel;
     switch (primaryCode) {
       case KeyCodes.ARROW_UP:
@@ -1117,11 +1130,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
         fnLabel = null;
         break;
     }
-    if (fnLabel != null && (functionActive || shiftActive)) {
+    if (fnLabel != null && functionEngaged) {
       return fnLabel;
-    }
-    if (!functionActive) {
-      return currentLabel;
     }
     final String functionDigitLabel;
     switch (primaryCode) {
@@ -1893,8 +1903,14 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
         mKeyPreviewsManager.showPreviewForKey(key, iconToDraw, this, mPreviewPopupTheme);
       } else {
         CharSequence label = tracker.getPreviewText(key);
+        if (key instanceof AnyKeyboard.AnyKey anyKey) {
+          label = adjustLabelForFunctionState(anyKey, label);
+        }
         if (TextUtils.isEmpty(label)) {
           label = guessLabelForKey(key.getPrimaryCode());
+          if (key instanceof AnyKeyboard.AnyKey anyKey) {
+            label = adjustLabelForFunctionState(anyKey, label);
+          }
         }
 
         mKeyPreviewsManager.showPreviewForKey(key, label, this, mPreviewPopupTheme);

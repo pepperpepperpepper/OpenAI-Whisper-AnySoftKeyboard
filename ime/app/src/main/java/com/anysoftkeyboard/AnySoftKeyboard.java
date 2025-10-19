@@ -690,6 +690,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
         }
         break;
       case KeyCodes.CTRL:
+      case KeyCodes.CTRL_LOCK:
         if (fromUI) {
           handleControl();
         } else {
@@ -697,10 +698,6 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
           onPress(primaryCode);
           onRelease(primaryCode);
         }
-        break;
-      case KeyCodes.CTRL_LOCK:
-        mControlKeyState.toggleLocked();
-        handleControl();
         break;
       case KeyCodes.ALT_MODIFIER:
         if (fromUI) {
@@ -720,7 +717,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
         break;
       case KeyCodes.ARROW_LEFT:
       case KeyCodes.ARROW_RIGHT: {
-        if (mFunctionKeyState.isActive() || mShiftKeyState.isActive()) {
+        if (mFunctionKeyState.isActive()) {
           final int mappedCode =
               primaryCode == KeyCodes.ARROW_LEFT
                   ? KeyEvent.KEYCODE_MOVE_HOME
@@ -737,30 +734,30 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
                 ? KeyEvent.KEYCODE_DPAD_LEFT
                 : KeyEvent.KEYCODE_DPAD_RIGHT;
         if (!handleSelectionExpending(keyEventKeyCode, ic)) {
-          sendDownUpKeyEvents(keyEventKeyCode);
+          sendNavigationKeyEvent(keyEventKeyCode);
         }
         break;
       }
       case KeyCodes.ARROW_UP:
-        if (mFunctionKeyState.isActive() || mShiftKeyState.isActive()) {
+        if (mFunctionKeyState.isActive()) {
           sendDownUpKeyEvents(KeyEvent.KEYCODE_PAGE_UP);
           if (mFunctionKeyState.isActive() && !mFunctionKeyState.isLocked()) {
             mFunctionKeyState.setActiveState(false);
             handleFunction();
           }
         } else {
-          sendDownUpKeyEvents(KeyEvent.KEYCODE_DPAD_UP);
+          sendNavigationKeyEvent(KeyEvent.KEYCODE_DPAD_UP);
         }
         break;
       case KeyCodes.ARROW_DOWN:
-        if (mFunctionKeyState.isActive() || mShiftKeyState.isActive()) {
+        if (mFunctionKeyState.isActive()) {
           sendDownUpKeyEvents(KeyEvent.KEYCODE_PAGE_DOWN);
           if (mFunctionKeyState.isActive() && !mFunctionKeyState.isLocked()) {
             mFunctionKeyState.setActiveState(false);
             handleFunction();
           }
         } else {
-          sendDownUpKeyEvents(KeyEvent.KEYCODE_DPAD_DOWN);
+          sendNavigationKeyEvent(KeyEvent.KEYCODE_DPAD_DOWN);
         }
         break;
       case KeyCodes.MOVE_HOME:
@@ -1491,6 +1488,18 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
     }
   }
 
+  private void sendNavigationKeyEvent(int keyEventCode) {
+    final boolean temporarilyDisableShift =
+        getInputView() != null && getInputView().isShifted();
+    if (temporarilyDisableShift) {
+      getInputView().setShifted(false);
+    }
+    sendDownUpKeyEvents(keyEventCode);
+    if (temporarilyDisableShift) {
+      handleShift();
+    }
+  }
+
   private void handleVoice() {
     android.util.Log.d("VoiceKeyDebug", "handleVoice called - active: " + mVoiceKeyState.isActive() + ", locked: " + mVoiceKeyState.isLocked());
     if (getInputView() != null) {
@@ -1657,6 +1666,9 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
     super.onPress(primaryCode);
     InputConnection ic = getCurrentInputConnection();
 
+    final int normalizedPrimaryCode =
+        primaryCode == KeyCodes.CTRL_LOCK ? KeyCodes.CTRL : primaryCode;
+
     if (primaryCode == KeyCodes.SHIFT) {
       mShiftKeyState.onPress();
       // Toggle case on selected characters
@@ -1666,10 +1678,12 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
       mShiftKeyState.onOtherKeyPressed();
     }
 
-    if (primaryCode == KeyCodes.CTRL) {
+    if (normalizedPrimaryCode == KeyCodes.CTRL) {
       mControlKeyState.onPress();
       handleControl();
-      sendKeyDown(ic, 113); // KeyEvent.KEYCODE_CTRL_LEFT (API 11 and up)
+      if (primaryCode == KeyCodes.CTRL) {
+        sendKeyDown(ic, 113); // KeyEvent.KEYCODE_CTRL_LEFT (API 11 and up)
+      }
     } else if (!isStickyModifier(primaryCode)) {
       mControlKeyState.onOtherKeyPressed();
     }
@@ -1694,6 +1708,8 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   public void onRelease(int primaryCode) {
     super.onRelease(primaryCode);
     InputConnection ic = getCurrentInputConnection();
+    final int normalizedPrimaryCode =
+        primaryCode == KeyCodes.CTRL_LOCK ? KeyCodes.CTRL : primaryCode;
     if (primaryCode == KeyCodes.SHIFT) {
       mShiftKeyState.onRelease(mMultiTapTimeout, mLongPressTimeout);
       handleShift();
@@ -1703,8 +1719,10 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
       }
     }
 
-    if (primaryCode == KeyCodes.CTRL) {
-      sendKeyUp(ic, 113); // KeyEvent.KEYCODE_CTRL_LEFT
+    if (normalizedPrimaryCode == KeyCodes.CTRL) {
+      if (primaryCode == KeyCodes.CTRL) {
+        sendKeyUp(ic, 113); // KeyEvent.KEYCODE_CTRL_LEFT
+      }
       mControlKeyState.onRelease(mMultiTapTimeout, mLongPressTimeout);
     } else if (!isStickyModifier(primaryCode)) {
       mControlKeyState.onOtherKeyReleased();

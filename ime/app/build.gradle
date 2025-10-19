@@ -8,8 +8,8 @@ ext.shouldBePublished = true
 ext.override_release_key_alias = 'fdroidrepo'
 ext.closedTestingTrackName = 'alpha'
 ext.openTestingTrackName = 'beta'
-ext.override_version_code = 15067
-ext.override_version_name = '13.8.16'
+ext.override_version_code = 15068
+ext.override_version_name = '13.8.17'
 
 apply from: "${rootDir}/gradle/apk_module.gradle"
 
