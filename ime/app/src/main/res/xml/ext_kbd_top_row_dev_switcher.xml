@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ask="http://schemas.android.com/apk/res-auto">
+    <Row
+        android:rowEdgeFlags="top"
+        android:keyWidth="16.667%p"
+        android:keyHeight="@integer/key_short_height">
+        <Key
+            android:codes="@integer/key_code_tab"
+            android:keyLabel="Tab"
+            ask:isFunctional="true"
+            android:keyEdgeFlags="left" />
+        <Key
+            android:codes="@integer/key_code_ctrl"
+            ask:isFunctional="true"
+            android:isModifier="true"
+            android:isSticky="true"
+            android:keyLabel="Ctrl" />
+        <Key
+            android:codes="@integer/key_code_alt_modifier"
+            ask:isFunctional="true"
+            android:isModifier="true"
+            android:isSticky="true"
+            android:keyLabel="Alt" />
+        <Key
+            android:codes="@integer/key_code_function"
+            ask:isFunctional="true"
+            android:isModifier="true"
+            android:isSticky="true"
+            android:keyLabel="Fn" />
+        <Key
+            android:codes="@integer/key_code_esc"
+            ask:isFunctional="true"
+            android:keyLabel="Esc" />
+        <Key
+            android:codes="@integer/key_code_keyboard_mode_change"
+            ask:isFunctional="true"
+            android:keyEdgeFlags="right" />
+    </Row>
+</Keyboard>
