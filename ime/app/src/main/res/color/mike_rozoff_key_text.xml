@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ask="http://schemas.android.com/apk/res-auto">
+    <item
+        ask:key_type_function="true"
+        android:state_pressed="true"
+        android:color="#5BC2FF" />
+    <item
+        ask:key_type_function="true"
+        android:state_checked="true"
+        android:color="#29ABE2" />
+    <item
+        ask:key_type_function="true"
+        android:color="#FFFFFFFF" />
+    <item
+        android:state_checkable="true"
+        android:state_pressed="true"
+        android:color="#5BC2FF" />
+    <item
+        android:state_checkable="true"
+        android:state_checked="true"
+        android:color="#29ABE2" />
+    <item
+        android:state_pressed="true"
+        android:color="#C7D6FF" />
+    <item android:color="#FFFFFFFF" />
+</selector>
