@@ -552,6 +552,7 @@
     <string name="extension_kbd_top_numbers_simple">Simple, numbers only</string>
     <string name="extension_kbd_top_terminal">Terminal</string>
     <string name="extension_kbd_top_dev">Dev</string>
+    <string name="extension_kbd_top_dev_switcher">Dev tools with switcher</string>
     <string name="extension_kbd_top_text_editing">Quick text editing</string>
 
     <string name="extension_kbd_bottom_none">No bottom row</string>

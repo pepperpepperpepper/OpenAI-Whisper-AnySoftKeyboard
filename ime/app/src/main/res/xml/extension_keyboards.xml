@@ -97,6 +97,14 @@
             description=""
             index="12"
             />
+    <ExtensionKeyboard
+            id="f6d8f6f2-9c4a-4eb3-a5c4-5f2adf8f7c31"
+            nameResId="@string/extension_kbd_top_dev_switcher"
+            extensionKeyboardResId="@xml/ext_kbd_top_row_dev_switcher"
+            extensionKeyboardType="@integer/extension_keyboard_type_top_row"
+            description=""
+            index="13"
+            />
 
 
     <!-- bottom rows -->

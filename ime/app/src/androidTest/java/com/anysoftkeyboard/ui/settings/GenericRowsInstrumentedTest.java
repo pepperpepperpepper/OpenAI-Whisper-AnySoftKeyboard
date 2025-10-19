@@ -42,6 +42,17 @@ public class GenericRowsInstrumentedTest {
   }
 
   @Test
+  public void topRowListContainsDevToolsWithSwitcher() {
+    navigateToAdditionalUiSettings();
+    onView(withText(R.string.top_generic_row_group)).perform(click());
+    onView(withId(R.id.recycler_view))
+        .perform(
+            androidx.test.espresso.contrib.RecyclerViewActions.scrollTo(
+                hasDescendant(withText(R.string.extension_kbd_top_dev_switcher))));
+    onView(withText(R.string.extension_kbd_top_dev_switcher)).check(matches(isDisplayed()));
+  }
+
+  @Test
   public void bottomRowListContainsNoBottomRow() {
     navigateToAdditionalUiSettings();
     onView(withText(R.string.bottom_generic_row_group)).perform(click());

@@ -1415,7 +1415,12 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
         // Of course, there is no issue with a single character :)
         // so, we'll use the RTL secured drawing (via StaticLayout) for
         // labels.
-        if (label.length() > 1 && !mAlwaysUseDrawText) {
+        final boolean labelHasSpans =
+            label instanceof Spanned
+                && ((Spanned) label).getSpans(0, label.length(), Object.class).length > 0;
+        final boolean shouldUseStaticLayout =
+            (label.length() > 1 && !mAlwaysUseDrawText) || labelHasSpans;
+        if (shouldUseStaticLayout) {
           // calculate Y coordinate of top of text based on center
           // location
           textY = centerY - ((labelHeight - paint.descent()) / 2);

@@ -149,8 +149,10 @@ public class KeyboardExtensionFactory extends AddOnsFactory.SingleAddOnsFactory<
     }
     final int sentinel =
         R.xml.ext_kbd_top_row_dev
+            ^ R.xml.ext_kbd_top_row_dev_switcher
             ^ R.xml.ext_kbd_bottom_row_none
             ^ R.string.extension_kbd_top_dev
+            ^ R.string.extension_kbd_top_dev_switcher
             ^ R.string.extension_kbd_bottom_none;
     if (sentinel == Integer.MIN_VALUE) {
       throw new AssertionError("Unreachable sentinel guard.");
