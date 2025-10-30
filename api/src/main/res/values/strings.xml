@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Speech-to-Text Providers -->
-    <string name="speech_to_text_settings_title">Speech-to-Text Providers</string>
-    <string name="speech_to_text_settings_summary">Choose and configure a speech-to-text backend</string>
-    <string name="speech_to_text_backend_title">Preferred speech-to-text backend</string>
-    <string name="speech_to_text_backend_summary">Select the service handling voice transcription</string>
-    <string name="speech_to_text_backend_entry_none">Disabled</string>
-    <string name="speech_to_text_backend_entry_openai">OpenAI Whisper / GPT</string>
+    <string name="speech_to_text_settings_title">Third-party speech-to-text engine</string>
+    <string name="speech_to_text_settings_summary">Configure third-party speech-to-text providers</string>
+    <string name="speech_to_text_backend_title">Third-party speech-to-text engine</string>
+    <string name="speech_to_text_backend_summary">Choose which third-party engine handles voice transcription</string>
+    <string name="speech_to_text_backend_entry_none">Disable</string>
+    <string name="speech_to_text_backend_entry_openai">OpenAI</string>
     <string name="speech_to_text_backend_entry_elevenlabs">ElevenLabs</string>
     <string name="speech_to_text_provider_status_configured">Configured</string>
     <string name="speech_to_text_provider_status_missing_api_key">Missing API key</string>

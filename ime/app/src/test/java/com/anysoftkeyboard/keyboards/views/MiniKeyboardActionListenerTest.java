@@ -99,6 +99,23 @@ public class MiniKeyboardActionListenerTest {
   }
 
   @Test
+  public void testOnKeyOnShotButArrowKeys() {
+    final AnyKeyboard.AnyKey key = Mockito.mock(AnyKeyboard.AnyKey.class);
+    final int[] nearByKeyCodes = {3};
+    mUnderTest.setInOneShot(true);
+    mUnderTest.onKey(KeyCodes.ARROW_DOWN, key, 0, nearByKeyCodes, true);
+
+    Mockito.verify(mMockParentListener)
+        .onKey(
+            Mockito.eq(KeyCodes.ARROW_DOWN),
+            Mockito.same(key),
+            Mockito.eq(0),
+            Mockito.same(nearByKeyCodes),
+            Mockito.eq(true));
+    Mockito.verifyNoMoreInteractions(mMockParentListener, mMockKeyboardDismissAction);
+  }
+
+  @Test
   public void testOnMultiTapStarted() {
     mUnderTest.onMultiTapStarted();
     final InOrder inOrder = Mockito.inOrder(mMockParentListener, mMockKeyboardDismissAction);

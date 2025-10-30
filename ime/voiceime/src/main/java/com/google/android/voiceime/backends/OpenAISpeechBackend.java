@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.inputmethodservice.InputMethodService;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -36,6 +37,7 @@ import java.io.File;
 public final class OpenAISpeechBackend implements SpeechToTextBackend {
 
     public static final String ID = "openai";
+    private static final String TAG = "OpenAISpeechBackend";
 
     private final OpenAITranscriber mTranscriber = new OpenAITranscriber();
 
@@ -150,11 +152,73 @@ public final class OpenAISpeechBackend implements SpeechToTextBackend {
                             "m4a");
             if (copied != null) {
                 fileForUpload = copied;
+            } else {
+                Log.w(
+                        TAG,
+                        "Failed to copy audio to "
+                                + destinationPreference
+                                + "; will keep original recording until cleanup.");
             }
         }
 
-        callback.onTranscriptionStarted();
-        mTranscriber.startAsync(
+        final File originalRecording = audioFile;
+        final File uploadFile = fileForUpload;
+        final boolean hasCopyDestination =
+                destinationPreference != null && !destinationPreference.isEmpty();
+        final boolean copySucceeded = hasCopyDestination && uploadFile != originalRecording;
+        final boolean retainOriginalRecording = hasCopyDestination && !copySucceeded;
+        final boolean retainUploadFile = copySucceeded;
+
+        TranscriptionResultCallback managedCallback =
+                new TranscriptionResultCallback() {
+                    private boolean cleaned;
+
+                    private void cleanup() {
+                        if (cleaned) {
+                            return;
+                        }
+                        cleaned = true;
+                        if (!retainOriginalRecording) {
+                            deleteQuietly(originalRecording, "original recording");
+                        } else {
+                            Log.d(
+                                    TAG,
+                                    "Keeping original recording "
+                                            + originalRecording.getAbsolutePath()
+                                            + " because copy destination is set but copy failed.");
+                        }
+                        if (!retainUploadFile && uploadFile != originalRecording) {
+                            deleteQuietly(uploadFile, "copied recording");
+                        }
+                    }
+
+                    @Override
+                    public void onTranscriptionStarted() {
+                        callback.onTranscriptionStarted();
+                    }
+
+                    @Override
+                    public void onSuccess(@NonNull String text) {
+                        try {
+                            callback.onSuccess(text);
+                        } finally {
+                            cleanup();
+                        }
+                    }
+
+                    @Override
+                    public void onError(@NonNull String errorMessage) {
+                        try {
+                            callback.onError(errorMessage);
+                        } finally {
+                            cleanup();
+                        }
+                    }
+                };
+
+        managedCallback.onTranscriptionStarted();
+        try {
+            mTranscriber.startAsync(
                 context,
                 fileForUpload.getAbsolutePath(),
                 mediaType,
@@ -173,14 +237,21 @@ public final class OpenAISpeechBackend implements SpeechToTextBackend {
                 new OpenAITranscriber.TranscriptionCallback() {
                     @Override
                     public void onResult(String result) {
-                        callback.onSuccess(result);
+                        managedCallback.onSuccess(result);
                     }
 
                     @Override
                     public void onError(String error) {
-                        callback.onError(error);
+                        managedCallback.onError(error);
                     }
                 });
+        } catch (RuntimeException runtimeException) {
+            Log.e(TAG, "Failed to start OpenAI transcription", runtimeException);
+            managedCallback.onError(
+                    runtimeException.getMessage() != null
+                            ? runtimeException.getMessage()
+                            : context.getString(R.string.openai_error_transcription_failed));
+        }
     }
 
     private static String sanitizeTemperature(String value) {
@@ -217,5 +288,16 @@ public final class OpenAISpeechBackend implements SpeechToTextBackend {
             return strategy;
         }
         return "none";
+    }
+
+    private static void deleteQuietly(@NonNull File file, @NonNull String label) {
+        if (!file.exists()) {
+            return;
+        }
+        if (file.delete()) {
+            Log.d(TAG, "Deleted " + label + ": " + file.getAbsolutePath());
+        } else {
+            Log.w(TAG, "Failed to delete " + label + ": " + file.getAbsolutePath());
+        }
     }
 }

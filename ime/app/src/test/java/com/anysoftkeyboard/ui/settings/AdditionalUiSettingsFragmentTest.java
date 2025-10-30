@@ -38,6 +38,18 @@ public class AdditionalUiSettingsFragmentTest
   }
 
   @Test
+  public void testNavigationCommonExtensionKeyboard() {
+    final AdditionalUiSettingsFragment fragment = startFragment();
+
+    ViewTestUtils.performClick(fragment.findPreference("settings_key_ext_kbd_extension_key"));
+
+    TestRxSchedulers.foregroundFlushAllJobs();
+    final Fragment next = getCurrentFragment();
+    Assert.assertTrue(next instanceof AdditionalUiSettingsFragment.ExtensionAddOnBrowserFragment);
+    Assert.assertFalse(next.hasOptionsMenu());
+  }
+
+  @Test
   public void testNavigationCommonBottomRow() {
     final AdditionalUiSettingsFragment fragment = startFragment();
 

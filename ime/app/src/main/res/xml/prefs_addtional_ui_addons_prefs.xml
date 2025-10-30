@@ -10,6 +10,12 @@
         android:title="@string/top_generic_row_group" />
 
     <Preference
+        android:key="settings_key_ext_kbd_extension_key"
+        android:persistent="false"
+        android:summary="@string/extension_generic_keyboard_summary"
+        android:title="@string/extension_generic_keyboard_group" />
+
+    <Preference
         android:key="settings_key_ext_kbd_bottom_row_key"
         android:persistent="false"
         android:summary="@string/bottom_generic_row_summary"

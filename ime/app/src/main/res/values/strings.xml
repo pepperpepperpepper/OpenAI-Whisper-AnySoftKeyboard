@@ -555,6 +555,10 @@
     <string name="extension_kbd_top_dev_switcher">Dev tools with switcher</string>
     <string name="extension_kbd_top_text_editing">Quick text editing</string>
 
+    <string name="extension_generic_keyboard_group">Swipe-up extension keyboard</string>
+    <string name="extension_generic_keyboard_dialog_title">Select extension keyboard</string>
+    <string name="extension_generic_keyboard_summary">Selected extension: %s</string>
+
     <string name="extension_kbd_bottom_none">No bottom row</string>
     <string name="extension_kbd_bottom_regular_with_voice">Regular</string>
     <string name="extension_kbd_bottom_regular">Classic (no mic)</string>
@@ -964,12 +968,12 @@
     <string name="wizard_skip_notification_permission">Do not allow notifications</string>
 
     <!-- Speech-to-Text Providers -->
-    <string name="speech_to_text_settings_title">Speech-to-Text Providers</string>
-    <string name="speech_to_text_settings_summary">Choose and configure a speech-to-text backend</string>
-    <string name="speech_to_text_backend_title">Preferred speech-to-text backend</string>
-    <string name="speech_to_text_backend_summary">Select the service handling voice transcription</string>
-    <string name="speech_to_text_backend_entry_none">Disabled</string>
-    <string name="speech_to_text_backend_entry_openai">OpenAI Whisper / GPT</string>
+    <string name="speech_to_text_settings_title">Third-party speech-to-text engine</string>
+    <string name="speech_to_text_settings_summary">Configure third-party speech-to-text providers</string>
+    <string name="speech_to_text_backend_title">Third-party speech-to-text engine</string>
+    <string name="speech_to_text_backend_summary">Choose which third-party engine handles voice transcription</string>
+    <string name="speech_to_text_backend_entry_none">Disable</string>
+    <string name="speech_to_text_backend_entry_openai">OpenAI</string>
     <string name="speech_to_text_backend_entry_elevenlabs">ElevenLabs</string>
     <string name="speech_to_text_provider_status_configured">Configured</string>
     <string name="speech_to_text_provider_status_missing_api_key">Missing API key</string>

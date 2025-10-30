@@ -75,7 +75,7 @@
         
         <Preference
             android:key="@string/settings_key_speech_to_text_settings"
-            android:title="@string/openai_speech_settings_title"
+            android:title="@string/speech_to_text_settings_title"
             android:summary="@string/speech_to_text_settings_summary"/>
             
     </androidx.preference.PreferenceCategory>

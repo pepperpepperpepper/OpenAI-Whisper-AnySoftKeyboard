@@ -316,6 +316,13 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
+            android:id="@+id/action_additionalUiSettingsFragment_to_extensionAddOnBrowserFragment"
+            app:destination="@id/extensionAddOnBrowserFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
             android:id="@+id/action_additionalUiSettingsFragment_to_topRowAddOnBrowserFragment"
             app:destination="@id/topRowAddOnBrowserFragment"
             app:enterAnim="@anim/slide_in_right"
@@ -346,6 +353,10 @@
         android:id="@+id/uiTweaksFragment"
         android:name="com.anysoftkeyboard.ui.settings.UiTweaksFragment"
         android:label="UiTweaksFragment" />
+    <fragment
+        android:id="@+id/extensionAddOnBrowserFragment"
+        android:name="com.anysoftkeyboard.ui.settings.AdditionalUiSettingsFragment$ExtensionAddOnBrowserFragment"
+        android:label="ExtensionAddOnBrowserFragment" />
     <fragment
         android:id="@+id/topRowAddOnBrowserFragment"
         android:name="com.anysoftkeyboard.ui.settings.AdditionalUiSettingsFragment$TopRowAddOnBrowserFragment"

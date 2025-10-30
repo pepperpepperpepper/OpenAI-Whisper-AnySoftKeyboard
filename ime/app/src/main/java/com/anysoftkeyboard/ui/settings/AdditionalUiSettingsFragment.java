@@ -109,6 +109,17 @@ public class AdditionalUiSettingsFragment extends PreferenceFragmentCompat
             R.string.top_generic_row_summary,
             AnyApplication.getTopRowFactory(requireContext()).getEnabledAddOn().getName()));
 
+    final Preference extensionSelector = findPreference("settings_key_ext_kbd_extension_key");
+    if (extensionSelector != null) {
+      extensionSelector.setOnPreferenceClickListener(this);
+      extensionSelector.setSummary(
+          getString(
+              R.string.extension_generic_keyboard_summary,
+              AnyApplication.getKeyboardExtensionFactory(requireContext())
+                  .getEnabledAddOn()
+                  .getName()));
+    }
+
     final Preference topBottomSelector = findPreference("settings_key_ext_kbd_bottom_row_key");
     topBottomSelector.setOnPreferenceClickListener(this);
     topBottomSelector.setSummary(
@@ -128,6 +139,11 @@ public class AdditionalUiSettingsFragment extends PreferenceFragmentCompat
       navController.navigate(
           AdditionalUiSettingsFragmentDirections
               .actionAdditionalUiSettingsFragmentToUiTweaksFragment());
+      return true;
+    } else if (key.equals("settings_key_ext_kbd_extension_key")) {
+      navController.navigate(
+          AdditionalUiSettingsFragmentDirections
+              .actionAdditionalUiSettingsFragmentToExtensionAddOnBrowserFragment());
       return true;
     } else if (key.equals("settings_key_ext_kbd_top_row_key")) {
       navController.navigate(
@@ -210,6 +226,50 @@ public class AdditionalUiSettingsFragment extends PreferenceFragmentCompat
           demoKeyboardView.getThemedKeyboardDimens(),
           addOn,
           AnyApplication.getBottomRowFactory(requireContext()).getEnabledAddOn());
+    }
+  }
+
+  public static class ExtensionAddOnBrowserFragment
+      extends AbstractAddOnsBrowserFragment<KeyboardExtension> {
+
+    public ExtensionAddOnBrowserFragment() {
+      super(
+          "ExtensionAddOnBrowserFragment",
+          R.string.extension_generic_keyboard_dialog_title,
+          true,
+          false,
+          false);
+    }
+
+    @Nullable
+    @Override
+    protected String getMarketSearchKeyword() {
+      return null;
+    }
+
+    @Override
+    protected int getMarketSearchTitle() {
+      return 0;
+    }
+
+    @NonNull
+    @Override
+    protected AddOnsFactory<KeyboardExtension> getAddOnFactory() {
+      return AnyApplication.getKeyboardExtensionFactory(requireContext());
+    }
+
+    @Override
+    protected void applyAddOnToDemoKeyboardView(
+        @NonNull KeyboardExtension addOn, @NonNull DemoAnyKeyboardView demoKeyboardView) {
+      AnyKeyboard defaultKeyboard =
+          AnyApplication.getKeyboardFactory(requireContext())
+              .getEnabledAddOn()
+              .createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
+      defaultKeyboard.loadKeyboard(
+          demoKeyboardView.getThemedKeyboardDimens(),
+          AnyApplication.getTopRowFactory(requireContext()).getEnabledAddOn(),
+          AnyApplication.getBottomRowFactory(requireContext()).getEnabledAddOn());
+      demoKeyboardView.setKeyboard(defaultKeyboard, null, null);
     }
   }
 
