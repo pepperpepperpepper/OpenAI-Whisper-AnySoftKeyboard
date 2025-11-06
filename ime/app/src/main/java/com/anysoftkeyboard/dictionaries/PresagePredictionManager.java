@@ -235,6 +235,7 @@ final class PresagePredictionManager {
         + "    <LOGGER>ERROR</LOGGER>\n"
         + "    <SLIDING_WINDOW_SIZE>80</SLIDING_WINDOW_SIZE>\n"
         + "    <LOWERCASE_MODE>yes</LOWERCASE_MODE>\n"
+        + "    <ONLINE_LEARNING>no</ONLINE_LEARNING>\n"
         + "  </ContextTracker>\n"
         + "  <Selector>\n"
         + "    <LOGGER>ERROR</LOGGER>\n"
