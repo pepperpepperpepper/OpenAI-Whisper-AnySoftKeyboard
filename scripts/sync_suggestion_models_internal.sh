@@ -6,10 +6,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SUGGESTIONS_ROOT="${SUGGESTIONS_ROOT:-$HOME/suggestions}"
 
 SRC_KENLM="${SUGGESTIONS_ROOT}/models/kenlm"
-SRC_DISTIL="${SUGGESTIONS_ROOT}/models/distilgpt2"
-
 DST_KENLM="${REPO_ROOT}/ime/app/src/main/assets/models/kenlm"
-DST_DISTIL="${REPO_ROOT}/ime/app/src/main/assets/models/distilgpt2"
 
 copy_dir() {
   local src="$1"
@@ -36,6 +33,11 @@ copy_dir() {
 }
 
 copy_dir "${SRC_KENLM}" "${DST_KENLM}" "KenLM"
-copy_dir "${SRC_DISTIL}" "${DST_DISTIL}" "DistilGPT-2"
+
+if [[ -d "${SUGGESTIONS_ROOT}/models/distilgpt2" ]]; then
+  echo "[skip] DistilGPT-2 assets present but not bundled; neural path not wired yet."
+else
+  echo "[skip] DistilGPT-2 assets not found (expected while neural path disabled)."
+fi
 
 echo "[done] suggestion models synced into assets (untracked)"

@@ -19,6 +19,7 @@ Last updated: November 6, 2025
 
 ## Neural Path Status
 - Not implemented. Selecting `neural` disables Presage but does not invoke a neural backend yet. Next steps: add ONNX Runtime Mobile + tokenizer, wire into `neural`/`hybrid` modes, and schedule on idle.
+- DistilGPT-2 assets are no longer bundled; `scripts/sync_suggestion_models.sh` skips copying them so APK size stays reasonable until the neural path ships.
 
 ## Follow-Ups
 - On-device instrumentation for latency/quality; add telemetry.
