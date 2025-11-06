@@ -25,4 +25,13 @@
         <item>extreme_aggressiveness</item>
     </string-array>
     <string name="settings_default_auto_pick_suggestion_aggressiveness">medium_aggressiveness</string>
+
+    <string name="settings_key_prediction_engine_mode">settings_key_prediction_engine_mode</string>
+    <string-array name="prediction_engine_mode_values">
+        <item>none</item>
+        <item>ngram</item>
+        <item>neural</item>
+        <item>hybrid</item>
+    </string-array>
+    <string name="settings_default_prediction_engine_mode">hybrid</string>
 </resources>

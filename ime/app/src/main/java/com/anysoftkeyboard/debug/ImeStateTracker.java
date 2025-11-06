@@ -204,7 +204,10 @@ public final class ImeStateTracker {
         return null;
       }
       for (Keyboard.Key key : keys) {
-        if (popupCharacters.equals(String.valueOf(key.popupCharacters))) {
+        String popupString = key.popupCharacters == null ? null : String.valueOf(key.popupCharacters);
+        String extraKeyData =
+            key instanceof AnyKeyboard.AnyKey ? ((AnyKeyboard.AnyKey) key).getExtraKeyData() : null;
+        if (popupCharacters.equals(popupString) || popupCharacters.equals(extraKeyData)) {
           int[] location = new int[2];
           keyboardView.getLocationOnScreen(location);
           float centerX = location[0] + key.x + (key.width / 2.0f);

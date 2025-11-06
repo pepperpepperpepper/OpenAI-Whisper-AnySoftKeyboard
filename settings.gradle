@@ -27,5 +27,6 @@ include ':ime:voiceime'
 include ':ime:releaseinfo'
 include ':ime:chewbacca'
 include ':ime:permissions'
+include ':ime:suggestions:presage'
 
 include ':ime:app'

@@ -560,8 +560,8 @@ public class StickyModifiersInstrumentedTest {
   }
 
   private void ensureImeEnabledAndSelected() throws IOException {
-    executeShellCommand("ime enable wtf.uhoh.newsoftkeyboard/.SoftKeyboard");
-    executeShellCommand("ime set wtf.uhoh.newsoftkeyboard/.SoftKeyboard");
+    executeShellCommand("ime enable --user 0 wtf.uhoh.newsoftkeyboard/.SoftKeyboard");
+    executeShellCommand("ime set --user 0 wtf.uhoh.newsoftkeyboard/.SoftKeyboard");
     executeShellCommand("settings put secure show_ime_with_hard_keyboard 1");
     SystemClock.sleep(500);
   }

@@ -25,6 +25,15 @@
             android:summary="@string/use_next_words_dictionary_aggressiveness_summary"
             android:title="@string/use_next_words_dictionary_aggressiveness"/>
 
+        <androidx.preference.ListPreference
+            android:key="@string/settings_key_prediction_engine_mode"
+            android:defaultValue="@string/settings_default_prediction_engine_mode"
+            android:dialogTitle="@string/prediction_engine_mode_dialog_title"
+            android:entries="@array/prediction_engine_mode_entries"
+            android:entryValues="@array/prediction_engine_mode_values"
+            android:summary="@string/prediction_engine_mode_summary"
+            android:title="@string/prediction_engine_mode_title"/>
+
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

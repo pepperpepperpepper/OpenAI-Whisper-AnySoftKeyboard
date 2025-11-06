@@ -347,10 +347,10 @@ public class MikeRozoffKeyboardSwitchInstrumentedTest {
 
   private void ensureImeEnabledAndSelected() throws IOException {
     String enableOutput =
-        executeShellCommand("ime enable wtf.uhoh.newsoftkeyboard/.SoftKeyboard");
+        executeShellCommand("ime enable --user 0 wtf.uhoh.newsoftkeyboard/.SoftKeyboard");
     Log.d(TAG, "ime enable output: " + enableOutput.trim());
     String setOutput =
-        executeShellCommand("ime set wtf.uhoh.newsoftkeyboard/.SoftKeyboard");
+        executeShellCommand("ime set --user 0 wtf.uhoh.newsoftkeyboard/.SoftKeyboard");
     Log.d(TAG, "ime set output: " + setOutput.trim());
     executeShellCommand("settings put secure show_ime_with_hard_keyboard 1");
     SystemClock.sleep(500);
@@ -359,7 +359,9 @@ public class MikeRozoffKeyboardSwitchInstrumentedTest {
   private void assertImeSelected() throws IOException {
     String current =
         executeShellCommand("settings get secure default_input_method").trim();
-    if (!current.contains("wtf.uhoh.newsoftkeyboard/.SoftKeyboard")) {
+    boolean packageMatches = current.startsWith("wtf.uhoh.newsoftkeyboard/");
+    boolean serviceMatches = current.endsWith(".SoftKeyboard");
+    if (!(packageMatches && serviceMatches)) {
       fail("New Soft Keyboard IME not selected. Current: " + current);
     }
   }

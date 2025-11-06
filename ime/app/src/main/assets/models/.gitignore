@@ -1,0 +1,4 @@
+# Keep this assets tree out of VCS. Large model binaries are synced locally
+# via scripts/sync_suggestion_models.sh and should never be committed.
+*
+!.gitignore

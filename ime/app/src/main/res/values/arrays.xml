@@ -3,6 +3,19 @@
 
     <!-- It is very important NOT to translate any string in this file. -->
 
+    <string-array name="prediction_engine_mode_entries">
+        <item>@string/prediction_engine_mode_none</item>
+        <item>@string/prediction_engine_mode_ngram</item>
+        <item>@string/prediction_engine_mode_neural</item>
+        <item>@string/prediction_engine_mode_hybrid</item>
+    </string-array>
+    <string-array name="prediction_engine_mode_values">
+        <item>none</item>
+        <item>ngram</item>
+        <item>neural</item>
+        <item>hybrid</item>
+    </string-array>
+
     <string-array name="speech_to_text_backend_entries">
         <item>@string/speech_to_text_backend_entry_none</item>
         <item>@string/speech_to_text_backend_entry_openai</item>

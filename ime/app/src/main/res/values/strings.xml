@@ -843,6 +843,13 @@
     <string name="clipboard_paste_entries_title">Pick text to paste</string>
     <string name="next_word_prefs_clear_data">Clear next-word data</string>
     <string name="next_word_prefs_clear_data_summary">This is irreversible. All your typing history will be cleared.</string>
+    <string name="prediction_engine_mode_title">Third-party suggestion engine</string>
+    <string name="prediction_engine_mode_dialog_title">Select suggestion engine</string>
+    <string name="prediction_engine_mode_summary">Engine in use: %s</string>
+    <string name="prediction_engine_mode_none">Disabled</string>
+    <string name="prediction_engine_mode_ngram">KenLM n-gram (offline)</string>
+    <string name="prediction_engine_mode_neural">Neural (DistilGPT-2)</string>
+    <string name="prediction_engine_mode_hybrid">Hybrid (n-gram + neural)</string>
     <string name="notification_read_contacts_title">Can I read your contacts?</string>
     <string name="notification_read_contacts_text">We need to read your contacts to give you a better auto-complete experience.</string>
     <string name="wizard_allow_contacts_permission">Allow contacts-based typing suggestions</string>

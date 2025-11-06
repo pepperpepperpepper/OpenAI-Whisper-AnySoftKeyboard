@@ -17,6 +17,7 @@ import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.BuildConfig;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.disposables.CompositeDisposable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -106,6 +107,18 @@ public class SuggestionsProvider {
   private final ContactsDictionaryLoaderListener mContactsDictionaryListener =
       new ContactsDictionaryLoaderListener();
 
+  private enum PredictionEngineMode {
+    NONE,
+    NGRAM,
+    NEURAL,
+    HYBRID
+  }
+
+  @NonNull private final PresagePredictionManager mPresagePredictionManager;
+  @NonNull private PredictionEngineMode mPredictionEngineMode = PredictionEngineMode.HYBRID;
+  @NonNull private final ArrayDeque<String> mPresageContext =
+      new ArrayDeque<>(PRESAGE_CONTEXT_WINDOW);
+
   private class ContactsDictionaryLoaderListener implements DictionaryBackgroundLoader.Listener {
 
     @NonNull private DictionaryBackgroundLoader.Listener mDelegate = NO_OP_LISTENER;
@@ -132,9 +145,11 @@ public class SuggestionsProvider {
 
   @NonNull private final List<Dictionary> mAbbreviationDictionary = new ArrayList<>();
   private final CompositeDisposable mPrefsDisposables = new CompositeDisposable();
+  private static final int PRESAGE_CONTEXT_WINDOW = 2;
 
   public SuggestionsProvider(@NonNull Context context) {
     mContext = context.getApplicationContext();
+    mPresagePredictionManager = new PresagePredictionManager(mContext);
 
     final RxSharedPrefs rxSharedPrefs = AnyApplication.prefs(mContext);
     mPrefsDisposables.add(
@@ -186,6 +201,18 @@ public class SuggestionsProvider {
                   mUserDictionaryEnabled = value;
                 },
                 GenericOnError.onError("settings_key_use_user_dictionary")));
+    mPrefsDisposables.add(
+        rxSharedPrefs
+            .getString(
+                R.string.settings_key_prediction_engine_mode,
+                R.string.settings_default_prediction_engine_mode)
+            .asObservable()
+            .subscribe(
+                modeValue -> {
+                  mCurrentSetupHashCode = 0;
+                  updatePredictionEngine(modeValue);
+                },
+                GenericOnError.onError("settings_key_prediction_engine_mode")));
     mPrefsDisposables.add(
         rxSharedPrefs
             .getString(
@@ -358,6 +385,8 @@ public class SuggestionsProvider {
           DictionaryBackgroundLoader.loadDictionaryInBackground(
               mContactsDictionaryListener, mContactsDictionary));
     }
+
+        activatePresageIfNeeded();
   }
 
   @NonNull
@@ -404,6 +433,9 @@ public class SuggestionsProvider {
 
   public void setIncognitoMode(boolean incognitoMode) {
     mIncognitoMode = incognitoMode;
+    if (incognitoMode) {
+      mPresageContext.clear();
+    }
   }
 
   public boolean isIncognitoMode() {
@@ -423,6 +455,8 @@ public class SuggestionsProvider {
     mContactsNextWordDictionary = NULL_NEXT_WORD_SUGGESTIONS;
     mAutoDictionary = NullDictionary;
     mContactsDictionary = NullDictionary;
+    mPresagePredictionManager.deactivate();
+    mPresageContext.clear();
 
     mDictionaryDisposables.dispose();
     mDictionaryDisposables = new CompositeDisposable();
@@ -438,6 +472,40 @@ public class SuggestionsProvider {
       nextWordSuggestions.resetSentence();
     }
     mContactsNextWordDictionary.resetSentence();
+    mPresageContext.clear();
+  }
+
+  private void updatePredictionEngine(@NonNull String modeValue) {
+    switch (modeValue) {
+      case "ngram":
+        mPredictionEngineMode = PredictionEngineMode.NGRAM;
+        activatePresageIfNeeded();
+        break;
+      case "neural":
+        mPredictionEngineMode = PredictionEngineMode.NEURAL;
+        mPresagePredictionManager.deactivate();
+        mPresageContext.clear();
+        break;
+      case "hybrid":
+        mPredictionEngineMode = PredictionEngineMode.HYBRID;
+        activatePresageIfNeeded();
+        break;
+      default:
+        mPredictionEngineMode = PredictionEngineMode.NONE;
+        mPresagePredictionManager.deactivate();
+        mPresageContext.clear();
+        break;
+    }
+    if (!usesPresageEngine()) {
+      mPresageContext.clear();
+    }
+    Logger.i(TAG, "Prediction engine set to " + mPredictionEngineMode);
+  }
+
+  private void activatePresageIfNeeded() {
+    if (usesPresageEngine()) {
+      mPresagePredictionManager.activate();
+    }
   }
 
   public void getSuggestions(KeyCodesProvider wordComposer, Dictionary.WordCallback wordCallback) {
@@ -463,24 +531,39 @@ public class SuggestionsProvider {
       String currentWord, Collection<CharSequence> suggestionsHolder, int maxSuggestions) {
     if (!mNextWordEnabled) return;
 
+    if (!usesPresageEngine()) {
+      mPresageContext.clear();
+    } else if (!mIncognitoMode) {
+      recordPresageContext(currentWord);
+    }
+
+    int remainingSuggestions = maxSuggestions;
+
+    final int sizeBeforeUser = suggestionsHolder.size();
     allDictionariesGetNextWord(
-        mUserNextWordDictionary, currentWord, suggestionsHolder, maxSuggestions);
-    maxSuggestions = maxSuggestions - suggestionsHolder.size();
-    if (maxSuggestions == 0) return;
+        mUserNextWordDictionary, currentWord, suggestionsHolder, remainingSuggestions);
+    remainingSuggestions -= suggestionsHolder.size() - sizeBeforeUser;
+    if (remainingSuggestions <= 0) return;
+
+    if (usesPresageEngine()) {
+      final int addedByPresage = appendPresageSuggestions(suggestionsHolder, remainingSuggestions);
+      remainingSuggestions -= addedByPresage;
+      if (remainingSuggestions <= 0) return;
+    }
 
     for (String nextWordSuggestion :
         mContactsNextWordDictionary.getNextWords(
             currentWord, mMaxNextWordSuggestionsCount, mMinWordUsage)) {
       suggestionsHolder.add(nextWordSuggestion);
-      maxSuggestions--;
-      if (maxSuggestions == 0) return;
+      remainingSuggestions--;
+      if (remainingSuggestions == 0) return;
     }
 
     if (mAlsoSuggestNextPunctuations) {
       for (String evenMoreSuggestions : mInitialSuggestionsList) {
         suggestionsHolder.add(evenMoreSuggestions);
-        maxSuggestions--;
-        if (maxSuggestions == 0) return;
+        remainingSuggestions--;
+        if (remainingSuggestions == 0) return;
       }
     }
   }
@@ -502,6 +585,40 @@ public class SuggestionsProvider {
         if (maxSuggestions == 0) return;
       }
     }
+  }
+
+  private boolean usesPresageEngine() {
+    return mPredictionEngineMode == PredictionEngineMode.NGRAM
+        || mPredictionEngineMode == PredictionEngineMode.HYBRID;
+  }
+
+  private void recordPresageContext(@NonNull String word) {
+    if (TextUtils.isEmpty(word)) return;
+    if (mPresageContext.size() == PRESAGE_CONTEXT_WINDOW) {
+      mPresageContext.removeFirst();
+    }
+    mPresageContext.addLast(word);
+  }
+
+  private int appendPresageSuggestions(
+      Collection<CharSequence> suggestionsHolder, int limit) {
+    if (limit <= 0) return 0;
+    if (!mPresagePredictionManager.isActive() && !mPresagePredictionManager.activate()) {
+      return 0;
+    }
+    if (mPresageContext.isEmpty()) return 0;
+    final String[] contextArray = mPresageContext.toArray(new String[mPresageContext.size()]);
+    final int requestLimit = Math.min(limit, mMaxNextWordSuggestionsCount);
+    final String[] predictions =
+        mPresagePredictionManager.predictNext(contextArray, requestLimit);
+    int added = 0;
+    for (String prediction : predictions) {
+      if (TextUtils.isEmpty(prediction)) continue;
+      suggestionsHolder.add(prediction);
+      added++;
+      if (added == limit) break;
+    }
+    return added;
   }
 
   public boolean tryToLearnNewWord(CharSequence newWord, int frequencyDelta) {

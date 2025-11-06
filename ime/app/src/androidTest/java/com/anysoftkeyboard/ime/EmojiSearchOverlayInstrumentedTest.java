@@ -7,7 +7,6 @@ import static org.junit.Assert.fail;
 import android.os.SystemClock;
 import android.os.ParcelFileDescriptor;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -139,11 +138,11 @@ public class EmojiSearchOverlayInstrumentedTest {
 
   private void ensureImeEnabledAndSelected() throws IOException {
     String enableOutput =
-        executeShellCommand("ime enable " + IME_COMPONENT).trim();
+        executeShellCommand("ime enable --user 0 " + IME_COMPONENT).trim();
     if (enableOutput.contains("Unknown")) {
       throw new IOException("Failed to enable IME: " + enableOutput);
     }
-    executeShellCommand("ime set " + IME_COMPONENT);
+    executeShellCommand("ime set --user 0 " + IME_COMPONENT);
     String enabled =
         executeShellCommand("settings get secure enabled_input_methods").trim();
     if (!enabled.contains(IME_COMPONENT)) {
@@ -158,7 +157,9 @@ public class EmojiSearchOverlayInstrumentedTest {
   private void assertImeSelected() throws IOException {
     String current =
         executeShellCommand("settings get secure default_input_method").trim();
-    if (!current.contains(IME_COMPONENT)) {
+    boolean packageMatches = current.startsWith("wtf.uhoh.newsoftkeyboard/");
+    boolean serviceMatches = current.endsWith(".SoftKeyboard");
+    if (!(packageMatches && serviceMatches)) {
       fail("New Soft Keyboard IME not selected. Current: " + current);
     }
   }

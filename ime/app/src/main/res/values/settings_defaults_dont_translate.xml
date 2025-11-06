@@ -117,6 +117,7 @@
     <string name="settings_default_theme_case_type_override">theme</string>
 
     <string name="settings_key_hint_size_default">big</string>
+    <string name="settings_default_prediction_engine_mode">none</string>
 
     <string name="settings_default_power_save_mode_value">on_low_battery</string>
     <string name="settings_default_night_mode_value">never</string>
