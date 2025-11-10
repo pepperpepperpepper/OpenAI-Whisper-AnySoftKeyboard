@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" tools:ignore="MissingTranslation">
-    
+    <string name="presage_model_catalog_url" translatable="false">https://fdroid.uh-oh.wtf/models/catalog.json</string>
 
     <string name="debug_tracing_starting">Tracing started!\nMake sure you stop it at some point
     </string>
@@ -850,6 +850,28 @@
     <string name="prediction_engine_mode_ngram">KenLM n-gram (offline)</string>
     <string name="prediction_engine_mode_neural">Neural (DistilGPT-2)</string>
     <string name="prediction_engine_mode_hybrid">Hybrid (n-gram + neural)</string>
+    <string name="presage_models_manage_title">Language models</string>
+    <string name="presage_models_manage_summary">Download, activate, or remove next-word model bundles.</string>
+    <string name="presage_models_title">Language models</string>
+    <string name="presage_models_installed_category">Installed models</string>
+    <string name="presage_models_available_category">Available downloads</string>
+    <string name="presage_models_installed_empty">No language models installed.</string>
+    <string name="presage_models_installed_selected">Active model</string>
+    <string name="presage_models_installed_tap_to_activate">Tap to activate this model</string>
+    <string name="presage_models_action_activate">Activate</string>
+    <string name="presage_models_action_delete">Remove</string>
+    <string name="presage_models_available_empty">No downloadable models found.</string>
+    <string name="presage_models_available_installed">Already installed</string>
+    <string name="presage_models_downloading">Downloading…</string>
+    <string name="presage_models_download_failed">Download failed (%1$s)</string>
+    <string name="presage_models_catalog_loading">Loading model catalog…</string>
+    <string name="presage_models_catalog_error">Unable to load catalog</string>
+    <string name="presage_models_catalog_error_detail">Catalog fetch failed (%1$s)</string>
+    <string name="presage_models_size_unknown">Size unknown</string>
+    <string name="presage_models_size_mb">%.1f MB</string>
+    <string name="presage_models_version_label">Version %1$d</string>
+    <string name="presage_models_recommended_label">Recommended</string>
+    <string name="presage_models_error_unknown">unknown</string>
     <string name="notification_read_contacts_title">Can I read your contacts?</string>
     <string name="notification_read_contacts_text">We need to read your contacts to give you a better auto-complete experience.</string>
     <string name="wizard_allow_contacts_permission">Allow contacts-based typing suggestions</string>

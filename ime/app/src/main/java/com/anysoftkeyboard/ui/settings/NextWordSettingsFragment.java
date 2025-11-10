@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.Navigation;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
@@ -69,6 +70,19 @@ public class NextWordSettingsFragment extends PreferenceFragmentCompat {
     super.onViewCreated(view, savedInstanceState);
     setHasOptionsMenu(true);
     findPreference("clear_next_word_data").setOnPreferenceClickListener(mClearDataListener);
+
+    final Preference manageModels =
+        findPreference(getString(R.string.settings_key_manage_presage_models));
+    if (manageModels != null) {
+      manageModels.setOnPreferenceClickListener(
+          preference -> {
+            Navigation.findNavController(requireView())
+                .navigate(
+                    NextWordSettingsFragmentDirections
+                        .actionNextWordSettingsFragmentToPresageModelsFragment());
+            return true;
+          });
+    }
   }
 
   @Override

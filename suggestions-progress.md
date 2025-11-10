@@ -1,10 +1,10 @@
 # Suggestions Integration Progress
 
-Last updated: November 6, 2025
+Last updated: November 8, 2025
 
 ## Presage Native Bring-Up
 - CMake builds vendored Presage 0.9.1 into a static lib; JNI bridge (`presage_bridge.cpp`) exposes open/close/score/predict and compiles with modern NDK toolchains (`config.h`/`dirs.h`).
-- Runtime stages KenLM ARPA.gz + vocab to `no_backup/presage/models` with SHA‑256 validation and generates a Presage XML profile enabling ARPA + Recency.
+- Runtime loads Presage models from `no_backup/presage/models/<model-id>` using per-model manifests (SHA‑256 validation) and generates a Presage XML profile pointing to the selected model.
 
 ## ASK App Integration
 - `PresagePredictionManager` activates/deactivates the native session and routes predictions into `SuggestionsProvider` when the engine mode is `ngram` or `hybrid`.
@@ -15,7 +15,7 @@ Last updated: November 6, 2025
 - Unit: `SuggestionsProviderPresageTest` (Robolectric) validates staging and JNI contract (via shadow) and asserts checksums are recorded.
 
 ## Assets
-- LM assets are not versioned. Place them under `~/suggestions/models/kenlm` and run `scripts/sync_suggestion_models.sh` to copy into `ime/app/src/main/assets/models` for local builds/tests.
+- LM assets are not versioned. Install them via ADB/Download into `no_backup/presage/models/<model-id>` (manifests + binaries) or, for developer builds, use `scripts/sync_suggestion_models.sh` to bundle a bootstrap asset.
 
 ## Neural Path Status
 - Not implemented. Selecting `neural` disables Presage but does not invoke a neural backend yet. Next steps: add ONNX Runtime Mobile + tokenizer, wire into `neural`/`hybrid` modes, and schedule on idle.

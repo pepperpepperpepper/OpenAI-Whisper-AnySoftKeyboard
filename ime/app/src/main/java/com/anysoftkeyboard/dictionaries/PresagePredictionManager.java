@@ -1,51 +1,41 @@
 package com.anysoftkeyboard.dictionaries;
 
 import android.content.Context;
-import android.content.res.AssetManager;
-import android.content.SharedPreferences;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import com.anysoftkeyboard.suggestions.presage.PresageNative;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.zip.GZIPInputStream;
+import com.anysoftkeyboard.dictionaries.presage.PresageModelStore;
+import com.anysoftkeyboard.dictionaries.presage.PresageModelStore.ActiveModel;
 
 final class PresagePredictionManager {
 
   private static final String TAG = "PresagePredictionManager";
   private static final String CONFIG_DIRECTORY = "presage";
   private static final String CONFIG_FILENAME = "presage_ngram.xml";
-  private static final String MODELS_SUBDIR = "models";
-  private static final String PREFS_NAME = "presage_asset_versions";
-  private static final String PREF_KEY_PREFIX = "sha_";
-  private static final String ARPA_ASSET = "models/kenlm/3-gram.pruned.3e-7.arpa.gz";
-  private static final String ARPA_FILENAME = "3-gram.pruned.3e-7.arpa";
-  private static final String ARPA_SHA256 =
-      "30a34a3fbb83fd77ed95738ab57d84c37565a2cd02a6c9472f3020c2681bb3c7";
-  private static final String VOCAB_ASSET = "models/kenlm/3-gram.pruned.3e-7.vocab";
-  private static final String VOCAB_FILENAME = "3-gram.pruned.3e-7.vocab";
-  private static final String VOCAB_SHA256 =
-      "7af9ac90bc819750d15e8a3ba8d4b7b4d131c55d94d3e080523779b2b1b8e9f5";
 
   @NonNull private final Context mContext;
   @NonNull private final File mConfigFile;
-  @NonNull private final File mModelsDirectory;
-  @NonNull private final SharedPreferences mAssetPreferences;
+  @NonNull private final PresageModelStore mModelStore;
+  private ActiveModel mActiveModel;
   private long mHandle;
 
   PresagePredictionManager(@NonNull Context context) {
+    this(context, new PresageModelStore(context));
+  }
+
+  @VisibleForTesting
+  PresagePredictionManager(
+      @NonNull Context context, @NonNull PresageModelStore modelStore) {
     mContext = context.getApplicationContext();
     final File configDirectory = new File(mContext.getNoBackupFilesDir(), CONFIG_DIRECTORY);
     mConfigFile = new File(configDirectory, CONFIG_FILENAME);
-    mModelsDirectory = new File(configDirectory, MODELS_SUBDIR);
-    mAssetPreferences = mContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    mModelStore = modelStore;
+    mActiveModel = null;
     mHandle = 0;
   }
 
@@ -67,6 +57,7 @@ final class PresagePredictionManager {
     if (!isActive()) return;
     PresageNative.closeModel(mHandle);
     mHandle = 0;
+    mActiveModel = null;
   }
 
   boolean isActive() {
@@ -85,15 +76,23 @@ final class PresagePredictionManager {
   }
 
   private boolean ensureConfigPresent() {
-    if (!ensureModelAssets()) {
+    final ActiveModel activeModel = mModelStore.ensureActiveModel();
+    if (activeModel == null) {
+      Log.w(TAG, "No Presage model available; skipping activation.");
       return false;
     }
-    if (mConfigFile.exists() && mConfigFile.length() > 0L) {
+    final boolean modelChanged =
+        mActiveModel == null
+            || !mActiveModel.getDefinition().getId().equals(activeModel.getDefinition().getId());
+    mActiveModel = activeModel;
+
+    if (mConfigFile.exists() && mConfigFile.length() > 0L && !modelChanged) {
       return true;
     }
+
     ensureDirectory(mConfigFile.getParentFile());
     try (FileOutputStream outputStream = new FileOutputStream(mConfigFile)) {
-      final byte[] bytes = buildConfigXml().getBytes(StandardCharsets.UTF_8);
+      final byte[] bytes = buildConfigXml(activeModel).getBytes(StandardCharsets.UTF_8);
       outputStream.write(bytes);
       outputStream.flush();
       return true;
@@ -106,14 +105,6 @@ final class PresagePredictionManager {
     }
   }
 
-  private boolean ensureModelAssets() {
-    ensureDirectory(mModelsDirectory);
-    final File arpaFile = new File(mModelsDirectory, ARPA_FILENAME);
-    final File vocabFile = new File(mModelsDirectory, VOCAB_FILENAME);
-    return stageAsset(ARPA_ASSET, arpaFile, true, ARPA_SHA256)
-        && stageAsset(VOCAB_ASSET, vocabFile, false, VOCAB_SHA256);
-  }
-
   private void ensureDirectory(File directory) {
     if (directory == null) return;
     if (directory.exists()) {
@@ -124,107 +115,9 @@ final class PresagePredictionManager {
     }
   }
 
-  private boolean stageAsset(String assetPath, File destination, boolean gunzip, String expectedSha) {
-    final String digestKey = PREF_KEY_PREFIX + destination.getName();
-    if (destination.exists() && destination.length() > 0L) {
-      final String recordedSha = mAssetPreferences.getString(digestKey, "");
-      if (!recordedSha.isEmpty() && recordedSha.equalsIgnoreCase(expectedSha)) {
-        return true;
-      }
-      if (!destination.delete()) {
-        Log.w(TAG, "Failed removing outdated Presage asset " + destination.getAbsolutePath());
-        return false;
-      }
-      mAssetPreferences.edit().remove(digestKey).apply();
-    }
-
-    final MessageDigest digest = newMessageDigest();
-    ensureDirectory(destination.getParentFile());
-    final AssetManager assets = mContext.getAssets();
-    InputStream assetStream = null;
-    boolean decompress = gunzip;
-    try {
-      assetStream = assets.open(assetPath);
-    } catch (IOException openError) {
-      if (gunzip && assetPath.endsWith(".gz")) {
-        final String fallbackPath = assetPath.substring(0, assetPath.length() - 3);
-        try {
-          assetStream = assets.open(fallbackPath);
-          decompress = false;
-          Log.i(TAG, "Falling back to uncompressed Presage asset " + fallbackPath);
-        } catch (IOException fallbackError) {
-          Log.e(
-              TAG,
-              "Failed staging Presage asset " + assetPath + " (and fallback " + fallbackPath + ")",
-              openError);
-          return false;
-        }
-      } else {
-        Log.e(TAG, "Failed staging Presage asset " + assetPath, openError);
-        return false;
-      }
-    }
-
-    try {
-      final BufferedInputStream buffered = new BufferedInputStream(assetStream);
-      final InputStream source =
-          decompress ? new GZIPInputStream(buffered) : buffered;
-      assetStream = null; // source now owns the stream chain
-      try (InputStream autoClose = source;
-          BufferedOutputStream output =
-              new BufferedOutputStream(new FileOutputStream(destination))) {
-        final byte[] buffer = new byte[16 * 1024];
-        int read;
-        while ((read = autoClose.read(buffer)) != -1) {
-          if (digest != null) {
-            digest.update(buffer, 0, read);
-          }
-          output.write(buffer, 0, read);
-        }
-        output.flush();
-      }
-      if (digest != null) {
-        final String computedSha = toHex(digest.digest());
-        if (!computedSha.equalsIgnoreCase(expectedSha)) {
-          Log.e(
-              TAG,
-              "Presage asset checksum mismatch for "
-                  + destination.getName()
-                  + " expected "
-                  + expectedSha
-                  + " but got "
-                  + computedSha);
-          if (!destination.delete()) {
-            Log.w(TAG, "Failed deleting corrupt asset " + destination.getAbsolutePath());
-          }
-          mAssetPreferences.edit().remove(digestKey).apply();
-          return false;
-        }
-        mAssetPreferences.edit().putString(digestKey, computedSha).apply();
-      } else {
-        Log.w(TAG, "Staged Presage asset without checksum validation: " + destination.getName());
-      }
-      return true;
-    } catch (IOException exception) {
-      Log.e(TAG, "Failed staging Presage asset " + assetPath, exception);
-      if (destination.exists() && !destination.delete()) {
-        Log.w(TAG, "Failed deleting incomplete asset " + destination.getAbsolutePath());
-      }
-      return false;
-    } finally {
-      if (assetStream != null) {
-        try {
-          assetStream.close();
-        } catch (IOException closeError) {
-          Log.w(TAG, "Ignoring failure closing asset stream for " + assetPath, closeError);
-        }
-      }
-    }
-  }
-
-  private String buildConfigXml() {
-    final String arpaPath = new File(mModelsDirectory, ARPA_FILENAME).getAbsolutePath();
-    final String vocabPath = new File(mModelsDirectory, VOCAB_FILENAME).getAbsolutePath();
+  private String buildConfigXml(@NonNull ActiveModel activeModel) {
+    final String arpaPath = activeModel.getArpaFile().getAbsolutePath();
+    final String vocabPath = activeModel.getVocabFile().getAbsolutePath();
     return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
         + "<Presage>\n"
         + "  <PredictorRegistry>\n"
@@ -274,26 +167,5 @@ final class PresagePredictionManager {
         + "    </DefaultRecencyPredictor>\n"
         + "  </Predictors>\n"
         + "</Presage>\n";
-  }
-
-  private static MessageDigest newMessageDigest() {
-    try {
-      return MessageDigest.getInstance("SHA-256");
-    } catch (NoSuchAlgorithmException exception) {
-      Log.w(TAG, "SHA-256 digest unavailable; skipping checksum validation.", exception);
-      return null;
-    }
-  }
-
-  private static String toHex(byte[] digest) {
-    final StringBuilder builder = new StringBuilder(digest.length * 2);
-    for (byte value : digest) {
-      final int intVal = value & 0xFF;
-      if (intVal < 0x10) {
-        builder.append('0');
-      }
-      builder.append(Integer.toHexString(intVal));
-    }
-    return builder.toString();
   }
 }

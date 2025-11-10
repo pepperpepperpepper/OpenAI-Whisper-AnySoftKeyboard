@@ -539,16 +539,26 @@ public class SuggestionsProvider {
 
     int remainingSuggestions = maxSuggestions;
 
-    final int sizeBeforeUser = suggestionsHolder.size();
-    allDictionariesGetNextWord(
-        mUserNextWordDictionary, currentWord, suggestionsHolder, remainingSuggestions);
-    remainingSuggestions -= suggestionsHolder.size() - sizeBeforeUser;
-    if (remainingSuggestions <= 0) return;
-
+    int addedByPresage = 0;
     if (usesPresageEngine()) {
-      final int addedByPresage = appendPresageSuggestions(suggestionsHolder, remainingSuggestions);
+      addedByPresage = appendPresageSuggestions(suggestionsHolder, remainingSuggestions);
       remainingSuggestions -= addedByPresage;
       if (remainingSuggestions <= 0) return;
+    }
+
+    final boolean shouldIncludeLegacyNextWords =
+        mPredictionEngineMode != PredictionEngineMode.NGRAM || addedByPresage == 0;
+
+    if (shouldIncludeLegacyNextWords) {
+      final int sizeBeforeUser = suggestionsHolder.size();
+      allDictionariesGetNextWord(
+          mUserNextWordDictionary, currentWord, suggestionsHolder, remainingSuggestions);
+      remainingSuggestions -= suggestionsHolder.size() - sizeBeforeUser;
+      if (remainingSuggestions <= 0) return;
+    } else if (!mIncognitoMode) {
+      for (NextWordSuggestions nextWordDictionary : mUserNextWordDictionary) {
+        nextWordDictionary.notifyNextTypedWord(currentWord);
+      }
     }
 
     for (String nextWordSuggestion :
@@ -606,11 +616,19 @@ public class SuggestionsProvider {
     if (!mPresagePredictionManager.isActive() && !mPresagePredictionManager.activate()) {
       return 0;
     }
-    if (mPresageContext.isEmpty()) return 0;
+    if (mPresageContext.isEmpty()) {
+      return 0;
+    }
     final String[] contextArray = mPresageContext.toArray(new String[mPresageContext.size()]);
     final int requestLimit = Math.min(limit, mMaxNextWordSuggestionsCount);
     final String[] predictions =
         mPresagePredictionManager.predictNext(contextArray, requestLimit);
+    if (predictions == null) {
+      return 0;
+    }
+    if (predictions.length == 0) {
+      return 0;
+    }
     int added = 0;
     for (String prediction : predictions) {
       if (TextUtils.isEmpty(prediction)) continue;

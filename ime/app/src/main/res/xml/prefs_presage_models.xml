@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.preference.PreferenceCategory
+        android:key="installed_models"
+        android:title="@string/presage_models_installed_category" />
+
+    <androidx.preference.PreferenceCategory
+        android:key="available_models"
+        android:title="@string/presage_models_available_category">
+
+        <Preference
+            android:key="catalog_status"
+            android:summary="@string/presage_models_catalog_loading"
+            android:selectable="false" />
+    </androidx.preference.PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
+

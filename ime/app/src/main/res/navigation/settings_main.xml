@@ -264,7 +264,19 @@
     <fragment
         android:id="@+id/nextWordSettingsFragment"
         android:name="com.anysoftkeyboard.ui.settings.NextWordSettingsFragment"
-        android:label="NextWordSettingsFragment" />
+        android:label="NextWordSettingsFragment" >
+        <action
+            android:id="@+id/action_nextWordSettingsFragment_to_presageModelsFragment"
+            app:destination="@id/presageModelsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/presageModelsFragment"
+        android:name="com.anysoftkeyboard.ui.settings.PresageModelsFragment"
+        android:label="PresageModelsFragment" />
     <fragment
         android:id="@+id/languageTweaksFragment"
         android:name="com.anysoftkeyboard.ui.settings.LanguageTweaksFragment"

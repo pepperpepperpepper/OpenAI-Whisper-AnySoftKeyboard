@@ -34,6 +34,11 @@
             android:summary="@string/prediction_engine_mode_summary"
             android:title="@string/prediction_engine_mode_title"/>
 
+        <Preference
+            android:key="@string/settings_key_manage_presage_models"
+            android:title="@string/presage_models_manage_title"
+            android:summary="@string/presage_models_manage_summary"/>
+
     </androidx.preference.PreferenceCategory>
 
     <androidx.preference.PreferenceCategory

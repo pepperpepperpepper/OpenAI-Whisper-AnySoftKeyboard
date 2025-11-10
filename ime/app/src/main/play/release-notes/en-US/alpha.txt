@@ -1,4 +1,4 @@
-New Soft Keyboard 13.8.28
+New Soft Keyboard 13.8.31
 - Emoji search overlay now docks above the keyboard instead of replacing QWERTY, so you can keep typing while browsing results.
 - Fixes an issue where typing would immediately dismiss the emoji search sheet; the search now stays open and updates with each character.
 

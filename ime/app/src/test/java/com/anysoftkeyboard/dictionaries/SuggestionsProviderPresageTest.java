@@ -8,20 +8,20 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
 import com.anysoftkeyboard.suggestions.presage.PresageNative;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
 import com.menny.android.anysoftkeyboard.R;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +40,7 @@ public class SuggestionsProviderPresageTest {
   public void setUp() {
     PresageNativeShadow.reset();
     clearPresageDirectoriesAndPrefs();
+    stageTestModel();
     mSuggestionsProvider = new SuggestionsProvider(getApplicationContext());
     SharedPrefsHelper.setPrefsValue(
         R.string.settings_key_prediction_engine_mode, "ngram");
@@ -73,23 +74,28 @@ public class SuggestionsProviderPresageTest {
     assertFalse("Presage session should remain open for reuse.", PresageNativeShadow.wasClosed());
 
     final File noBackupDir = getApplicationContext().getNoBackupFilesDir();
-    final File modelsDir = new File(new File(noBackupDir, "presage"), "models");
-    assertTrue("ARPA model should be staged.", new File(modelsDir, "3-gram.pruned.3e-7.arpa").exists());
-    assertTrue(
-        "Vocabulary should be staged.",
-        new File(modelsDir, "3-gram.pruned.3e-7.vocab").exists());
+    final File modelDir =
+        new File(new File(new File(noBackupDir, "presage"), "models"), "test-model");
+    final File arpaFile = new File(modelDir, "test-model.arpa");
+    final File vocabFile = new File(modelDir, "test-model.vocab");
+    assertTrue("ARPA model should exist.", arpaFile.exists());
+    assertTrue("Vocabulary should exist.", vocabFile.exists());
 
     final Context context = getApplicationContext();
-    final SharedPreferences prefs =
+    final SharedPreferences digestPrefs =
         context.getSharedPreferences("presage_asset_versions", Context.MODE_PRIVATE);
     assertEquals(
-        "Expect recorded checksum for ARPA asset.",
-        computeAssetSha(context, "models/kenlm/3-gram.pruned.3e-7.arpa.gz", true),
-        prefs.getString("sha_3-gram.pruned.3e-7.arpa", ""));
+        "Expect recorded checksum for ARPA file.",
+        computeSha256(arpaFile),
+        digestPrefs.getString("sha_test-model_test-model.arpa", ""));
     assertEquals(
-        "Expect recorded checksum for vocab asset.",
-        computeAssetSha(context, "models/kenlm/3-gram.pruned.3e-7.vocab", false),
-        prefs.getString("sha_3-gram.pruned.3e-7.vocab", ""));
+        "Expect recorded checksum for vocab file.",
+        computeSha256(vocabFile),
+        digestPrefs.getString("sha_test-model_test-model.vocab", ""));
+
+    final SharedPreferences selectionPrefs =
+        context.getSharedPreferences("presage_model_selection", Context.MODE_PRIVATE);
+    assertEquals("test-model", selectionPrefs.getString("selected_model_id", ""));
   }
 
   @Implements(PresageNative.class)
@@ -166,6 +172,9 @@ public class SuggestionsProviderPresageTest {
     final SharedPreferences prefs =
         context.getSharedPreferences("presage_asset_versions", Context.MODE_PRIVATE);
     prefs.edit().clear().commit();
+    final SharedPreferences selectionPrefs =
+        context.getSharedPreferences("presage_model_selection", Context.MODE_PRIVATE);
+    selectionPrefs.edit().clear().commit();
   }
 
   private static void deleteRecursively(File file) {
@@ -185,46 +194,73 @@ public class SuggestionsProviderPresageTest {
     }
   }
 
-  private static String computeAssetSha(
-      Context context, String assetPath, boolean gunzip) {
-    final AssetManager assetManager = context.getAssets();
-    InputStream raw = null;
-    boolean decompress = gunzip;
-    try {
-      raw = assetManager.open(assetPath);
-    } catch (IOException firstError) {
-      if (gunzip && assetPath.endsWith(".gz")) {
-        final String fallbackPath = assetPath.substring(0, assetPath.length() - 3);
-        try {
-          raw = assetManager.open(fallbackPath);
-          decompress = false;
-        } catch (IOException fallbackError) {
-          final AssertionError assertion =
-              new AssertionError(
-                  "Failed to open Presage asset "
-                      + assetPath
-                      + " and fallback "
-                      + fallbackPath,
-                  fallbackError);
-          assertion.addSuppressed(firstError);
-          throw assertion;
-        }
-      } else {
-        throw new AssertionError("Failed to open Presage asset " + assetPath, firstError);
-      }
+  private void stageTestModel() {
+    final Context context = getApplicationContext();
+    final File modelDir =
+        new File(new File(new File(context.getNoBackupFilesDir(), "presage"), "models"),
+            "test-model");
+    deleteRecursively(modelDir);
+    if (!modelDir.mkdirs()) {
+      throw new AssertionError("Failed to create test model directory at " + modelDir);
     }
 
-    try (InputStream primary = raw;
-        InputStream source = decompress ? new GZIPInputStream(primary) : primary) {
+    try {
+      final File arpa = new File(modelDir, "test-model.arpa");
+      final File vocab = new File(modelDir, "test-model.vocab");
+      writeText(arpa, "test arpa content\n");
+      writeText(vocab, "test vocab content\n");
+
+      final String arpaSha = computeSha256(arpa);
+      final String vocabSha = computeSha256(vocab);
+
+      final File manifest = new File(modelDir, "manifest.json");
+      final String manifestJson =
+          "{\n"
+              + "  \"id\": \"test-model\",\n"
+              + "  \"label\": \"Test Model\",\n"
+              + "  \"files\": [\n"
+              + "    {\n"
+              + "      \"type\": \"arpa\",\n"
+              + "      \"filename\": \"test-model.arpa\",\n"
+              + "      \"sha256\": \""
+              + arpaSha
+              + "\"\n"
+              + "    },\n"
+              + "    {\n"
+              + "      \"type\": \"vocab\",\n"
+              + "      \"filename\": \"test-model.vocab\",\n"
+              + "      \"sha256\": \""
+              + vocabSha
+              + "\"\n"
+              + "    }\n"
+              + "  ]\n"
+              + "}\n";
+      writeText(manifest, manifestJson);
+    } catch (IOException exception) {
+      throw new AssertionError(exception);
+    }
+  }
+
+  private static void writeText(File file, String content) throws IOException {
+    try (FileOutputStream outputStream = new FileOutputStream(file)) {
+      outputStream.write(content.getBytes(StandardCharsets.UTF_8));
+      outputStream.flush();
+    }
+  }
+
+  private static String computeSha256(File file) {
+    try {
       final MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      final byte[] buffer = new byte[16 * 1024];
-      int read;
-      while ((read = source.read(buffer)) != -1) {
-        digest.update(buffer, 0, read);
+      try (FileInputStream inputStream = new FileInputStream(file)) {
+        final byte[] buffer = new byte[4096];
+        int read;
+        while ((read = inputStream.read(buffer)) != -1) {
+          digest.update(buffer, 0, read);
+        }
       }
       return toHex(digest.digest());
-    } catch (IOException | NoSuchAlgorithmException error) {
-      throw new AssertionError("Failed computing checksum for " + assetPath, error);
+    } catch (IOException | NoSuchAlgorithmException exception) {
+      throw new AssertionError(exception);
     }
   }
 

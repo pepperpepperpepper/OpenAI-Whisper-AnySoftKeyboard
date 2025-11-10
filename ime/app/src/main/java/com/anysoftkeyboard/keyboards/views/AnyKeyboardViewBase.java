@@ -1408,7 +1408,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
         final float textX =
             mKeyBackgroundPadding.left
                 + (key.width - mKeyBackgroundPadding.left - mKeyBackgroundPadding.right) / 2f;
-        final float textY;
+        float textY;
+        float translateX = textX;
         // Some devices (mostly pre-Honeycomb, have issues with RTL text
         // drawing.
         // Of course, there is no issue with a single character :)
@@ -1422,15 +1423,17 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
         if (shouldUseStaticLayout) {
           // calculate Y coordinate of top of text based on center
           // location
+          final int layoutWidth = Math.max(1, (int) Math.ceil(textWidth));
           textY = centerY - ((labelHeight - paint.descent()) / 2);
-          canvas.translate(textX, textY);
+          translateX = textX - (layoutWidth / 2f);
+          canvas.translate(translateX, textY);
           // RTL fix. But it costs, let do it when in need (more than
           // 1 character)
           StaticLayout labelText =
               new StaticLayout(
                   label,
                   new TextPaint(paint),
-                  (int) textWidth,
+                  layoutWidth,
                   Alignment.ALIGN_NORMAL,
                   1.0f,
                   0.0f,
@@ -1442,10 +1445,10 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
           // bottom of text), then subtract the part below the
           // baseline. Note that fm.top is negative.
           textY = centerY + ((labelHeight - paint.descent()) / 2);
-          canvas.translate(textX, textY);
+          canvas.translate(translateX, textY);
           canvas.drawText(label, 0, label.length(), 0, 0, paint);
         }
-        canvas.translate(-textX, -textY);
+        canvas.translate(-translateX, -textY);
         // (-)
 
         // Turn off drop shadow
