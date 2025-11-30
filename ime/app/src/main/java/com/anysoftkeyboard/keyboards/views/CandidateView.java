@@ -35,6 +35,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import androidx.annotation.NonNull;
+import com.menny.android.anysoftkeyboard.BuildConfig;
 import androidx.core.content.ContextCompat;
 import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.base.utils.Logger;
@@ -111,6 +112,26 @@ public class CandidateView extends View implements ThemeableChild {
     setHorizontalScrollBarEnabled(false);
     setVerticalScrollBarEnabled(false);
     scrollTo(0, getScrollY());
+
+    if (BuildConfig.TESTING_BUILD) {
+      try {
+        CandidateViewTestRegistry.setActive(this);
+      } catch (Throwable ignored) {
+        // ignore in production or if class not present
+      }
+    }
+  }
+
+  /** Test-only helper: picks the suggestion at the given index, if available. */
+  public boolean pickCandidateAtForTest(int index) {
+    if (index < 0 || index >= mSuggestions.size()) return false;
+    mSelectedIndex = index;
+    mSelectedString = mSuggestions.get(index);
+    if (mService != null) {
+      mService.pickSuggestionManually(mSelectedIndex, mSelectedString);
+      return true;
+    }
+    return false;
   }
 
   @Override
