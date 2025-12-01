@@ -80,6 +80,17 @@ public class NextWordSuggestionsUiAutomatorTest {
     mScenario.onActivity(TestInputActivity::forceShowKeyboard);
     SystemClock.sleep(SHORT_WAIT_MS);
     waitForKeyboardVisible();
+
+    // Seed a neutral prefix so suggestions start flowing
+    mScenario.onActivity(
+        activity -> {
+          EditText edit = activity.findViewById(R.id.test_edit_text);
+          edit.setText("the ");
+          activity.forceShowKeyboard();
+        });
+    SystemClock.sleep(SHORT_WAIT_MS);
+    clickKeyboardRelative(0.50f, 0.90f);
+    SystemClock.sleep(SHORT_WAIT_MS);
   }
 
   @After
