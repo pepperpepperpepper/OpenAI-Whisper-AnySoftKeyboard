@@ -90,17 +90,20 @@ public class NextWordSuggestionsUiAutomatorTest {
 
   @Test
   public void composeNonsenseSentenceUsingOnlySuggestions() throws Exception {
-    // Locate keyboard bounds to infer candidate strip area (which sits directly above it)
-    Rect kb = locateKeyboardBounds();
-    int candidateHeight = Math.max(36, Math.round(kb.height() * 0.18f));
-    int candCenterY = Math.max(0, kb.top - (candidateHeight / 2));
+    // Use test-only proxy overlays to tap candidates reliably
+    UiObject2 leftProxy =
+        mDevice.wait(
+            Until.findObject(By.res("wtf.uhoh.newsoftkeyboard:id/test_candidate_left")),
+            READY_TIMEOUT_MS);
+    if (leftProxy == null) {
+      dumpWindowHierarchyForDebug();
+      fail("Test candidate proxy not visible");
+    }
 
-    // Tap only on the left side of the inferred candidate strip N times, letting the IME pick suggestions.
+    // Tap only on the left proxy N times, letting the IME pick suggestions.
     final int taps = 12;
     for (int i = 0; i < taps; i++) {
-      int x = kb.left + Math.max(12, Math.round(kb.width() * 0.12f));
-      int y = candCenterY;
-      mDevice.click(x, y);
+      leftProxy.click();
       SystemClock.sleep(SHORT_WAIT_MS);
       // Add a space with a tap near the bottom-center of the keyboard surface
       clickKeyboardRelative(0.50f, 0.90f);

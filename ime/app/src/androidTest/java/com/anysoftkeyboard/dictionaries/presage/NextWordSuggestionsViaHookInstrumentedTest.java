@@ -48,6 +48,8 @@ public class NextWordSuggestionsViaHookInstrumentedTest {
           edit.setText("the ");
           activity.forceShowKeyboard();
         });
+    // Nudge the IME by tapping near the bottom-center of the keyboard region (spacebar zone)
+    tapSpacebarArea();
   }
 
   @After
@@ -59,14 +61,14 @@ public class NextWordSuggestionsViaHookInstrumentedTest {
   public void composeSentenceUsingSuggestionHook() {
     // repeatedly pick the first visible suggestion and then add a space by editing the field.
     for (int i = 0; i < 12; i++) {
-      CandidateViewTestRegistry.pickByIndex(0);
-      SystemClock.sleep(150);
+      mScenario.onActivity(activity -> CandidateViewTestRegistry.pickByIndex(0));
+      SystemClock.sleep(220);
       mScenario.onActivity(
           activity -> {
             EditText edit = activity.findViewById(R.id.test_edit_text);
             edit.append(" ");
           });
-      SystemClock.sleep(120);
+      SystemClock.sleep(140);
     }
 
     final AtomicReference<String> sentenceRef = new AtomicReference<>("");
@@ -78,6 +80,34 @@ public class NextWordSuggestionsViaHookInstrumentedTest {
     String sentence = sentenceRef.get();
     Log.d(TAG, "NON_SENSE_SENTENCE=" + sentence);
     assertFalse(sentence.isEmpty());
+  }
+
+  private void tapSpacebarArea() {
+    try {
+      String dump = execShell("dumpsys window windows");
+      String touchLine = null;
+      for (String line : dump.split("\n")) {
+        if (line.contains("InputMethod") && line.contains("touchable region=SkRegion")) {
+          touchLine = line;
+          break;
+        }
+      }
+      if (touchLine == null) return;
+      java.util.regex.Matcher m =
+          java.util.regex.Pattern
+              .compile("touchable region=SkRegion\\\\(\\\\((\\\\d+),(\\\\d+),(\\\\d+),(\\\\d+)\\\\)\\\\)")
+              .matcher(touchLine);
+      if (!m.find()) return;
+      int L = Integer.parseInt(m.group(1));
+      int T = Integer.parseInt(m.group(2));
+      int R = Integer.parseInt(m.group(3));
+      int B = Integer.parseInt(m.group(4));
+      int x = L + (R - L) / 2;
+      int y = B - 30;
+      execShell("input tap " + x + " " + y);
+      SystemClock.sleep(200);
+    } catch (Exception ignored) {
+    }
   }
 
   private static String execShell(String cmd) {
