@@ -1,4 +1,4 @@
-New Soft Keyboard 13.8.33
+New Soft Keyboard 13.8.34
 - Added a downloadable TinyLlama 1.1B (INT4) neural bundle alongside the existing DistilGPT-2 option; grab it from Settings → Language → Grammars → Language models and switch the engine to “Neural” or “Hybrid.”
 - Neural predictions now run fully on-device via ONNX Runtime Mobile, bootstrapping `past_key_values` automatically so new models drop in without code changes.
 
