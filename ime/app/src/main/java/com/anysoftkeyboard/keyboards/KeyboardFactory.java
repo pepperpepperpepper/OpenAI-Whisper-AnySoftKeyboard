@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.addons.AddOnsFactory;
 import com.anysoftkeyboard.addons.AddOnsFactory.ReceiverSpec;
+import wtf.uhoh.newsoftkeyboard.api.PluginActions;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.prefs.DirectBootAwareSharedPreferences;
 import com.menny.android.anysoftkeyboard.BuildConfig;
@@ -47,8 +48,8 @@ public class KeyboardFactory extends AddOnsFactory.MultipleAddOnsFactory<Keyboar
         context,
         DirectBootAwareSharedPreferences.create(context),
         TAG,
-        "wtf.uhoh.newsoftkeyboard.KEYBOARD",
-        "wtf.uhoh.newsoftkeyboard.keyboards",
+        PluginActions.ACTION_KEYBOARD_NEW,
+        PluginActions.METADATA_KEYBOARDS_NEW,
         "Keyboards",
         "Keyboard",
         PREF_ID_PREFIX,
@@ -57,8 +58,7 @@ public class KeyboardFactory extends AddOnsFactory.MultipleAddOnsFactory<Keyboar
         true,
         BuildConfig.TESTING_BUILD,
         new ReceiverSpec(
-            "com.anysoftkeyboard.plugin.KEYBOARD",
-            "com.anysoftkeyboard.plugindata.keyboards"));
+            PluginActions.ACTION_KEYBOARD_ASK, PluginActions.METADATA_KEYBOARDS_ASK));
   }
 
   @Override

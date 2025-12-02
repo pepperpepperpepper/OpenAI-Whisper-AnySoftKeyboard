@@ -16,6 +16,10 @@ import com.anysoftkeyboard.dictionaries.content.ContactsDictionary;
 import com.anysoftkeyboard.dictionaries.sqlite.AbbreviationsDictionary;
 import com.anysoftkeyboard.dictionaries.sqlite.AutoDictionary;
 import com.anysoftkeyboard.dictionaries.neural.NeuralPredictionManager;
+import wtf.uhoh.newsoftkeyboard.engine.NeuralEngineAdapter;
+import wtf.uhoh.newsoftkeyboard.engine.PredictionEngine;
+import wtf.uhoh.newsoftkeyboard.engine.PredictionResult;
+import wtf.uhoh.newsoftkeyboard.engine.PresageEngineAdapter;
 import com.anysoftkeyboard.nextword.NextWordSuggestions;
 import com.anysoftkeyboard.prefs.RxSharedPrefs;
 import com.anysoftkeyboard.rx.GenericOnError;
@@ -126,6 +130,8 @@ public class SuggestionsProvider {
 
   @NonNull private final PresagePredictionManager mPresagePredictionManager;
   @NonNull private final NeuralPredictionManager mNeuralPredictionManager;
+  @NonNull private final PredictionEngine mNgramEngine;
+  @NonNull private final PredictionEngine mNeuralEngine;
   @NonNull private PredictionEngineMode mPredictionEngineMode = PredictionEngineMode.HYBRID;
   @NonNull private final ArrayDeque<String> mPresageContext =
       new ArrayDeque<>(PRESAGE_CONTEXT_WINDOW);
@@ -163,6 +169,8 @@ public class SuggestionsProvider {
     mContext = context.getApplicationContext();
     mPresagePredictionManager = new PresagePredictionManager(mContext);
     mNeuralPredictionManager = new NeuralPredictionManager(mContext);
+    mNgramEngine = new PresageEngineAdapter(mPresagePredictionManager);
+    mNeuralEngine = new NeuralEngineAdapter(mNeuralPredictionManager);
 
     final RxSharedPrefs rxSharedPrefs = AnyApplication.prefs(mContext);
     mPrefsDisposables.add(
@@ -521,14 +529,14 @@ public class SuggestionsProvider {
 
   private void activatePresageIfNeeded() {
     if (usesPresageEngine()) {
-      mPresagePredictionManager.activate();
+      mNgramEngine.activate();
     }
   }
 
   private void activateNeuralIfNeeded() {
     if (mPredictionEngineMode == PredictionEngineMode.NEURAL
         || mPredictionEngineMode == PredictionEngineMode.HYBRID) {
-      if (!mNeuralPredictionManager.activate()) {
+      if (!mNeuralEngine.activate()) {
         handleNeuralActivationFailure();
       }
     }
@@ -680,7 +688,7 @@ public class SuggestionsProvider {
   private int appendPresageSuggestions(
       Collection<CharSequence> suggestionsHolder, int limit) {
     if (limit <= 0) return 0;
-    if (!mPresagePredictionManager.isActive() && !mPresagePredictionManager.activate()) {
+    if (!mNgramEngine.isReady() && !mNgramEngine.activate()) {
       return 0;
     }
     if (mPresageContext.isEmpty()) {
@@ -688,21 +696,13 @@ public class SuggestionsProvider {
     }
     final String[] contextArray = mPresageContext.toArray(new String[mPresageContext.size()]);
     final int requestLimit = Math.min(limit, mMaxNextWordSuggestionsCount);
-    final String[] predictions =
-        mPresagePredictionManager.predictNext(contextArray, requestLimit);
-    if (predictions == null) {
-      return 0;
-    }
-    if (predictions.length == 0) {
-      return 0;
-    }
+    final PredictionResult result = mNgramEngine.predict(contextArray, requestLimit);
+    final List<String> predictions = result.getCandidates();
+    if (predictions.isEmpty()) return 0;
     if (BuildConfig.DEBUG) {
       Logger.d(
           TAG,
-          "Presage raw predictions "
-              + Arrays.toString(predictions)
-              + " for context "
-              + Arrays.toString(contextArray));
+          "Presage raw predictions " + predictions + " for context " + Arrays.toString(contextArray));
     }
     int added = 0;
     for (String prediction : predictions) {
@@ -733,14 +733,16 @@ public class SuggestionsProvider {
               + "ms exceeded budget.");
       return 0;
     }
-    if (!mNeuralPredictionManager.isActive() && !mNeuralPredictionManager.activate()) {
+    if (!mNeuralEngine.isReady() && !mNeuralEngine.activate()) {
       handleNeuralActivationFailure();
       return 0;
     }
     final String[] contextArray = mPresageContext.toArray(new String[0]);
     final long start = SystemClock.elapsedRealtime();
     final List<String> predictions =
-        mNeuralPredictionManager.predictNextWords(contextArray, Math.min(limit, mMaxNextWordSuggestionsCount));
+        mNeuralEngine
+            .predict(contextArray, Math.min(limit, mMaxNextWordSuggestionsCount))
+            .getCandidates();
     mLastNeuralLatencyMs = SystemClock.elapsedRealtime() - start;
     if (mLastNeuralLatencyMs > NEURAL_LATENCY_BUDGET_MS) {
       Logger.i(

@@ -25,6 +25,7 @@ import androidx.collection.ArrayMap;
 import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.addons.AddOnsFactory;
 import com.anysoftkeyboard.addons.AddOnsFactory.ReceiverSpec;
+import wtf.uhoh.newsoftkeyboard.api.PluginActions;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.KeyboardFactory;
@@ -56,8 +57,8 @@ public class ExternalDictionaryFactory extends AddOnsFactory<DictionaryAddOnAndB
         context,
         DirectBootAwareSharedPreferences.create(context),
         TAG,
-        "wtf.uhoh.newsoftkeyboard.DICTIONARY",
-        "wtf.uhoh.newsoftkeyboard.dictionaries",
+        PluginActions.ACTION_DICTIONARY_NEW,
+        PluginActions.METADATA_DICTIONARIES_NEW,
         "Dictionaries",
         "Dictionary",
         "dictionary_",
@@ -66,8 +67,7 @@ public class ExternalDictionaryFactory extends AddOnsFactory<DictionaryAddOnAndB
         true,
         BuildConfig.TESTING_BUILD,
         new ReceiverSpec(
-            "com.anysoftkeyboard.plugin.DICTIONARY",
-            "com.anysoftkeyboard.plugindata.dictionaries"));
+            PluginActions.ACTION_DICTIONARY_ASK, PluginActions.METADATA_DICTIONARIES_ASK));
   }
 
   public static String getDictionaryOverrideKey(AnyKeyboard currentKeyboard) {
