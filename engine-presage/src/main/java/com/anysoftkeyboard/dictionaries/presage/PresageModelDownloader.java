@@ -50,20 +50,22 @@ public final class PresageModelDownloader {
 
   @NonNull
   public PresageModelDefinition downloadAndInstall(
-      @NonNull PresageModelCatalog.CatalogEntry catalogEntry) throws IOException, JSONException {
+      @NonNull PresageModelDefinition definition,
+      @NonNull String bundleUrl,
+      @Nullable String bundleSha256) throws IOException, JSONException {
 
     final File cacheDir = new File(mContext.getCacheDir(), "presage-downloads");
     ensureDirectory(cacheDir);
     final File tempZip = File.createTempFile("presage_model_", ".zip", cacheDir);
 
     try {
-      final String computedSha = downloadToFile(catalogEntry.getBundleUrl(), tempZip);
-      final String expectedSha = catalogEntry.getBundleSha256();
+      final String computedSha = downloadToFile(bundleUrl, tempZip);
+      final String expectedSha = bundleSha256;
       if (expectedSha != null && !expectedSha.isEmpty()) {
         if (!expectedSha.equalsIgnoreCase(computedSha)) {
           throw new IOException(
               "Checksum mismatch for "
-                  + catalogEntry.getDefinition().getId()
+                  + definition.getId()
                   + ": expected "
                   + expectedSha
                   + ", got "
@@ -72,7 +74,7 @@ public final class PresageModelDownloader {
       }
 
       final File modelsRoot = getModelsRootDirectory();
-      final String modelId = catalogEntry.getDefinition().getId();
+      final String modelId = definition.getId();
       final File stagingDir = new File(modelsRoot, modelId + "-staging");
       deleteRecursively(stagingDir);
       ensureDirectory(stagingDir);
@@ -81,8 +83,7 @@ public final class PresageModelDownloader {
 
       final File manifestFile = locateManifest(stagingDir);
 
-      final PresageModelDefinition manifestDefinition =
-          PresageModelDefinition.fromJson(readJson(manifestFile));
+      final PresageModelDefinition manifestDefinition = PresageModelDefinition.fromJson(readJson(manifestFile));
       validateExtractedFiles(stagingDir, manifestDefinition);
 
       final File targetDir = new File(modelsRoot, manifestDefinition.getId());

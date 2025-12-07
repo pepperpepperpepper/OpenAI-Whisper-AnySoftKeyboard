@@ -127,61 +127,6 @@ public final class PresageModelStore {
     return null;
   }
 
-  @NonNull
-  public List<PresageModelDefinition> listAvailableModels() {
-    return new ArrayList<>(discoverDefinitions().values());
-  }
-
-  public void persistSelectedModelId(
-      @NonNull PresageModelDefinition.EngineType engineType, @NonNull String modelId) {
-    if (modelId.trim().isEmpty()) {
-      clearSelectedModelId(engineType);
-    } else {
-      mSelectionPreferences.edit().putString(selectionPrefKey(engineType), modelId).apply();
-    }
-  }
-
-  @Nullable
-  public String getSelectedModelId(@NonNull PresageModelDefinition.EngineType engineType) {
-    final String stored = mSelectionPreferences.getString(selectionPrefKey(engineType), "");
-    if (stored == null || stored.trim().isEmpty()) {
-      return null;
-    }
-    return stored;
-  }
-
-  public void clearSelectedModelId(@NonNull PresageModelDefinition.EngineType engineType) {
-    mSelectionPreferences.edit().remove(selectionPrefKey(engineType)).apply();
-  }
-
-  public void removeModel(@NonNull String modelId) {
-    final File modelDirectory = new File(getModelsRootDirectory(), modelId);
-    deleteRecursively(modelDirectory);
-
-    final String digestPrefix = DIGEST_PREF_KEY_PREFIX + modelId + "_";
-    final Map<String, ?> allDigests = mDigestPreferences.getAll();
-    if (!allDigests.isEmpty()) {
-      final SharedPreferences.Editor editor = mDigestPreferences.edit();
-      boolean modified = false;
-      for (String key : allDigests.keySet()) {
-        if (key != null && key.startsWith(digestPrefix)) {
-          editor.remove(key);
-          modified = true;
-        }
-      }
-      if (modified) {
-        editor.apply();
-      }
-    }
-
-    for (PresageModelDefinition.EngineType engineType : PresageModelDefinition.EngineType.values()) {
-      final String selectedId = getSelectedModelId(engineType);
-      if (selectedId != null && selectedId.equals(modelId)) {
-        clearSelectedModelId(engineType);
-      }
-    }
-  }
-
   @Nullable
   private ActiveModel ensureDefinitionInstalled(@NonNull PresageModelDefinition definition) {
     final File modelDirectory = new File(getModelsRootDirectory(), definition.getId());
@@ -386,24 +331,29 @@ public final class PresageModelStore {
     }
   }
 
-  private void deleteRecursively(@Nullable File file) {
-    if (file == null || !file.exists()) {
-      return;
+  @Nullable
+  private String computeFileSha256(@NonNull File file) {
+    final MessageDigest digest;
+    try {
+      digest = MessageDigest.getInstance("SHA-256");
+    } catch (NoSuchAlgorithmException e) {
+      Logger.e(TAG, "SHA-256 digest unavailable", e);
+      return null;
     }
-    if (file.isDirectory()) {
-      final File[] children = file.listFiles();
-      if (children != null) {
-        for (File child : children) {
-          deleteRecursively(child);
-        }
+    try (DigestInputStream inputStream =
+            new DigestInputStream(new BufferedInputStream(new FileInputStream(file)), digest)) {
+      final byte[] buffer = new byte[16 * 1024];
+      while (inputStream.read(buffer) != -1) {
+        // no-op
       }
-    }
-    if (!file.delete()) {
-      file.deleteOnExit();
+      final byte[] result = digest.digest();
+      return toHexString(result);
+    } catch (IOException exception) {
+      Logger.e(TAG, "Failed computing SHA-256 for " + file.getAbsolutePath(), exception);
+      return null;
     }
   }
 
-  @Nullable
   private static JSONObject readJson(@NonNull File file) throws IOException, JSONException {
     try (Reader reader = new InputStreamReader(new FileInputStream(file))) {
       final StringBuilder builder = new StringBuilder();
@@ -413,29 +363,6 @@ public final class PresageModelStore {
         builder.append(buffer, 0, read);
       }
       return new JSONObject(builder.toString());
-    }
-  }
-
-  @Nullable
-  private static String computeFileSha256(@NonNull File file) {
-    MessageDigest digest;
-    try {
-      digest = MessageDigest.getInstance("SHA-256");
-    } catch (NoSuchAlgorithmException exception) {
-      Logger.w(TAG, "SHA-256 digest unavailable", exception);
-      return null;
-    }
-
-    try (DigestInputStream digestInputStream =
-        new DigestInputStream(new BufferedInputStream(new FileInputStream(file)), digest)) {
-      final byte[] buffer = new byte[16 * 1024];
-      while (digestInputStream.read(buffer) != -1) {
-        // Keep reading until EOF to update digest
-      }
-      return toHexString(digest.digest());
-    } catch (IOException exception) {
-      Logger.e(TAG, "Failed computing checksum for " + file.getAbsolutePath(), exception);
-      return null;
     }
   }
 
@@ -562,5 +489,27 @@ public final class PresageModelStore {
 
   private String selectionPrefKey(@NonNull PresageModelDefinition.EngineType engineType) {
     return PREF_SELECTED_MODEL_ID + "_" + engineType.getSerializedValue();
+  }
+
+  public void persistSelectedModelId(
+      @NonNull PresageModelDefinition.EngineType engineType, @NonNull String modelId) {
+    if (modelId.trim().isEmpty()) {
+      clearSelectedModelId(engineType);
+    } else {
+      mSelectionPreferences.edit().putString(selectionPrefKey(engineType), modelId).apply();
+    }
+  }
+
+  @Nullable
+  public String getSelectedModelId(@NonNull PresageModelDefinition.EngineType engineType) {
+    final String stored = mSelectionPreferences.getString(selectionPrefKey(engineType), "");
+    if (stored == null || stored.trim().isEmpty()) {
+      return null;
+    }
+    return stored;
+  }
+
+  public void clearSelectedModelId(@NonNull PresageModelDefinition.EngineType engineType) {
+    mSelectionPreferences.edit().remove(selectionPrefKey(engineType)).apply();
   }
 }

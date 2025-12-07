@@ -1,3 +1,4 @@
+
 package com.anysoftkeyboard.dictionaries;
 
 import android.content.Context;
@@ -58,11 +59,6 @@ public final class PresagePredictionManager {
     return true;
   }
 
-  /**
-   * Ensures the configuration XML on disk reflects the currently selected Presage model without
-   * opening the native bridge. Useful for staging configuration during instrumentation or settings
-   * flows where the JNI bridge may be unavailable (or undesirable).
-   */
   @VisibleForTesting
   public boolean stageConfigurationForActiveModel() {
     mLastActivationError = null;
@@ -180,12 +176,8 @@ public final class PresagePredictionManager {
         + "    <DefaultARPAPredictor>\n"
         + "      <PREDICTOR>ARPAPredictor</PREDICTOR>\n"
         + "      <LOGGER>ERROR</LOGGER>\n"
-        + "      <ARPAFILENAME>"
-        + arpaPath
-        + "</ARPAFILENAME>\n"
-        + "      <VOCABFILENAME>"
-        + vocabPath
-        + "</VOCABFILENAME>\n"
+        + "      <ARPAFILENAME>" + arpaPath + "</ARPAFILENAME>\n"
+        + "      <VOCABFILENAME>" + vocabPath + "</VOCABFILENAME>\n"
         + "      <TIMEOUT>100</TIMEOUT>\n"
         + "    </DefaultARPAPredictor>\n"
         + "    <DefaultRecencyPredictor>\n"

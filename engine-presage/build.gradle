@@ -1,0 +1,12 @@
+apply plugin: 'com.android.library'
+
+apply from: "${rootDir}/gradle/android_general.gradle"
+
+android {
+    namespace 'com.anysoftkeyboard.dictionaries.presage'
+}
+
+dependencies {
+    api project(':ime:base')
+    api project(':ime:suggestions:presage')
+}

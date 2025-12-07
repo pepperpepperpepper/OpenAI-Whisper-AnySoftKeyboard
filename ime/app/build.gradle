@@ -97,6 +97,7 @@ android {
 }
 
 dependencies {
+    implementation project(':engine-core')
     implementation project(':api')
     implementation project(':addons:base')
     implementation project(':addons:languages:english:pack')
@@ -119,6 +120,8 @@ dependencies {
     implementation project(':ime:permissions')
     implementation project(':ime:fileprovider')
     implementation project(':ime:suggestions:presage')
+    implementation project(':engine-presage')
+    implementation project(':engine-neural')
 
     implementation 'androidx.fragment:fragment:1.8.9'
     implementation 'androidx.appcompat:appcompat:1.7.1'
@@ -138,6 +141,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-dynamic-features-fragment:2.9.3'
 
     implementation 'androidx.multidex:multidex:2.0.1'
+    // kept for now; engine-neural also declares it. Gradle will dedupe.
     implementation 'com.microsoft.onnxruntime:onnxruntime-android:1.19.2'
 
     testImplementation project(path: ':ime:base-test')
@@ -158,6 +162,20 @@ dependencies {
     rootProject.findProject(":addons").subprojects.forEach {
         if (it.name == 'pack') {
             allAddOnsImplementation it
+        }
+    }
+}
+
+android {
+    flavorDimensions "dist"
+    productFlavors {
+        nsk {
+            dimension "dist"
+            applicationId "wtf.uhoh.newsoftkeyboard"
+        }
+        askCompat {
+            dimension "dist"
+            applicationId "wtf.uhoh.newsoftkeyboard.askcompat"
         }
     }
 }

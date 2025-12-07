@@ -1,0 +1,13 @@
+apply plugin: 'com.android.library'
+
+apply from: "${rootDir}/gradle/android_general.gradle"
+
+android {
+    namespace 'com.anysoftkeyboard.dictionaries.neural'
+}
+
+dependencies {
+    api project(':ime:base')
+    api project(':engine-presage')
+    implementation 'com.microsoft.onnxruntime:onnxruntime-android:1.19.2'
+}

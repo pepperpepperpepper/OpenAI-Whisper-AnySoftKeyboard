@@ -192,7 +192,10 @@ public class PresageModelsFragment extends PreferenceFragmentCompat {
     preference.setSummary(getString(R.string.presage_models_downloading));
 
     mDisposables.add(
-        Single.fromCallable(() -> mDownloader.downloadAndInstall(entry))
+        Single.fromCallable(
+                () ->
+                    mDownloader.downloadAndInstall(
+                        entry.getDefinition(), entry.getBundleUrl(), entry.getBundleSha256()))
             .subscribeOn(RxSchedulers.background())
             .observeOn(RxSchedulers.mainThread())
             .subscribe(

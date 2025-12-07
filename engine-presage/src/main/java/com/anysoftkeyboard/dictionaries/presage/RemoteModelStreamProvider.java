@@ -1,7 +1,6 @@
 package com.anysoftkeyboard.dictionaries.presage;
 
 import androidx.annotation.NonNull;
-import com.menny.android.anysoftkeyboard.BuildConfig;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +32,7 @@ public interface RemoteModelStreamProvider {
       connection.setReadTimeout(READ_TIMEOUT_MS);
       connection.setInstanceFollowRedirects(true);
       connection.setRequestProperty(
-          "User-Agent", "AnySoftKeyboard/" + BuildConfig.VERSION_NAME);
+          "User-Agent", "NewSoftKeyboard/engine-presage");
       connection.setRequestProperty("Accept", "application/json, application/zip, */*");
       connection.setRequestProperty("Accept-Encoding", "identity");
       connection.connect();
@@ -67,4 +66,3 @@ public interface RemoteModelStreamProvider {
     }
   }
 }
-

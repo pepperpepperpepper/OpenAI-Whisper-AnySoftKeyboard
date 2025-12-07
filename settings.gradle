@@ -30,3 +30,6 @@ include ':ime:permissions'
 include ':ime:suggestions:presage'
 
 include ':ime:app'
+include ':engine-core'
+include ':engine-presage'
+include ':engine-neural'

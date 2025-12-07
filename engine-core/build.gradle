@@ -1,0 +1,11 @@
+apply plugin: 'com.android.library'
+
+apply from: "${rootDir}/gradle/android_general.gradle"
+
+android {
+    namespace 'wtf.uhoh.newsoftkeyboard.engine'
+}
+
+dependencies {
+    api 'androidx.annotation:annotation:1.9.1'
+}
