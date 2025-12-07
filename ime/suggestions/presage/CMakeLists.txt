@@ -65,6 +65,18 @@ set_target_properties(presage_static PROPERTIES
     CXX_EXTENSIONS NO)
 target_compile_definitions(presage_static PRIVATE HAVE_CONFIG_H=1)
 
+# Presage upstream (0.9.1) emits several warnings under Clang/NDK r27
+# that can fail CI when treated as errors on some toolchains. We keep
+# -Werror on our JNI bridge, but relax a few noisy warnings only for the
+# vendored presage_static target to regain x86/x86_64 build coverage.
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(presage_static PRIVATE
+        -Wno-constant-conversion
+        -Wno-c++11-narrowing
+        -Wno-unused-parameter
+        -Wno-sign-compare)
+endif()
+
 add_library(anysoftkeyboard_presage SHARED
     src/main/jni/presage_bridge.cpp)
 
