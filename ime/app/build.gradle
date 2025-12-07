@@ -100,6 +100,12 @@ android {
         it.res.srcDirs += 'src/debug/res'
     }
     namespace 'com.menny.android.anysoftkeyboard'
+    // Run instrumentation against the release variant so tests are
+    // signed with the same key as the target app, allowing
+    // instrumentation on Genymotion without signature mismatch.
+    defaultConfig {
+        testBuildType 'release'
+    }
 }
 
 dependencies {
