@@ -33,6 +33,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import wtf.uhoh.newsoftkeyboard.pipeline.CandidateMerger;
+import wtf.uhoh.newsoftkeyboard.pipeline.CandidateNormalizer;
 
 public class SuggestionsProvider {
 
@@ -697,22 +699,14 @@ public class SuggestionsProvider {
     final String[] contextArray = mPresageContext.toArray(new String[mPresageContext.size()]);
     final int requestLimit = Math.min(limit, mMaxNextWordSuggestionsCount);
     final PredictionResult result = mNgramEngine.predict(contextArray, requestLimit);
-    final List<String> predictions = result.getCandidates();
+    final List<String> predictions = CandidateNormalizer.normalize(result.getCandidates());
     if (predictions.isEmpty()) return 0;
     if (BuildConfig.DEBUG) {
       Logger.d(
           TAG,
           "Presage raw predictions " + predictions + " for context " + Arrays.toString(contextArray));
     }
-    int added = 0;
-    for (String prediction : predictions) {
-      if (TextUtils.isEmpty(prediction)) continue;
-      if (suggestionsHolder.contains(prediction)) continue;
-      suggestionsHolder.add(prediction);
-      added++;
-      if (added == limit) break;
-    }
-    return added;
+    return CandidateMerger.mergeUnique(suggestionsHolder, predictions, limit);
   }
 
   private int appendNeuralSuggestions(
@@ -740,9 +734,10 @@ public class SuggestionsProvider {
     final String[] contextArray = mPresageContext.toArray(new String[0]);
     final long start = SystemClock.elapsedRealtime();
     final List<String> predictions =
-        mNeuralEngine
-            .predict(contextArray, Math.min(limit, mMaxNextWordSuggestionsCount))
-            .getCandidates();
+        CandidateNormalizer.normalize(
+            mNeuralEngine
+                .predict(contextArray, Math.min(limit, mMaxNextWordSuggestionsCount))
+                .getCandidates());
     mLastNeuralLatencyMs = SystemClock.elapsedRealtime() - start;
     if (mLastNeuralLatencyMs > NEURAL_LATENCY_BUDGET_MS) {
       Logger.i(
@@ -767,21 +762,7 @@ public class SuggestionsProvider {
               + Arrays.toString(contextArray));
     }
     clearNeuralActivationFailureStatus();
-    int added = 0;
-    for (String prediction : predictions) {
-      if (TextUtils.isEmpty(prediction)) {
-        continue;
-      }
-      if (suggestionsHolder.contains(prediction)) {
-        continue;
-      }
-      suggestionsHolder.add(prediction);
-      added++;
-      if (added == limit) {
-        break;
-      }
-    }
-    return added;
+    return CandidateMerger.mergeUnique(suggestionsHolder, predictions, limit);
   }
 
   private void handleNeuralActivationFailure() {
