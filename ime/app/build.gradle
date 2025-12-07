@@ -52,6 +52,11 @@ android {
     }
 }
 
+// Align AndroidX tracing across app and tests to satisfy runner calls
+configurations.all {
+    resolutionStrategy.force 'androidx.tracing:tracing:1.3.0'
+}
+
 //adding TESTING_BUILD
 android {
     buildFeatures {
@@ -108,6 +113,7 @@ android {
     }
 }
 
+
 dependencies {
     implementation project(':engine-core')
     implementation project(':api')
@@ -153,6 +159,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-dynamic-features-fragment:2.9.3'
 
     implementation 'androidx.multidex:multidex:2.0.1'
+    // Ensure release includes a recent androidx.tracing used by the test runner
+    implementation 'androidx.tracing:tracing:1.3.0'
     // kept for now; engine-neural also declares it. Gradle will dedupe.
     implementation 'com.microsoft.onnxruntime:onnxruntime-android:1.19.2'
 
@@ -162,12 +170,15 @@ dependencies {
 
     androidTestImplementation 'androidx.test:core:1.6.1'
     androidTestImplementation 'androidx.test.ext:junit:1.3.0'
-    androidTestImplementation 'androidx.test:runner:1.6.1'
+    // Align test runner with tracing expectations
+    androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test:rules:1.6.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.6.1'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.6.1'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+    // Ensure test APK carries modern tracing too
+    androidTestImplementation 'androidx.tracing:tracing:1.3.0'
     androidTestUtil 'androidx.test:orchestrator:1.4.2'
 
     //allAddOns have all the add-ons packs as dependencies

@@ -27,3 +27,5 @@
 }
 
 -keep class ai.onnxruntime.** { *; }
+## Keep AndroidX tracing so AndroidJUnitRunner can call Trace.beginSection/endSection
+-keep class androidx.tracing.Trace { *; }
