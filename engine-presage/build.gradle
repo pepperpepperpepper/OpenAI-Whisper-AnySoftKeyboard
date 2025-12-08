@@ -11,3 +11,18 @@ dependencies {
     api project(':ime:suggestions:presage')
     api project(':engine-core')
 }
+
+def presageVendorDir = file("${rootDir}/third_party/presage/presage-0.9.1")
+
+tasks.register('setupPresageVendor') {
+    outputs.dir(presageVendorDir)
+    doLast {
+        if (!presageVendorDir.exists()) {
+            exec {
+                commandLine 'bash', "${rootDir}/scripts/setup_presage.sh"
+            }
+        }
+    }
+}
+
+preBuild.dependsOn tasks.named('setupPresageVendor')

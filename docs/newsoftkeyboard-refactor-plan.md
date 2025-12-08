@@ -25,9 +25,18 @@ Compatibility Strategy
 - Keep package names for internal classes stable for now; applicationId remains `wtf.uhoh.newsoftkeyboard`.
 - Centralize action/meta‑data constants in a facade so call sites don’t hardcode strings.
 
-Repository Layout (phase 1‑2)
+Repository Layout (phase 1-2)
 - Keep current module boundaries; introduce `compat-ask` Java package and move callers to it.
 - Add docs and migration checklist; only after stabilization, consider extracting `engine-core`/`engine-*` into modules.
+
+Roadmap snapshot (Dec 2025)
+- DONE: Adapters + prediction seam moved into engine modules; app depends on engine-core/presage/neural only.
+- DONE: BUILDING.md added with canonical build/test/publish steps.
+- TODO: Extract EditorStateTracker/InputConnectionRouter from AnySoftKeyboard*.
+- TODO: Extract TouchDispatcher from AnyKeyboardViewBase/PointerTracker.
+- TODO: Split PresageModelStore into downloader/selection/file IO.
+- TODO: Wire scripts/setup_presage.sh into Gradle prebuild (partially done in engine-presage).
+- TODO: Add host predictNextWords sanity test using mixed-case model.
 
 Milestones
 1. Documentation and constants centralization (this change):

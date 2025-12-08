@@ -337,4 +337,12 @@ afterEvaluate { proj ->
             println '\nTip: adb -s ' + dev + ' logcat -d | grep NON_SENSE_SENTENCE='
         }
     }
+
+    // Convenience task to build release app and androidTest together (signing optional).
+    tasks.register('verifyRelease') { t ->
+        t.group = 'verification'
+        t.description = 'Builds release APK and androidTest APK together.'
+        t.dependsOn 'assembleRelease'
+        t.dependsOn 'assembleAndroidTest'
+    }
 }
