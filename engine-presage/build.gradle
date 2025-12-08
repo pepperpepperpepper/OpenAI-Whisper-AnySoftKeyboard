@@ -9,4 +9,5 @@ android {
 dependencies {
     api project(':ime:base')
     api project(':ime:suggestions:presage')
+    api project(':engine-core')
 }

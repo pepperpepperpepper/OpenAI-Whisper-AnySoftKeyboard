@@ -18,7 +18,6 @@ import com.anysoftkeyboard.dictionaries.sqlite.AutoDictionary;
 import com.anysoftkeyboard.dictionaries.neural.NeuralPredictionManager;
 import wtf.uhoh.newsoftkeyboard.engine.NeuralEngineAdapter;
 import wtf.uhoh.newsoftkeyboard.engine.PredictionEngine;
-import wtf.uhoh.newsoftkeyboard.engine.PredictionResult;
 import wtf.uhoh.newsoftkeyboard.engine.PresageEngineAdapter;
 import com.anysoftkeyboard.nextword.NextWordSuggestions;
 import com.anysoftkeyboard.prefs.RxSharedPrefs;
@@ -33,8 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import wtf.uhoh.newsoftkeyboard.pipeline.CandidateMerger;
-import wtf.uhoh.newsoftkeyboard.pipeline.CandidateNormalizer;
+import wtf.uhoh.newsoftkeyboard.pipeline.EngineOrchestrator;
 
 public class SuggestionsProvider {
 
@@ -696,26 +694,14 @@ public class SuggestionsProvider {
     if (mPresageContext.isEmpty()) {
       return 0;
     }
-    final String[] contextArray = mPresageContext.toArray(new String[mPresageContext.size()]);
-    final int requestLimit = Math.min(limit, mMaxNextWordSuggestionsCount);
-    final PredictionResult result = mNgramEngine.predict(contextArray, requestLimit);
-    final List<String> raw = result.getCandidates();
-    if (BuildConfig.TESTING_BUILD) {
-      Logger.d(
-          TAG,
-          "Presage raw candidates="
-              + raw
-              + " ctx="
-              + Arrays.toString(contextArray));
-    }
-    final List<String> predictions = CandidateNormalizer.normalize(raw);
-    if (predictions.isEmpty()) return 0;
-    if (BuildConfig.DEBUG) {
-      Logger.d(
-          TAG,
-          "Presage raw predictions " + predictions + " for context " + Arrays.toString(contextArray));
-    }
-    return CandidateMerger.mergeUnique(suggestionsHolder, predictions, limit);
+    return EngineOrchestrator.predictAndMerge(
+        mNgramEngine,
+        mPresageContext,
+        mMaxNextWordSuggestionsCount,
+        suggestionsHolder,
+        limit,
+        BuildConfig.TESTING_BUILD,
+        TAG + "-Presage");
   }
 
   private int appendNeuralSuggestions(
@@ -740,45 +726,27 @@ public class SuggestionsProvider {
       handleNeuralActivationFailure();
       return 0;
     }
-    final String[] contextArray = mPresageContext.toArray(new String[0]);
     final long start = SystemClock.elapsedRealtime();
-    final PredictionResult predictionResult =
-        mNeuralEngine.predict(contextArray, Math.min(limit, mMaxNextWordSuggestionsCount));
-    if (BuildConfig.TESTING_BUILD) {
-      Logger.d(
-          TAG,
-          "Neural raw candidates="
-              + predictionResult.getCandidates()
-              + " ctx="
-              + Arrays.toString(contextArray));
-    }
-    final List<String> predictions =
-        CandidateNormalizer.normalize(predictionResult.getCandidates());
+    final int merged =
+        EngineOrchestrator.predictAndMerge(
+            mNeuralEngine,
+            mPresageContext,
+            mMaxNextWordSuggestionsCount,
+            suggestionsHolder,
+            limit,
+            BuildConfig.TESTING_BUILD,
+            TAG + "-Neural");
     mLastNeuralLatencyMs = SystemClock.elapsedRealtime() - start;
     if (mLastNeuralLatencyMs > NEURAL_LATENCY_BUDGET_MS) {
       Logger.i(
           TAG,
-          "Neural inference latency "
-              + mLastNeuralLatencyMs
-              + "ms for context "
-              + Arrays.toString(contextArray));
-    }
-    if (predictions.isEmpty()) {
-      if (!TextUtils.isEmpty(mNeuralPredictionManager.getLastActivationError())) {
-        handleNeuralActivationFailure();
-      }
-      return 0;
-    }
-    if (BuildConfig.DEBUG) {
-      Logger.d(
-          TAG,
-          "Neural raw predictions "
-              + predictions
-              + " for context "
-              + Arrays.toString(contextArray));
+          "Neural inference latency " + mLastNeuralLatencyMs + "ms for current context");
     }
     clearNeuralActivationFailureStatus();
-    return CandidateMerger.mergeUnique(suggestionsHolder, predictions, limit);
+    if (merged == 0 && !TextUtils.isEmpty(mNeuralPredictionManager.getLastActivationError())) {
+      handleNeuralActivationFailure();
+    }
+    return merged;
   }
 
   private void handleNeuralActivationFailure() {

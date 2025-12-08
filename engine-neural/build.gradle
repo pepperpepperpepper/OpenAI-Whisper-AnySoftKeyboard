@@ -9,6 +9,7 @@ android {
 dependencies {
     api project(':ime:base')
     api project(':engine-presage')
+    api project(':engine-core')
     implementation 'com.microsoft.onnxruntime:onnxruntime-android:1.19.2'
     testImplementation 'junit:junit:4.13.2'
 }

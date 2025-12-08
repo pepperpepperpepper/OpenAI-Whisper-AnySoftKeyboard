@@ -1,6 +1,6 @@
   - versionName: 13.8.35
     versionCode: 15086
-    commit: 4c1a3716234cc339ab3c313d7ad9737d1d228756
+    commit: 139a82be952e89e72f09005b71c899433b8f2423
     subdir: ime/app
     sudo:
       - apt-get update || apt-get update
