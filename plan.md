@@ -1,4 +1,6 @@
-# Multi-Suggestions Roadmap
+# Multi-Suggestions Roadmap (archived)
+
+> Archived in favor of `docs/newsoftkeyboard-refactor-plan.md` and `fix_plan.md`. Keep for historical context only (not the active plan).
 
 Last verified: November 15, 2025
 

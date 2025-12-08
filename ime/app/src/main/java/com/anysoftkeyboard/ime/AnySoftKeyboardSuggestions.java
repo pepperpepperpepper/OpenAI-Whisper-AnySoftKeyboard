@@ -397,8 +397,8 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
       int newSelEnd,
       int candidatesStart,
       int candidatesEnd) {
-    final int oldCandidateStart = mGlobalCandidateStartPositionDangerous;
-    final int oldCandidateEnd = mGlobalCandidateEndPositionDangerous;
+    final int oldCandidateStart = getCandidateStartPositionDangerous();
+    final int oldCandidateEnd = getCandidateEndPositionDangerous();
     super.onUpdateSelection(
         oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
     Logger.v(
@@ -439,7 +439,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
       return; // not relevant if no prediction is needed.
     }
 
-    final InputConnection ic = getCurrentInputConnection();
+    final InputConnection ic = currentInputConnection();
     if (ic == null) {
       return; // well, I can't do anything without this connection
     }
@@ -590,7 +590,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
 
     mLastCharacterWasShifted = (getInputView() != null) && getInputView().isShifted();
 
-    final InputConnection ic = getCurrentInputConnection();
+    final InputConnection ic = currentInputConnection();
     mWord.add(primaryCode, nearByKeyCodes);
     if (isPredictionOn()) {
       if (ic != null) {
@@ -666,7 +666,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     final boolean isSpace = primaryCode == KeyCodes.SPACE;
 
     // Handle separator
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic != null) {
       ic.beginBatchEdit();
     }
@@ -850,7 +850,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   @Override
   public void onText(Keyboard.Key key, CharSequence text) {
     Logger.d(TAG, "onText: '%s'", text);
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic == null) {
       return;
     }
@@ -872,7 +872,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   @Override
   public void onTyping(Keyboard.Key key, CharSequence text) {
     Logger.d(TAG, "onTyping: '%s'", text);
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic == null) {
       return;
     }
@@ -947,7 +947,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     mJustAutoAddedWord = false;
     mKeyboardHandler.removeAllSuggestionMessages();
 
-    final InputConnection ic = getCurrentInputConnection();
+    final InputConnection ic = currentInputConnection();
     markExpectingSelectionUpdate();
     if (ic != null) ic.finishComposingText();
 
@@ -1096,7 +1096,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   public void pickSuggestionManually(
       int index, CharSequence suggestion, boolean withAutoSpaceEnabled) {
     mWordRevertLength = 0; // no reverts
-    final InputConnection ic = getCurrentInputConnection();
+    final InputConnection ic = currentInputConnection();
     if (ic != null) {
       ic.beginBatchEdit();
     }
@@ -1164,7 +1164,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   @CallSuper
   protected void commitWordToInput(
       @NonNull CharSequence wordToCommit, @NonNull CharSequence typedWord) {
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic != null) {
       final boolean delayedUpdates = isSelectionUpdateDelayed();
       markExpectingSelectionUpdate();
@@ -1183,7 +1183,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   }
 
   private boolean isCursorTouchingWord() {
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic == null) {
       return false;
     }
@@ -1227,7 +1227,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
       final int length = mWordRevertLength;
       mAutoCorrectOn = false;
       // note: typedWord may be empty
-      final InputConnection ic = getCurrentInputConnection();
+    final InputConnection ic = currentInputConnection();
       final int globalCursorPosition = getCursorPosition();
       ic.setComposingRegion(globalCursorPosition - length, globalCursorPosition);
       WordComposer temp = mWord;

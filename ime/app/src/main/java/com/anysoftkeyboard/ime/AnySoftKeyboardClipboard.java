@@ -368,7 +368,7 @@ public abstract class AnySoftKeyboardClipboard extends AnySoftKeyboardSwipeListe
   protected boolean handleSelectionExpending(int keyEventKeyCode, InputConnection ic) {
     if (mArrowSelectionState && ic != null) {
       final int selectionEnd = getCursorPosition();
-      final int selectionStart = mGlobalSelectionStartPositionDangerous;
+      final int selectionStart = getSelectionStartPositionDangerous();
       markExpectingSelectionUpdate();
       switch (keyEventKeyCode) {
         case KeyEvent.KEYCODE_DPAD_LEFT:

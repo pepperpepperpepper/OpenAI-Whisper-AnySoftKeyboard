@@ -112,7 +112,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   protected final PreviewPopupTheme mPreviewPopupTheme = new PreviewPopupTheme();
   protected final KeyPressTimingHandler mKeyPressTimingHandler;
   // TODO: Let the PointerTracker class manage this pointer queue
-  final PointerQueue mPointerQueue = new PointerQueue();
+  final TouchDispatcher mTouchDispatcher = new TouchDispatcher();
   // Timing constants
   private final int mKeyRepeatInterval;
   /* keys icons */
@@ -2141,10 +2141,10 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       // Before processing a down event of modifier key, all pointers
       // already being tracked
       // should be released.
-      mPointerQueue.releaseAllPointersExcept(tracker, eventTime);
+      mTouchDispatcher.releaseAllPointersExcept(tracker, eventTime);
     }
     tracker.onDownEvent(x, y, eventTime);
-    mPointerQueue.add(tracker);
+    mTouchDispatcher.add(tracker);
   }
 
   protected void onUpEvent(PointerTracker tracker, int x, int y, long eventTime) {
@@ -2152,11 +2152,11 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       // Before processing an up event of modifier key, all pointers
       // already being tracked
       // should be released.
-      mPointerQueue.releaseAllPointersExcept(tracker, eventTime);
+      mTouchDispatcher.releaseAllPointersExcept(tracker, eventTime);
     } else {
-      int index = mPointerQueue.lastIndexOf(tracker);
+      int index = mTouchDispatcher.lastIndexOf(tracker);
       if (index >= 0) {
-        mPointerQueue.releaseAllPointersOlderThan(tracker, eventTime);
+        mTouchDispatcher.releaseAllPointersOlderThan(tracker, eventTime);
       } else {
         Logger.w(
             TAG,
@@ -2166,12 +2166,12 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       }
     }
     tracker.onUpEvent(x, y, eventTime);
-    mPointerQueue.remove(tracker);
+    mTouchDispatcher.remove(tracker);
   }
 
   protected void onCancelEvent(PointerTracker tracker) {
     tracker.onCancelEvent();
-    mPointerQueue.remove(tracker);
+    mTouchDispatcher.remove(tracker);
   }
 
   @Nullable
@@ -2191,7 +2191,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   public boolean resetInputView() {
     mKeyPreviewsManager.cancelAllPreviews();
     mKeyPressTimingHandler.cancelAllMessages();
-    mPointerQueue.cancelAllPointers();
+    mTouchDispatcher.cancelAllPointers();
 
     return false;
   }
@@ -2306,70 +2306,10 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       removeMessages(MSG_LONG_PRESS_KEY);
     }
 
-    public void cancelAllMessages() {
-      cancelKeyRepeatTimer();
-      cancelLongPressTimer();
-    }
+  public void cancelAllMessages() {
+    cancelKeyRepeatTimer();
+    cancelLongPressTimer();
   }
-
-  static class PointerQueue {
-    private final ArrayList<PointerTracker> mQueue = new ArrayList<>();
-    private static final PointerTracker[] EMPTY_TRACKERS = new PointerTracker[0];
-
-    public void add(PointerTracker tracker) {
-      mQueue.add(tracker);
-    }
-
-    int lastIndexOf(PointerTracker tracker) {
-      ArrayList<PointerTracker> queue = mQueue;
-      for (int index = queue.size() - 1; index >= 0; index--) {
-        PointerTracker t = queue.get(index);
-        if (t == tracker) {
-          return index;
-        }
-      }
-      return -1;
-    }
-
-    void releaseAllPointersOlderThan(final PointerTracker tracker, final long eventTime) {
-      // doing a copy to prevent ConcurrentModificationException
-      PointerTracker[] trackers = mQueue.toArray(EMPTY_TRACKERS);
-      for (PointerTracker t : trackers) {
-        if (t == tracker) break;
-        if (!t.isModifier()) {
-          t.onUpEvent(t.getLastX(), t.getLastY(), eventTime);
-          t.setAlreadyProcessed();
-          mQueue.remove(t);
-        }
-      }
-    }
-
-    void cancelAllPointers() {
-      for (PointerTracker t : mQueue) {
-        t.onCancelEvent();
-      }
-      mQueue.clear();
-    }
-
-    void releaseAllPointersExcept(@Nullable PointerTracker tracker, long eventTime) {
-      for (PointerTracker t : mQueue) {
-        if (t == tracker) {
-          continue;
-        }
-        t.onUpEvent(t.getLastX(), t.getLastY(), eventTime);
-        t.setAlreadyProcessed();
-      }
-      mQueue.clear();
-      if (tracker != null) mQueue.add(tracker);
-    }
-
-    public void remove(PointerTracker tracker) {
-      mQueue.remove(tracker);
-    }
-
-    public int size() {
-      return mQueue.size();
-    }
   }
 
   private static class TextWidthCacheValue {

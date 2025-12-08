@@ -1,6 +1,8 @@
 # Neural suggestion quality – fix plan
 Last updated: December 8, 2025
 
+> Scope: neural/Presage quality only. The canonical project roadmap lives in `docs/newsoftkeyboard-refactor-plan.md`.
+
 ## Goal
 Restore sensible next‑word suggestions from the mixed‑case neural model (no “the the the”, no garbled tokens) without relying on duplicate filtering.
 

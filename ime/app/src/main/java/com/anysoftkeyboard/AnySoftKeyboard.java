@@ -491,7 +491,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
 
   @Override
   public void onMultiTapStarted() {
-    final InputConnection ic = getCurrentInputConnection();
+    final InputConnection ic = currentInputConnection();
     if (ic != null) {
       ic.beginBatchEdit();
     }
@@ -501,7 +501,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
 
   @Override
   public void onMultiTapEnded() {
-    final InputConnection ic = getCurrentInputConnection();
+    final InputConnection ic = currentInputConnection();
     if (ic != null) {
       ic.endBatchEdit();
     }
@@ -647,7 +647,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   private void onFunctionKey(final int primaryCode, final Keyboard.Key key, final boolean fromUI) {
     if (BuildConfig.DEBUG) Logger.d(TAG, "onFunctionKey %d", primaryCode);
 
-    final InputConnection ic = getCurrentInputConnection();
+    final InputConnection ic = currentInputConnection();
 
     switch (primaryCode) {
       case KeyCodes.DELETE:
@@ -1090,7 +1090,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
       final int[] nearByKeyCodes) {
     if (BuildConfig.DEBUG) Logger.d(TAG, "onNonFunctionKey %d", primaryCode);
 
-    final InputConnection ic = getCurrentInputConnection();
+    final InputConnection ic = currentInputConnection();
 
     if (mFunctionKeyState.isActive()) {
       if (handleFunctionCombination(primaryCode, key)) {
@@ -1150,7 +1150,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
         sendEscape();
         break;
       default:
-        if (mGlobalSelectionStartPositionDangerous != mGlobalCursorPositionDangerous
+        if (getSelectionStartPositionDangerous() != getCursorPosition()
             && mSpecialWrapCharacters.get(primaryCode) != null) {
           int[] wrapCharacters = mSpecialWrapCharacters.get(primaryCode);
           wrapSelectionWithCharacters(wrapCharacters[0], wrapCharacters[1]);
@@ -1187,7 +1187,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   @Override
   public void onKey(
       int primaryCode, Keyboard.Key key, int multiTapIndex, int[] nearByKeyCodes, boolean fromUI) {
-    final InputConnection ic = getCurrentInputConnection();
+    final InputConnection ic = currentInputConnection();
     if (ic != null) ic.beginBatchEdit();
     boolean handledByOverlay =
         isEmojiSearchOverlayShowing()
@@ -1227,7 +1227,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void sendTab() {
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic == null) {
       return;
     }
@@ -1246,7 +1246,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void sendEscape() {
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic == null) {
       return;
     }
@@ -1439,7 +1439,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void handleDeleteLastCharacter(boolean forMultiTap) {
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     final WordComposer currentComposedWord = getCurrentComposedWord();
     final boolean wordManipulation =
         isPredictionOn()
@@ -1602,11 +1602,11 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void toggleCaseOfSelectedCharacters() {
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic == null) return;
     // we have not received notification that something is selected.
     // no need to make a costly getExtractedText call.
-    if (mGlobalSelectionStartPositionDangerous == mGlobalCursorPositionDangerous) return;
+    if (getSelectionStartPositionDangerous() == getCursorPosition()) return;
     final ExtractedText et = getExtractedText();
     if (et == null) return;
     final int selectionStart = et.selectionStart;
@@ -1660,7 +1660,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void wrapSelectionWithCharacters(int prefix, int postfix) {
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic == null) return;
     final ExtractedText et = getExtractedText();
     if (et == null) return;
@@ -1740,7 +1740,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   @Override
   public void onPress(int primaryCode) {
     super.onPress(primaryCode);
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
 
     final int normalizedPrimaryCode =
         primaryCode == KeyCodes.CTRL_LOCK ? KeyCodes.CTRL : primaryCode;
@@ -1783,7 +1783,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   @Override
   public void onRelease(int primaryCode) {
     super.onRelease(primaryCode);
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     final int normalizedPrimaryCode =
         primaryCode == KeyCodes.CTRL_LOCK ? KeyCodes.CTRL : primaryCode;
     if (primaryCode == KeyCodes.SHIFT) {
@@ -2026,7 +2026,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
     } else {
       shouldDeleteUsingCompletion = false;
     }
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic != null) {
       if (isPredictionOn() && shouldDeleteUsingCompletion) {
         ic.setComposingText(currentComposedWord.getTypedWord() /* mComposing */, 1);
@@ -2053,7 +2053,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void updateShiftStateNow() {
-    final InputConnection ic = getCurrentInputConnection();
+    final InputConnection ic = currentInputConnection();
     EditorInfo ei = getCurrentInputEditorInfo();
     final int caps;
     if (mKeyboardAutoCap

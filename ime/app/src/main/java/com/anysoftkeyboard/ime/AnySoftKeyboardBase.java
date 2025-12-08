@@ -61,13 +61,9 @@ public abstract class AnySoftKeyboardBase extends InputMethodService
   private KeyboardViewContainerView mInputViewContainer;
   private InputViewBinder mInputView;
   private InputMethodManager mInputMethodManager;
+  private InputConnectionRouter mInputConnectionRouter;
 
-  // NOTE: These two are dangerous to use, as they may point to
-  // an inaccurate position (in cases where onSelectionUpdate is delayed).
-  protected int mGlobalCursorPositionDangerous = 0;
-  protected int mGlobalSelectionStartPositionDangerous = 0;
-  protected int mGlobalCandidateStartPositionDangerous = 0;
-  protected int mGlobalCandidateEndPositionDangerous = 0;
+  protected final EditorStateTracker mEditorStateTracker = new EditorStateTracker();
 
   protected final ModifierKeyState mShiftKeyState =
       new ModifierKeyState(true /*supports locked state*/);
@@ -92,6 +88,7 @@ public abstract class AnySoftKeyboardBase extends InputMethodService
         BuildConfig.VERSION_NAME,
         BuildConfig.VERSION_CODE);
     super.onCreate();
+    mInputConnectionRouter = new InputConnectionRouter(this);
     mOrientation = getResources().getConfiguration().orientation;
     if (!BuildConfig.DEBUG && DeveloperUtils.hasTracingRequested(getApplicationContext())) {
       try {
@@ -136,7 +133,7 @@ public abstract class AnySoftKeyboardBase extends InputMethodService
   }
 
   public void sendDownUpKeyEvents(int keyEventCode, int metaState) {
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic == null) return;
     long eventTime = SystemClock.uptimeMillis();
     ic.sendKeyEvent(
@@ -330,17 +327,14 @@ public abstract class AnySoftKeyboardBase extends InputMethodService
   public void onFinishInput() {
     super.onFinishInput();
     mInputSessionDisposables.clear();
-    mGlobalCursorPositionDangerous = 0;
-    mGlobalSelectionStartPositionDangerous = 0;
-    mGlobalCandidateStartPositionDangerous = 0;
-    mGlobalCandidateEndPositionDangerous = 0;
+    mEditorStateTracker.reset();
   }
 
   protected abstract boolean isSelectionUpdateDelayed();
 
   @Nullable
   protected ExtractedText getExtractedText() {
-    final InputConnection connection = getCurrentInputConnection();
+    final InputConnection connection = currentInputConnection();
     if (connection == null) {
       return null;
     }
@@ -349,15 +343,24 @@ public abstract class AnySoftKeyboardBase extends InputMethodService
 
   // TODO SHOULD NOT USE THIS METHOD AT ALL!
   protected int getCursorPosition() {
-    if (isSelectionUpdateDelayed()) {
-      ExtractedText extracted = getExtractedText();
-      if (extracted == null) {
-        return 0;
-      }
-      mGlobalCursorPositionDangerous = extracted.startOffset + extracted.selectionEnd;
-      mGlobalSelectionStartPositionDangerous = extracted.startOffset + extracted.selectionStart;
-    }
-    return mGlobalCursorPositionDangerous;
+    return mEditorStateTracker.getCursorPosition(
+        isSelectionUpdateDelayed(), currentInputConnection());
+  }
+
+  protected int getSelectionStartPositionDangerous() {
+    return mEditorStateTracker.getSelectionStart();
+  }
+
+  protected int getCandidateStartPositionDangerous() {
+    return mEditorStateTracker.getCandidateStart();
+  }
+
+  protected int getCandidateEndPositionDangerous() {
+    return mEditorStateTracker.getCandidateEnd();
+  }
+
+  protected InputConnection currentInputConnection() {
+    return mInputConnectionRouter.current();
   }
 
   @Override
@@ -379,10 +382,8 @@ public abstract class AnySoftKeyboardBase extends InputMethodService
           candidatesStart,
           candidatesEnd);
     }
-    mGlobalCursorPositionDangerous = newSelEnd;
-    mGlobalSelectionStartPositionDangerous = newSelStart;
-    mGlobalCandidateStartPositionDangerous = candidatesStart;
-    mGlobalCandidateEndPositionDangerous = candidatesEnd;
+    mEditorStateTracker.setCursorAndSelection(newSelEnd, newSelStart);
+    mEditorStateTracker.setCandidateRange(candidatesStart, candidatesEnd);
   }
 
   @Override

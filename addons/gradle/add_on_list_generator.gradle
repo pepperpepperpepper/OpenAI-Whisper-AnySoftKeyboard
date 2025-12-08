@@ -38,14 +38,14 @@ tasks.register("generatePacksYaml") {
                     playStoreLink = "https://play.google.com/store/apps/details?id=${it.android.defaultConfig.applicationId}"
                 }
                 def addOnDir = rootProject.projectDir.relativePath(it.projectDir)
-                // Default to a placeholder if 'githubRootUrl' is not defined
-                def githubBaseUrl = project.hasProperty('githubRootUrl') ? project.property('githubRootUrl') : "https://github.com/AnySoftKeyboard/AnySoftKeyboard"
+                // Default to the NewSoftKeyboard monorepo if 'githubRootUrl' is not defined
+                def githubBaseUrl = project.hasProperty('githubRootUrl') ? project.property('githubRootUrl') : "https://github.com/pepperpepperpepper/NewSoftKeyboard"
                 def githubLink = "${githubBaseUrl}/tree/main/${addOnDir}"
                 // Not all packages are published to f-droid. Checking.
                 def fdroidLink = validateLink("https://f-droid.org/en/packages/${it.android.defaultConfig.applicationId}/")
 
                 // pack icon
-                def image = "https://raw.githubusercontent.com/AnySoftKeyboard/AnySoftKeyboard/refs/heads/main/${addOnDir}/flag/{{IMAGE_FILENAME}}"
+                def image = "https://raw.githubusercontent.com/pepperpepperpepper/NewSoftKeyboard/refs/heads/main/${addOnDir}/flag/{{IMAGE_FILENAME}}"
                 if (it.file("flag/flag.png").exists()) {
                     image = image.replace("{{IMAGE_FILENAME}}", "flag.png")
                 } else if (it.file("flag/flag.svg").exists()) {

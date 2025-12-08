@@ -2,56 +2,40 @@ package com.anysoftkeyboard.dictionaries.presage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.anysoftkeyboard.base.utils.Logger;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Locale;
-import java.util.zip.GZIPInputStream;
+import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /** Handles discovery and installation of Presage-compatible models on-device. */
-public final class PresageModelStore {
+public class PresageModelStore {
 
   private static final String TAG = "PresageModelStore";
-  private static final String CONFIG_DIRECTORY = "presage";
-  private static final String MODELS_DIRECTORY = "models";
-  private static final String MANIFEST_FILE = "manifest.json";
-
   private static final String DIGEST_PREFS = "presage_asset_versions";
   private static final String DIGEST_PREF_KEY_PREFIX = "sha_";
   private static final String MODEL_SELECTION_PREFS = "presage_model_selection";
-  private static final String PREF_SELECTED_MODEL_ID = "selected_model_id";
 
   private final Context mContext;
-  private final AssetManager mAssets;
   private final SharedPreferences mDigestPreferences;
-  private final SharedPreferences mSelectionPreferences;
+  private final PresageModelSelection mSelection;
+  private final PresageModelFiles mFiles;
 
   public PresageModelStore(@NonNull Context context) {
     mContext = context.getApplicationContext();
-    mAssets = mContext.getAssets();
     mDigestPreferences = mContext.getSharedPreferences(DIGEST_PREFS, Context.MODE_PRIVATE);
-    mSelectionPreferences =
+    final SharedPreferences selectionPreferences =
         mContext.getSharedPreferences(MODEL_SELECTION_PREFS, Context.MODE_PRIVATE);
+    mSelection = new PresageModelSelection(selectionPreferences);
+    mFiles = new PresageModelFiles(mContext);
   }
 
   @Nullable
@@ -73,7 +57,7 @@ public final class PresageModelStore {
       return null;
     }
 
-    String selectedId = getSelectedModelId(engineType);
+    String selectedId = mSelection.getSelectedModelId(engineType);
     if (selectedId == null && engineType == PresageModelDefinition.EngineType.NGRAM) {
       for (PresageModelDefinition definition : engineDefinitions) {
         if (definition.getId().equals(PresageModelDefinition.DEFAULT_MODEL_ID)) {
@@ -94,14 +78,12 @@ public final class PresageModelStore {
     }
 
     if (definition == null) {
-      definition =
-          engineDefinitions.get(
-              0); // fallback to first available when selected id is missing or invalid.
+      definition = engineDefinitions.get(0); // fallback to first available when selected id is missing.
     }
 
     ActiveModel activeModel = ensureDefinitionInstalled(definition);
     if (activeModel != null) {
-      persistSelectedModelId(engineType, definition.getId());
+      mSelection.persistSelectedModelId(engineType, definition.getId());
       return activeModel;
     }
 
@@ -118,7 +100,7 @@ public final class PresageModelStore {
       }
       activeModel = ensureDefinitionInstalled(candidate);
       if (activeModel != null) {
-        persistSelectedModelId(engineType, candidate.getId());
+        mSelection.persistSelectedModelId(engineType, candidate.getId());
         return activeModel;
       }
     }
@@ -129,8 +111,8 @@ public final class PresageModelStore {
 
   @Nullable
   private ActiveModel ensureDefinitionInstalled(@NonNull PresageModelDefinition definition) {
-    final File modelDirectory = new File(getModelsRootDirectory(), definition.getId());
-    ensureDirectory(modelDirectory);
+    final File modelDirectory = new File(mFiles.getModelsRootDirectory(), definition.getId());
+    mFiles.ensureDirectory(modelDirectory);
 
     final LinkedHashMap<String, File> installedFiles = new LinkedHashMap<>();
     for (Map.Entry<String, PresageModelDefinition.FileRequirement> entry :
@@ -142,7 +124,7 @@ public final class PresageModelStore {
       installedFiles.put(entry.getKey(), file);
     }
 
-    writeManifestIfNecessary(modelDirectory, definition);
+    mFiles.writeManifestIfNecessary(mFiles.manifestFile(modelDirectory), definition);
     return new ActiveModel(definition, modelDirectory, installedFiles);
   }
 
@@ -157,16 +139,16 @@ public final class PresageModelStore {
       if (isDigestValid(definition, requirement, destination)) {
         return destination;
       }
-      removeFile(destination);
+      mFiles.removeFile(destination);
     }
 
     final String assetPath = requirement.getAssetPath();
     if (assetPath != null) {
-      if (stageFromAsset(destination, requirement)) {
+      if (mFiles.stageFromAsset(destination, requirement)) {
         if (isDigestValid(definition, requirement, destination)) {
           return destination;
         }
-        removeFile(destination);
+        mFiles.removeFile(destination);
       }
     }
 
@@ -193,7 +175,7 @@ public final class PresageModelStore {
             + " has unexpected checksum for "
             + requirement.getFilename()
             + "; delete and reinstall the model.");
-    removeFile(destination);
+    mFiles.removeFile(destination);
     return null;
   }
 
@@ -212,7 +194,7 @@ public final class PresageModelStore {
       return true;
     }
 
-    final String computed = computeFileSha256(destination);
+    final String computed = mFiles.computeFileSha256(destination);
     if (computed == null) {
       return false;
     }
@@ -224,59 +206,11 @@ public final class PresageModelStore {
     return true;
   }
 
-  private boolean stageFromAsset(
-      @NonNull File destination, @NonNull PresageModelDefinition.FileRequirement requirement) {
-    InputStream rawStream = null;
-    try {
-      rawStream = mAssets.open(requirement.getAssetPath());
-    } catch (IOException openError) {
-      Logger.i(
-          TAG,
-          "Asset " + requirement.getAssetPath() + " unavailable; model must be downloaded.");
-      return false;
-    }
-
-    ensureDirectory(destination.getParentFile());
-
-    try (InputStream maybeCompressed =
-            requirement.isAssetGzipped() ? new GZIPInputStream(new BufferedInputStream(rawStream)) : new BufferedInputStream(rawStream);
-        BufferedOutputStream output =
-            new BufferedOutputStream(new FileOutputStream(destination))) {
-      rawStream = null;
-      final byte[] buffer = new byte[16 * 1024];
-      int read;
-      while ((read = maybeCompressed.read(buffer)) != -1) {
-        output.write(buffer, 0, read);
-      }
-      output.flush();
-      return true;
-    } catch (IOException exception) {
-      Logger.e(TAG, "Failed staging Presage model asset " + requirement.getAssetPath(), exception);
-      removeFile(destination);
-      return false;
-    } finally {
-      closeQuietly(rawStream);
-    }
-  }
-
-  private void writeManifestIfNecessary(
-      @NonNull File modelDirectory, @NonNull PresageModelDefinition definition) {
-    final File manifestFile = new File(modelDirectory, MANIFEST_FILE);
-    try (FileOutputStream outputStream = new FileOutputStream(manifestFile)) {
-      final JSONObject jsonObject = definition.toJson();
-      outputStream.write(jsonObject.toString(2).getBytes());
-      outputStream.flush();
-    } catch (IOException | JSONException exception) {
-      Logger.w(TAG, "Failed writing Presage model manifest", exception);
-      removeFile(manifestFile);
-    }
-  }
-
   @NonNull
   private Map<String, PresageModelDefinition> discoverDefinitions() {
     final Map<String, PresageModelDefinition> definitions = new LinkedHashMap<>();
 
-    final File[] modelDirs = getModelsRootDirectory().listFiles();
+    final File[] modelDirs = mFiles.getModelsRootDirectory().listFiles();
     if (modelDirs == null) {
       maybeAddBundledDefault(definitions);
       return definitions;
@@ -286,12 +220,15 @@ public final class PresageModelStore {
       if (!child.isDirectory()) {
         continue;
       }
-      final File manifestFile = new File(child, MANIFEST_FILE);
+      final File manifestFile = mFiles.manifestFile(child);
       if (!manifestFile.exists()) {
         continue;
       }
       try {
-        final JSONObject manifestJson = readJson(manifestFile);
+        final JSONObject manifestJson = mFiles.readJson(manifestFile);
+        if (manifestJson == null) {
+          continue;
+        }
         final PresageModelDefinition manifestDefinition =
             PresageModelDefinition.fromJson(manifestJson);
         definitions.put(manifestDefinition.getId(), manifestDefinition);
@@ -302,96 +239,6 @@ public final class PresageModelStore {
 
     maybeAddBundledDefault(definitions);
     return definitions;
-  }
-
-  @NonNull
-  private File getModelsRootDirectory() {
-    final File presageRoot = new File(mContext.getNoBackupFilesDir(), CONFIG_DIRECTORY);
-    ensureDirectory(presageRoot);
-    final File models = new File(presageRoot, MODELS_DIRECTORY);
-    ensureDirectory(models);
-    return models;
-  }
-
-  private void ensureDirectory(@Nullable File directory) {
-    if (directory == null) {
-      return;
-    }
-    if (directory.exists()) {
-      return;
-    }
-    if (!directory.mkdirs()) {
-      Logger.w(TAG, "Failed creating directory " + directory.getAbsolutePath());
-    }
-  }
-
-  private void removeFile(@NonNull File file) {
-    if (file.exists() && !file.delete()) {
-      file.deleteOnExit();
-    }
-  }
-
-  @Nullable
-  private String computeFileSha256(@NonNull File file) {
-    final MessageDigest digest;
-    try {
-      digest = MessageDigest.getInstance("SHA-256");
-    } catch (NoSuchAlgorithmException e) {
-      Logger.e(TAG, "SHA-256 digest unavailable", e);
-      return null;
-    }
-    try (DigestInputStream inputStream =
-            new DigestInputStream(new BufferedInputStream(new FileInputStream(file)), digest)) {
-      final byte[] buffer = new byte[16 * 1024];
-      while (inputStream.read(buffer) != -1) {
-        // no-op
-      }
-      final byte[] result = digest.digest();
-      return toHexString(result);
-    } catch (IOException exception) {
-      Logger.e(TAG, "Failed computing SHA-256 for " + file.getAbsolutePath(), exception);
-      return null;
-    }
-  }
-
-  private static JSONObject readJson(@NonNull File file) throws IOException, JSONException {
-    try (Reader reader = new InputStreamReader(new FileInputStream(file))) {
-      final StringBuilder builder = new StringBuilder();
-      final char[] buffer = new char[4096];
-      int read;
-      while ((read = reader.read(buffer)) != -1) {
-        builder.append(buffer, 0, read);
-      }
-      return new JSONObject(builder.toString());
-    }
-  }
-
-  @NonNull
-  private static String toHexString(byte[] bytes) {
-    final StringBuilder builder = new StringBuilder(bytes.length * 2);
-    for (byte value : bytes) {
-      final int intValue = value & 0xFF;
-      if (intValue < 0x10) {
-        builder.append('0');
-      }
-      builder.append(Integer.toHexString(intValue));
-    }
-    return builder.toString();
-  }
-
-  private static void closeQuietly(@Nullable InputStream stream) {
-    if (stream == null) {
-      return;
-    }
-    try {
-      stream.close();
-    } catch (IOException ignored) {
-      // ignored
-    }
-  }
-
-  private String digestPreferenceKey(@NonNull String modelId, @NonNull String filename) {
-    return DIGEST_PREF_KEY_PREFIX + modelId + "_" + filename;
   }
 
   private void maybeAddBundledDefault(
@@ -410,23 +257,51 @@ public final class PresageModelStore {
     if (definition.getEngineType() != PresageModelDefinition.EngineType.NGRAM) {
       return false;
     }
-    return assetExists(definition.getArpaRequirement().getAssetPath())
-        && assetExists(definition.getVocabRequirement().getAssetPath());
+    return mFiles.assetExists(definition.getArpaRequirement().getAssetPath())
+        && mFiles.assetExists(definition.getVocabRequirement().getAssetPath());
   }
 
-  private boolean assetExists(@Nullable String assetPath) {
-    if (assetPath == null || assetPath.trim().isEmpty()) {
-      return false;
+  private String digestPreferenceKey(@NonNull String modelId, @NonNull String filename) {
+    return DIGEST_PREF_KEY_PREFIX + modelId + "_" + filename;
+  }
+
+  public void persistSelectedModelId(
+      @NonNull PresageModelDefinition.EngineType engineType, @NonNull String modelId) {
+    mSelection.persistSelectedModelId(engineType, modelId);
+  }
+
+  @Nullable
+  public String getSelectedModelId(@NonNull PresageModelDefinition.EngineType engineType) {
+    return mSelection.getSelectedModelId(engineType);
+  }
+
+  public void clearSelectedModelId(@NonNull PresageModelDefinition.EngineType engineType) {
+    mSelection.clearSelectedModelId(engineType);
+  }
+
+  // --- Compatibility helpers for settings/UI (used by ime/app) ---
+  /** Returns all discovered Presage model definitions on device for both engines. */
+  @NonNull
+  public List<PresageModelDefinition> listAvailableModels() {
+    return new ArrayList<>(discoverDefinitions().values());
+  }
+
+  /**
+   * Removes a model directory by id. If the removed model was selected, clears the selection for
+   * its engine type.
+   */
+  public void removeModel(@NonNull String modelId) {
+    final Map<String, PresageModelDefinition> defs = discoverDefinitions();
+    final PresageModelDefinition def = defs.get(modelId);
+    final File modelDir = new File(mFiles.getModelsRootDirectory(), modelId);
+    if (modelDir.exists()) {
+      mFiles.deleteRecursively(modelDir);
     }
-    InputStream stream = null;
-    try {
-      stream = mAssets.open(assetPath);
-      return true;
-    } catch (IOException exception) {
-      Logger.i(TAG, "Asset " + assetPath + " not bundled: " + exception.getMessage());
-      return false;
-    } finally {
-      closeQuietly(stream);
+    if (def != null) {
+      final String selected = mSelection.getSelectedModelId(def.getEngineType());
+      if (modelId.equals(selected)) {
+        mSelection.clearSelectedModelId(def.getEngineType());
+      }
     }
   }
 
@@ -436,7 +311,7 @@ public final class PresageModelStore {
     private final File mModelDirectory;
     private final LinkedHashMap<String, File> mFiles;
 
-    private ActiveModel(
+    public ActiveModel(
         @NonNull PresageModelDefinition definition,
         @NonNull File modelDirectory,
         @NonNull LinkedHashMap<String, File> files) {
@@ -485,67 +360,5 @@ public final class PresageModelStore {
     public File getVocabFile() {
       return requireFile("vocab");
     }
-  }
-
-  private String selectionPrefKey(@NonNull PresageModelDefinition.EngineType engineType) {
-    return PREF_SELECTED_MODEL_ID + "_" + engineType.getSerializedValue();
-  }
-
-  public void persistSelectedModelId(
-      @NonNull PresageModelDefinition.EngineType engineType, @NonNull String modelId) {
-    if (modelId.trim().isEmpty()) {
-      clearSelectedModelId(engineType);
-    } else {
-      mSelectionPreferences.edit().putString(selectionPrefKey(engineType), modelId).apply();
-    }
-  }
-
-  @Nullable
-  public String getSelectedModelId(@NonNull PresageModelDefinition.EngineType engineType) {
-    final String stored = mSelectionPreferences.getString(selectionPrefKey(engineType), "");
-    if (stored == null || stored.trim().isEmpty()) {
-      return null;
-    }
-    return stored;
-  }
-
-  public void clearSelectedModelId(@NonNull PresageModelDefinition.EngineType engineType) {
-    mSelectionPreferences.edit().remove(selectionPrefKey(engineType)).apply();
-  }
-
-  // --- Compatibility helpers for settings/UI (used by ime/app) ---
-  /** Returns all discovered Presage model definitions on device for both engines. */
-  @NonNull
-  public List<PresageModelDefinition> listAvailableModels() {
-    return new ArrayList<>(discoverDefinitions().values());
-  }
-
-  /**
-   * Removes a model directory by id. If the removed model was selected, clears the selection for
-   * its engine type.
-   */
-  public void removeModel(@NonNull String modelId) {
-    final Map<String, PresageModelDefinition> defs = discoverDefinitions();
-    final PresageModelDefinition def = defs.get(modelId);
-    final File modelDir = new File(getModelsRootDirectory(), modelId);
-    if (modelDir.exists()) {
-      deleteRecursively(modelDir);
-    }
-    if (def != null) {
-      final String selected = getSelectedModelId(def.getEngineType());
-      if (modelId.equals(selected)) {
-        clearSelectedModelId(def.getEngineType());
-      }
-    }
-  }
-
-  private void deleteRecursively(@NonNull File file) {
-    if (file.isDirectory()) {
-      final File[] children = file.listFiles();
-      if (children != null) {
-        for (File c : children) deleteRecursively(c);
-      }
-    }
-    if (!file.delete()) file.deleteOnExit();
   }
 }

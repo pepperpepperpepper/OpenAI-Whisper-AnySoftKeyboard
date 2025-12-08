@@ -112,7 +112,7 @@ public abstract class AnySoftKeyboardHardware extends AnySoftKeyboardPressEffect
   @Override
   @SuppressWarnings("fallthrough")
   public boolean onKeyDown(final int keyEventKeyCode, @NonNull KeyEvent event) {
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (handleSelectionExpending(keyEventKeyCode, ic)) return true;
     final boolean shouldTranslateSpecialKeys = isInputViewShown();
 
@@ -247,7 +247,7 @@ public abstract class AnySoftKeyboardHardware extends AnySoftKeyboardPressEffect
                   event.getDeviceId(),
                   event.getScanCode(),
                   KeyEvent.META_SHIFT_LEFT_ON | KeyEvent.META_SHIFT_ON);
-          InputConnection ic = getCurrentInputConnection();
+          InputConnection ic = currentInputConnection();
           if (ic != null) ic.sendKeyEvent(event);
 
           return true;
@@ -268,7 +268,7 @@ public abstract class AnySoftKeyboardHardware extends AnySoftKeyboardPressEffect
   }
 
   private void setInputConnectionMetaStateAsCurrentMetaKeyKeyListenerState() {
-    InputConnection ic = getCurrentInputConnection();
+    InputConnection ic = currentInputConnection();
     if (ic != null) {
       int clearStatesFlags = 0;
       if (MyMetaKeyKeyListener.getMetaState(mMetaState, MyMetaKeyKeyListener.META_ALT_ON) == 0)

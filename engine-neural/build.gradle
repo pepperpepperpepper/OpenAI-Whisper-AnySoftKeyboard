@@ -12,4 +12,38 @@ dependencies {
     api project(':engine-core')
     implementation 'com.microsoft.onnxruntime:onnxruntime-android:1.19.2'
     testImplementation 'junit:junit:4.13.2'
+    testImplementation project(':ime:base-test')
+}
+
+def skipNeuralModel = project.hasProperty('skipNeuralModel') || System.getenv('SKIP_NEURAL_MODEL')
+def neuralModelUrl = project.findProperty('neuralModelUrl')
+if (!neuralModelUrl) {
+    neuralModelUrl = System.getenv("NEURAL_MODEL_URL")
+}
+if (!neuralModelUrl && !skipNeuralModel) {
+    neuralModelUrl = 'https://fdroid.uh-oh.wtf/models/distilgpt2_mixedcase_sanity_v1.zip'
+}
+
+def neuralModelDir = file("$buildDir/neural_test_model")
+
+tasks.register('fetchNeuralTestModel') {
+    onlyIf { neuralModelUrl && !skipNeuralModel }
+    outputs.dir(neuralModelDir)
+    doLast {
+        neuralModelDir.mkdirs()
+        def zipFile = file("$buildDir/neural_test_model.zip")
+        if (zipFile.exists()) {
+            zipFile.delete()
+        }
+        ant.get(src: neuralModelUrl, dest: zipFile, verbose: false, usetimestamp: true)
+        ant.unzip(src: zipFile, dest: neuralModelDir, overwrite: true)
+    }
+}
+
+tasks.withType(Test).configureEach { task ->
+    if (neuralModelUrl && !skipNeuralModel) {
+        task.dependsOn tasks.named('fetchNeuralTestModel')
+        task.systemProperty 'NEURAL_MODEL_DIR', neuralModelDir.absolutePath
+        task.environment 'NEURAL_MODEL_DIR', neuralModelDir.absolutePath
+    }
 }

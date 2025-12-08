@@ -76,7 +76,7 @@ public abstract class AnySoftKeyboardMediaInsertion extends AnySoftKeyboardHardw
   }
 
   protected void handleMediaInsertionKey() {
-    final InputConnection inputConnection = getCurrentInputConnection();
+    final InputConnection inputConnection = currentInputConnection();
     if (inputConnection != null) {
       final EditorInfo editorInfo = getCurrentInputEditorInfo();
       mPendingRequestId = 0;
@@ -100,7 +100,7 @@ public abstract class AnySoftKeyboardMediaInsertion extends AnySoftKeyboardHardw
   }
 
   private void onMediaInsertionReply(int requestId, InputContentInfoCompat inputContentInfo) {
-    final InputConnection inputConnection = getCurrentInputConnection();
+    final InputConnection inputConnection = currentInputConnection();
     final EditorInfo editorInfo = getCurrentInputEditorInfo();
     if (inputContentInfo != null) {
       Logger.i(
