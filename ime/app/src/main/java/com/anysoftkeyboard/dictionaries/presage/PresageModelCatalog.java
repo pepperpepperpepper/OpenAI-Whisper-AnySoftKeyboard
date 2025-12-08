@@ -3,7 +3,9 @@ package com.anysoftkeyboard.dictionaries.presage;
 import android.content.Context;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
+import androidx.annotation.Keep;
 import com.anysoftkeyboard.base.utils.Logger;
+import androidx.annotation.Keep;
 import com.menny.android.anysoftkeyboard.R;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /** Fetches and parses the catalog of downloadable Presage-compatible language models. */
+@Keep
 public final class PresageModelCatalog {
 
   private static final String TAG = "PresageModelCatalog";
@@ -115,6 +118,7 @@ public final class PresageModelCatalog {
   }
 
   /** Single catalog entry describing a downloadable model bundle. */
+  @Keep
   public static final class CatalogEntry {
 
     @NonNull private final PresageModelDefinition mDefinition;
@@ -167,4 +171,3 @@ public final class PresageModelCatalog {
     }
   }
 }
-

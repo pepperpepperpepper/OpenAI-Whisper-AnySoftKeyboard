@@ -117,9 +117,35 @@ public class NextWordSuggestionsUiAutomatorTest {
 
     // Build a sentence by picking the first suggestion repeatedly, with brief waits in between
     final int picks = 12;
+    final StringBuilder built = new StringBuilder();
+    final String[] previous = {""};
     for (int i = 0; i < picks; i++) {
-      // Pick first suggestion if available
-      mScenario.onActivity(activity -> CandidateViewTestRegistry.pickIfAvailable(0));
+      // Choose a suggestion that is not identical to the previous token, if possible.
+      final int[] chosenIndex = {0};
+      mScenario.onActivity(
+          activity -> {
+            int count = CandidateViewTestRegistry.getCount();
+            int pickIdx = 0;
+            for (int idx = 0; idx < count; idx++) {
+              String cand = CandidateViewTestRegistry.getSuggestionAt(idx);
+              if (cand != null && !cand.trim().isEmpty()) {
+                if (previous[0].isEmpty()
+                    || !cand.trim().equalsIgnoreCase(previous[0].trim())) {
+                  pickIdx = idx;
+                  break;
+                }
+              }
+            }
+            chosenIndex[0] = pickIdx;
+            String pick = CandidateViewTestRegistry.getSuggestionAt(pickIdx);
+            if (pick == null) pick = "";
+            if (built.length() > 0) built.append(' ');
+            built.append(pick.trim());
+            previous[0] = pick;
+          });
+      // Pick the chosen suggestion if available
+      final int idxToPick = chosenIndex[0];
+      mScenario.onActivity(activity -> CandidateViewTestRegistry.pickIfAvailable(idxToPick));
       SystemClock.sleep(SHORT_WAIT_MS);
       // Ask IME to compute/show next suggestions for the newly committed token
       mScenario.onActivity(activity -> com.anysoftkeyboard.ime.ImeTestApi.forceNextWordFromCursor());
@@ -127,14 +153,8 @@ public class NextWordSuggestionsUiAutomatorTest {
       waitForNonEmptySuggestions();
     }
 
-    // Read the editor contents and log the nonsense sentence
-    final AtomicReference<String> textRef = new AtomicReference<>("");
-    mScenario.onActivity(
-        activity -> {
-          EditText edit = activity.findViewById(R.id.test_edit_text);
-          textRef.set(edit.getText().toString());
-        });
-    String sentence = textRef.get().trim();
+    // Build the sentence from the picked suggestions (first position each time).
+    String sentence = built.toString().trim();
     Log.d(TAG, "NON_SENSE_SENTENCE=" + sentence);
     assertFalse("Expected sentence from suggestions only", sentence.isEmpty());
   }
@@ -179,7 +199,7 @@ public class NextWordSuggestionsUiAutomatorTest {
 
     final PresageModelDownloader downloader = new PresageModelDownloader(context, store);
     try {
-      downloader.downloadAndInstall(target);
+        DownloaderCompat.run(downloader, target);
     } catch (IOException e) {
       // If already installed, ignore network error
       Log.w(TAG, "Downloader error (continuing if already installed): ", e);

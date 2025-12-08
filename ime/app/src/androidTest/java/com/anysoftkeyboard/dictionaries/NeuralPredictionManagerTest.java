@@ -11,6 +11,7 @@ import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.dictionaries.neural.NeuralPredictionManager;
 import com.anysoftkeyboard.dictionaries.presage.PresageModelCatalog;
 import com.anysoftkeyboard.dictionaries.presage.PresageModelCatalog.CatalogEntry;
+import com.anysoftkeyboard.dictionaries.presage.DownloaderCompat;
 import com.anysoftkeyboard.dictionaries.presage.PresageModelDefinition;
 import com.anysoftkeyboard.dictionaries.presage.PresageModelStore;
 import com.anysoftkeyboard.dictionaries.presage.PresageModelDownloader;
@@ -177,6 +178,6 @@ public class NeuralPredictionManagerTest {
     }
 
     final PresageModelDownloader downloader = new PresageModelDownloader(context, store);
-    downloader.downloadAndInstall(targetEntry);
+    DownloaderCompat.run(downloader, targetEntry);
   }
 }

@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.dictionaries.presage.PresageModelCatalog;
+import com.anysoftkeyboard.dictionaries.presage.DownloaderCompat;
 import com.anysoftkeyboard.dictionaries.presage.PresageModelCatalog.CatalogEntry;
 import com.anysoftkeyboard.dictionaries.presage.PresageModelDefinition;
 import com.anysoftkeyboard.dictionaries.presage.PresageModelDownloader;
@@ -180,7 +181,7 @@ public class PresagePredictionManagerTest {
     }
 
     final PresageModelDownloader downloader = new PresageModelDownloader(context, store);
-    downloader.downloadAndInstall(targetEntry);
+    DownloaderCompat.run(downloader, targetEntry);
     store.persistSelectedModelId(
         targetEntry.getDefinition().getEngineType(), targetEntry.getDefinition().getId());
 
@@ -232,7 +233,7 @@ public class PresagePredictionManagerTest {
         throw new AssertionError("No n-gram Presage models available in catalog");
       }
       final PresageModelDownloader downloader = new PresageModelDownloader(context, store);
-      downloader.downloadAndInstall(targetEntry);
+      DownloaderCompat.run(downloader, targetEntry);
     } catch (Exception exception) {
       throw new AssertionError("Failed downloading Presage model", exception);
     }

@@ -2,12 +2,14 @@ package com.anysoftkeyboard.dictionaries.presage;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Keep;
 import java.util.Locale;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /** Metadata describing a Presage-compatible language model package. */
+@Keep
 public final class PresageModelDefinition {
 
   public static final String DEFAULT_MODEL_ID = "kenlm_librispeech_3gram_pruned_3e7";
@@ -277,6 +279,7 @@ public final class PresageModelDefinition {
     }
   }
 
+  @Keep
   public static final class Builder {
 
     private final String mId;

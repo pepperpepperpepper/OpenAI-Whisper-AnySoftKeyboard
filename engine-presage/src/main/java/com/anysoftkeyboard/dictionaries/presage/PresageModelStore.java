@@ -512,4 +512,40 @@ public final class PresageModelStore {
   public void clearSelectedModelId(@NonNull PresageModelDefinition.EngineType engineType) {
     mSelectionPreferences.edit().remove(selectionPrefKey(engineType)).apply();
   }
+
+  // --- Compatibility helpers for settings/UI (used by ime/app) ---
+  /** Returns all discovered Presage model definitions on device for both engines. */
+  @NonNull
+  public List<PresageModelDefinition> listAvailableModels() {
+    return new ArrayList<>(discoverDefinitions().values());
+  }
+
+  /**
+   * Removes a model directory by id. If the removed model was selected, clears the selection for
+   * its engine type.
+   */
+  public void removeModel(@NonNull String modelId) {
+    final Map<String, PresageModelDefinition> defs = discoverDefinitions();
+    final PresageModelDefinition def = defs.get(modelId);
+    final File modelDir = new File(getModelsRootDirectory(), modelId);
+    if (modelDir.exists()) {
+      deleteRecursively(modelDir);
+    }
+    if (def != null) {
+      final String selected = getSelectedModelId(def.getEngineType());
+      if (modelId.equals(selected)) {
+        clearSelectedModelId(def.getEngineType());
+      }
+    }
+  }
+
+  private void deleteRecursively(@NonNull File file) {
+    if (file.isDirectory()) {
+      final File[] children = file.listFiles();
+      if (children != null) {
+        for (File c : children) deleteRecursively(c);
+      }
+    }
+    if (!file.delete()) file.deleteOnExit();
+  }
 }

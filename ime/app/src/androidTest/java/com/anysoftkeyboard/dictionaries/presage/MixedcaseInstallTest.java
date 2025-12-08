@@ -38,7 +38,7 @@ public class MixedcaseInstallTest {
             false);
 
     final PresageModelDownloader downloader = new PresageModelDownloader(context, store);
-    final PresageModelDefinition def = downloader.downloadAndInstall(target);
+      final PresageModelDefinition def = DownloaderCompat.run(downloader, target);
     assertEquals("distilgpt2_mixedcase_sanity", def.getId());
 
     store.persistSelectedModelId(PresageModelDefinition.EngineType.NEURAL, def.getId());

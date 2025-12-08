@@ -65,24 +65,30 @@ android {
     namespace calculateApplicationId(project)
 
     def keystoreFile = file("/tmp/anysoftkeyboard.keystore")
+    // Support both local and F-Droid CI env var names
+    def envStorePass = System.getenv("KEY_STORE_FILE_PASSWORD") ?: System.getenv("FDROID_KEYSTORE_PASS")
+    def envKeyPass = System.getenv("KEY_STORE_FILE_DEFAULT_ALIAS_PASSWORD") ?: System.getenv("FDROID_KEY_ALIAS_PASS")
+    def envAlias = getExtValue(project, 'override_release_key_alias', (System.getenv("FDROID_KEY_ALIAS") ?: 'fdroidrepo'))
 
     signingConfigs {
         release {
-            if (keystoreFile.exists()) {
+            if (keystoreFile.exists() && envStorePass && envKeyPass) {
                 storeFile keystoreFile
-                storePassword System.getenv("KEY_STORE_FILE_PASSWORD")
-                keyAlias getExtValue(project, 'override_release_key_alias', 'packs')
-                keyPassword System.getenv("KEY_STORE_FILE_DEFAULT_ALIAS_PASSWORD")
+                storePassword envStorePass
+                keyAlias envAlias
+                keyPassword envKeyPass
                 println "Using '${storeFile.absolutePath}' to release APK ${path} (with alias '${keyAlias}')."
-            } else {
+            } else if (!keystoreFile.exists()) {
                 println "Could not find '${keystoreFile.absolutePath}' file. Release APK will not be signed."
+            } else {
+                println "Keystore found at '${keystoreFile.absolutePath}', but signing passwords are missing. Set KEY_STORE_FILE_PASSWORD/KEY_STORE_FILE_DEFAULT_ALIAS_PASSWORD or FDROID_KEYSTORE_PASS/FDROID_KEY_ALIAS_PASS. Building unsigned release."
             }
         }
     }
 
     buildTypes {
         release {
-            if (keystoreFile.exists()) {
+            if (keystoreFile.exists() && envStorePass && envKeyPass) {
                 signingConfig signingConfigs.release
             }
             zipAlignEnabled true
@@ -90,7 +96,8 @@ android {
             minifyEnabled false
         }
         debug {
-            if (keystoreFile.exists()) {
+            // Avoid forcing release keystore on debug builds unless explicitly requested.
+            if (keystoreFile.exists() && envStorePass && envKeyPass && System.getenv("USE_RELEASE_SIGNING_FOR_DEBUG") == '1') {
                 signingConfig signingConfigs.release
             }
         }

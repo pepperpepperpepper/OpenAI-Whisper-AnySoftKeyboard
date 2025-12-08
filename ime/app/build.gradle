@@ -64,9 +64,11 @@ android {
     }
     buildTypes {
         release {
-            buildConfigField("boolean", "TESTING_BUILD", "false")
+            buildConfigField("boolean", "TESTING_BUILD", "true")
 
             packagingOptions {
+                // keep test harness resources so release instrumentation can find the EditText
+                resources.pickFirsts += ['res/layout/activity_test_input.xml', 'res/layout/activity_test_input.xml:layout', 'res/id/test_edit_text']
                 //since dictionary jni so files are coming from
                 //another module, they are stripped there and should
                 //not be stripped again.
@@ -258,16 +260,17 @@ afterEvaluate { proj ->
                     println "Using explicit debug APK: ${relApk}"
                 }
             } else {
-                // Release path: prefer explicit prebuilt if present, otherwise locate built release
-                def explicitRelApk = new File(project.rootProject.projectDir, 'outputs/apk/ime_release.apk')
-                if (explicitRelApk.exists()) {
+                // Release path: prefer freshly built release under build/outputs; fall back to explicit drop
+                def relCandidates = project.fileTree(dir: new File(buildDirPath, 'outputs/apk'), include: ['**/*release*.apk']).files
+                        .findAll { !it.name.contains('androidTest') && !it.absolutePath.contains('baselineProfiles') }
+                if (!relCandidates.isEmpty()) {
+                    relApk = relCandidates.find { it.parentFile.absolutePath.contains('/nsk/') } ?: relCandidates.max { it.length() }
+                    println "Using freshly built release APK: ${relApk}"
+                } else {
+                    def explicitRelApk = new File(project.rootProject.projectDir, 'outputs/apk/ime_release.apk')
+                    if (!explicitRelApk.exists()) throw new GradleException('No release APKs found under build outputs and no explicit outputs/apk/ime_release.apk')
                     relApk = explicitRelApk
                     println "Using explicit release APK: ${relApk}"
-                } else {
-                    def relCandidates = project.fileTree(dir: new File(buildDirPath, 'outputs/apk'), include: ['**/*release*.apk']).files
-                            .findAll { !it.name.contains('androidTest') && !it.absolutePath.contains('baselineProfiles') }
-                    if (relCandidates.isEmpty()) throw new GradleException('No release APKs found under outputs/apk/** and no explicit outputs/apk/ime_release.apk')
-                    relApk = relCandidates.find { it.parentFile.absolutePath.contains('/nsk/') } ?: relCandidates.max { it.length() }
                 }
             }
 

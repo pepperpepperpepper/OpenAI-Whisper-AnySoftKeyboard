@@ -17,8 +17,10 @@ import ai.onnxruntime.TensorInfo;
 import ai.onnxruntime.ValueInfo;
 import java.io.File;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.nio.LongBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,7 @@ import java.util.regex.Pattern;
 public final class NeuralPredictionManager {
 
   private static final String TAG = "NeuralPredictionManager";
+  private static final boolean ENABLE_TEST_LOGS = true;
   private static final int MAX_CONTEXT_TOKENS = 64;
   private static final Pattern PAST_KEY_VALUE_PATTERN =
       Pattern.compile("past_key_values\\.(\\d+)\\.(key|value)");
@@ -151,6 +154,7 @@ public final class NeuralPredictionManager {
       return new java.util.ArrayList<>();
     }
     mSessionLock.lock();
+    final java.util.ArrayList<OnnxTensor> owned = new java.util.ArrayList<>();
     try {
       if (!isActive() && !activate()) {
         return new java.util.ArrayList<>();
@@ -159,7 +163,7 @@ public final class NeuralPredictionManager {
         return new java.util.ArrayList<>();
       }
 
-      final String contextText = String.join(" ", contextTokens);
+      final String contextText = " " + String.join(" ", contextTokens);
       if (contextText.trim().isEmpty()) {
         return new java.util.ArrayList<>();
       }
@@ -168,6 +172,9 @@ public final class NeuralPredictionManager {
       if (encoded.length == 0) {
         return new java.util.ArrayList<>();
       }
+      if (ENABLE_TEST_LOGS) {
+        Logger.d(TAG, "predictNextWords ctx='" + contextText + "' tokens=" + Arrays.toString(encoded));
+      }
       if (encoded.length > MAX_CONTEXT_TOKENS) {
         final int[] trimmed = new int[MAX_CONTEXT_TOKENS];
         System.arraycopy(
@@ -175,9 +182,19 @@ public final class NeuralPredictionManager {
         encoded = trimmed;
       }
 
-      try (OnnxTensor inputTensor = createInputTensor(encoded)) {
+      final int pastLength = 0; // no cache yet
+      try (OnnxTensor inputTensor = createInputTensor(encoded);
+          OnnxTensor attentionMask = maybeCreateAttentionMask(encoded.length, pastLength);
+          OnnxTensor positionIds = maybeCreatePositionIds(encoded.length, pastLength)) {
         final java.util.HashMap<String, OnnxTensor> inputs = new java.util.HashMap<>();
         inputs.put("input_ids", inputTensor);
+        if (attentionMask != null) {
+          inputs.put("attention_mask", attentionMask);
+        }
+        if (positionIds != null) {
+          inputs.put("position_ids", positionIds);
+        }
+        inputs.putAll(createPastKeyValueInputs(encoded.length, pastLength, owned));
 
         final Result result = mSession.run(inputs);
         try {
@@ -185,6 +202,9 @@ public final class NeuralPredictionManager {
           final float[] lastLogits = extractLogits(value);
           if (lastLogits == null) {
             return new java.util.ArrayList<>();
+          }
+          if (ENABLE_TEST_LOGS && mTokenizer != null) {
+            Logger.d(TAG, "top5 logits " + formatTopLogits(lastLogits, 5, mTokenizer));
           }
           return extractTopTokens(lastLogits, maxResults);
         } finally {
@@ -197,6 +217,12 @@ public final class NeuralPredictionManager {
       deactivate();
       return new java.util.ArrayList<>();
     } finally {
+      // Close any past_key_values tensors created outside the try-with-resources scope.
+      for (OnnxTensor tensor : owned) {
+        if (tensor != null) {
+          tensor.close();
+        }
+      }
       mSessionLock.unlock();
     }
   }
@@ -224,12 +250,48 @@ public final class NeuralPredictionManager {
         final long[] shape = materializeShape(rawShape);
         mPastKeyValueInputShapes.put(name, shape);
         mPastKeyValueInputTypes.put(name, tensorInfo.type);
+        if (ENABLE_TEST_LOGS) {
+          Logger.d(
+              TAG,
+              "past_key_values input "
+                  + name
+                  + " shape="
+                  + java.util.Arrays.toString(shape)
+                  + " type="
+                  + tensorInfo.type);
+        }
       }
     }
   }
 
-  private boolean needsAttentionMask() { return false; }
-  private boolean needsPositionIds() { return false; }
+  @Nullable
+  private OnnxTensor maybeCreateAttentionMask(int tokenCount, int pastLength) throws OrtException {
+    if (mEnvironment == null
+        || mSessionInputNames == null
+        || !mSessionInputNames.contains("attention_mask")) {
+      return null;
+    }
+    final int length = pastLength + tokenCount;
+    final long[] shape = new long[] {1L, length};
+    final long[] data = new long[length];
+    java.util.Arrays.fill(data, 1L);
+    return OnnxTensor.createTensor(mEnvironment, LongBuffer.wrap(data), shape);
+  }
+
+  @Nullable
+  private OnnxTensor maybeCreatePositionIds(int tokenCount, int pastLength) throws OrtException {
+    if (mEnvironment == null
+        || mSessionInputNames == null
+        || !mSessionInputNames.contains("position_ids")) {
+      return null;
+    }
+    final long[] shape = new long[] {1L, tokenCount};
+    final long[] data = new long[tokenCount];
+    for (int i = 0; i < tokenCount; i++) {
+      data[i] = pastLength + i;
+    }
+    return OnnxTensor.createTensor(mEnvironment, LongBuffer.wrap(data), shape);
+  }
 
   private OnnxTensor createInputTensor(int[] tokenIds) throws OrtException {
     final long[] shape = new long[] {1L, tokenIds.length};
@@ -237,6 +299,53 @@ public final class NeuralPredictionManager {
     for (int i = 0; i < tokenIds.length; i++) data[i] = tokenIds[i];
     final LongBuffer buf = LongBuffer.wrap(data);
     return OnnxTensor.createTensor(mEnvironment, buf, shape);
+  }
+
+  private java.util.Map<String, OnnxTensor> createPastKeyValueInputs(
+      int tokenCount, int pastLength, java.util.List<OnnxTensor> owned) throws OrtException {
+    final java.util.HashMap<String, OnnxTensor> out = new java.util.HashMap<>();
+    if (mEnvironment == null || mPastKeyValueInputNames.isEmpty()) {
+      return out;
+    }
+    for (String name : mPastKeyValueInputNames) {
+      final long[] recordedShape = mPastKeyValueInputShapes.get(name);
+      final ai.onnxruntime.OnnxJavaType type = mPastKeyValueInputTypes.get(name);
+      if (recordedShape == null || type == null) continue;
+      final long[] shape = recordedShape.clone();
+      if (shape.length >= 3) {
+        final int seqIndex = shape.length - 2; // for [batch, heads, seq, dim] this is seq
+        shape[seqIndex] = pastLength;
+      }
+      final long size = elementCount(shape);
+      if (size < 0 || size > Integer.MAX_VALUE) continue;
+      switch (type) {
+        case FLOAT:
+          final float[] fData = new float[(int) size];
+          final OnnxTensor fTensor =
+              OnnxTensor.createTensor(mEnvironment, FloatBuffer.wrap(fData), shape);
+          owned.add(fTensor);
+          out.put(name, fTensor);
+          break;
+        case INT64:
+          final long[] lData = new long[(int) size];
+          final OnnxTensor lTensor = OnnxTensor.createTensor(mEnvironment, LongBuffer.wrap(lData), shape);
+          owned.add(lTensor);
+          out.put(name, lTensor);
+          break;
+        default:
+          // unsupported type; skip
+          break;
+      }
+    }
+    return out;
+  }
+
+  private long elementCount(long[] shape) {
+    long n = 1L;
+    for (long dim : shape) {
+      n *= dim;
+    }
+    return n;
   }
 
   private float[] extractLogits(Object value) {
@@ -252,19 +361,82 @@ public final class NeuralPredictionManager {
   }
 
   private java.util.List<String> extractTopTokens(float[] lastLogits, int k) {
-    final java.util.PriorityQueue<int[]> heap =
-        new java.util.PriorityQueue<>(java.util.Comparator.comparingDouble(a -> a[1]));
-    for (int i = 0; i < lastLogits.length; i++) {
-      final int score = Float.floatToIntBits(lastLogits[i]);
-      if (heap.size() < k) heap.add(new int[] {i, score});
-      else if (score > heap.peek()[1]) { heap.poll(); heap.add(new int[] {i, score}); }
+    return selectTopTokens(lastLogits, k, mTokenizer);
+  }
+
+  private static String formatTopLogits(
+      float[] lastLogits, int k, @NonNull Gpt2Tokenizer tokenizer) {
+    if (lastLogits == null || lastLogits.length == 0 || k <= 0) {
+      return "[]";
     }
-    final java.util.ArrayList<String> out = new java.util.ArrayList<>(k);
+    final java.util.PriorityQueue<int[]> heap =
+        new java.util.PriorityQueue<>(java.util.Comparator.comparingDouble(a -> Float.intBitsToFloat(a[1])));
+    for (int i = 0; i < lastLogits.length; i++) {
+      final float score = lastLogits[i];
+      final int packed = Float.floatToRawIntBits(score);
+      if (heap.size() < k) {
+        heap.add(new int[] {i, packed});
+      } else if (score > Float.intBitsToFloat(heap.peek()[1])) {
+        heap.poll();
+        heap.add(new int[] {i, packed});
+      }
+    }
+    final java.util.ArrayList<String> out = new java.util.ArrayList<>(heap.size());
     while (!heap.isEmpty()) {
       final int[] pair = heap.poll();
-      out.add(String.valueOf(pair[0]));
+      out.add(
+          pair[0]
+              + ":"
+              + tokenizer.decodeId(pair[0]).replace("\n", "\\n").replace("\r", "")
+              + "="
+              + Float.intBitsToFloat(pair[1]));
     }
     java.util.Collections.reverse(out);
+    return out.toString();
+  }
+
+  /** Visible for testing: selects the top-k token strings by logit value. */
+  static java.util.List<String> selectTopTokens(
+      float[] lastLogits, int k, @Nullable Gpt2Tokenizer tokenizer) {
+    if (k <= 0 || lastLogits == null || lastLogits.length == 0) {
+      return java.util.Collections.emptyList();
+    }
+    final int target = Math.min(lastLogits.length, Math.max(k * 6, k + 8));
+    final java.util.PriorityQueue<int[]> heap =
+        new java.util.PriorityQueue<>(java.util.Comparator.comparingDouble(a -> Float.intBitsToFloat(a[1])));
+    for (int i = 0; i < lastLogits.length; i++) {
+      final float score = lastLogits[i];
+      final int packed = Float.floatToRawIntBits(score);
+      if (heap.size() < target) {
+        heap.add(new int[] {i, packed});
+      } else if (score > Float.intBitsToFloat(heap.peek()[1])) {
+        heap.poll();
+        heap.add(new int[] {i, packed});
+      }
+    }
+    final java.util.ArrayList<int[]> sorted = new java.util.ArrayList<>(heap.size());
+    while (!heap.isEmpty()) {
+      final int[] pair = heap.poll();
+      sorted.add(pair);
+    }
+    java.util.Collections.reverse(sorted);
+
+    final java.util.ArrayList<String> out = new java.util.ArrayList<>(k);
+    for (int[] pair : sorted) {
+      final int tokenId = pair[0];
+      final String decoded = tokenizer != null ? tokenizer.decodeId(tokenId) : String.valueOf(tokenId);
+      if (tokenizer != null && isPunctuationOnly(decoded)) {
+        continue;
+      }
+      out.add(decoded);
+      if (out.size() == k) break;
+    }
+    if (out.isEmpty()) {
+      for (int[] pair : sorted) {
+        out.add(tokenizer != null ? tokenizer.decodeId(pair[0]) : String.valueOf(pair[0]));
+        if (out.size() == k) break;
+      }
+    }
     return out;
   }
 
@@ -273,5 +445,16 @@ public final class NeuralPredictionManager {
     final long[] shape = raw.clone();
     for (int i = 0; i < shape.length; i++) if (shape[i] < 0) shape[i] = 1L;
     return shape;
+  }
+
+  private static boolean isPunctuationOnly(@NonNull String token) {
+    if (token.isEmpty()) return true;
+    for (int i = 0; i < token.length(); i++) {
+      final char c = token.charAt(i);
+      if (Character.isLetterOrDigit(c)) {
+        return false;
+      }
+    }
+    return true;
   }
 }

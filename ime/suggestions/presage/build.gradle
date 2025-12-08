@@ -3,6 +3,9 @@ apply plugin: 'com.android.library'
 apply from: "${rootDir}/gradle/android_general.gradle"
 
 android {
+    defaultConfig {
+        consumerProguardFiles 'consumer-rules.pro'
+    }
     ndkVersion sideBySideNdkVersion
     externalNativeBuild {
         cmake {

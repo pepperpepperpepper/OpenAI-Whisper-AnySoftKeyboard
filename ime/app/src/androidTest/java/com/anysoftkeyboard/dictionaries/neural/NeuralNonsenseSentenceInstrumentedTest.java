@@ -26,13 +26,14 @@ public class NeuralNonsenseSentenceInstrumentedTest {
     manager.activate();
 
     List<String> words = new ArrayList<>();
-    String[] ctx = new String[] {"the"};
-    for (int i = 0; i < 12; i++) {
+    words.add("The");
+    for (int i = 0; i < 10; i++) {
+      final String[] ctx = words.toArray(new String[0]);
       List<String> preds = manager.predictNextWords(ctx, 5);
+      preds = wtf.uhoh.newsoftkeyboard.pipeline.CandidateNormalizer.normalize(preds);
       if (preds.isEmpty()) break;
       String w = preds.get(0);
       words.add(w);
-      ctx = new String[] {ctx[ctx.length - 1], w};
     }
     manager.deactivate();
     String sentence = String.join(" ", words);
@@ -61,7 +62,7 @@ public class NeuralNonsenseSentenceInstrumentedTest {
 
     final PresageModelDownloader downloader = new PresageModelDownloader(context, store);
     try {
-      downloader.downloadAndInstall(target);
+      DownloaderCompat.run(downloader, target);
     } catch (IOException e) {
       // already installed
     }

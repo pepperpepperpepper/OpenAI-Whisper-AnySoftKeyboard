@@ -699,7 +699,16 @@ public class SuggestionsProvider {
     final String[] contextArray = mPresageContext.toArray(new String[mPresageContext.size()]);
     final int requestLimit = Math.min(limit, mMaxNextWordSuggestionsCount);
     final PredictionResult result = mNgramEngine.predict(contextArray, requestLimit);
-    final List<String> predictions = CandidateNormalizer.normalize(result.getCandidates());
+    final List<String> raw = result.getCandidates();
+    if (BuildConfig.TESTING_BUILD) {
+      Logger.d(
+          TAG,
+          "Presage raw candidates="
+              + raw
+              + " ctx="
+              + Arrays.toString(contextArray));
+    }
+    final List<String> predictions = CandidateNormalizer.normalize(raw);
     if (predictions.isEmpty()) return 0;
     if (BuildConfig.DEBUG) {
       Logger.d(
@@ -733,11 +742,18 @@ public class SuggestionsProvider {
     }
     final String[] contextArray = mPresageContext.toArray(new String[0]);
     final long start = SystemClock.elapsedRealtime();
+    final PredictionResult predictionResult =
+        mNeuralEngine.predict(contextArray, Math.min(limit, mMaxNextWordSuggestionsCount));
+    if (BuildConfig.TESTING_BUILD) {
+      Logger.d(
+          TAG,
+          "Neural raw candidates="
+              + predictionResult.getCandidates()
+              + " ctx="
+              + Arrays.toString(contextArray));
+    }
     final List<String> predictions =
-        CandidateNormalizer.normalize(
-            mNeuralEngine
-                .predict(contextArray, Math.min(limit, mMaxNextWordSuggestionsCount))
-                .getCandidates());
+        CandidateNormalizer.normalize(predictionResult.getCandidates());
     mLastNeuralLatencyMs = SystemClock.elapsedRealtime() - start;
     if (mLastNeuralLatencyMs > NEURAL_LATENCY_BUDGET_MS) {
       Logger.i(

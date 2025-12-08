@@ -1,0 +1,1 @@
+-keep class com.anysoftkeyboard.dictionaries.presage.PresageModelDefinition { *; }

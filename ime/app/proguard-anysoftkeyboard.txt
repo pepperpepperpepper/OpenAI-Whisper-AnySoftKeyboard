@@ -29,3 +29,20 @@
 -keep class ai.onnxruntime.** { *; }
 ## Keep AndroidX tracing so AndroidJUnitRunner can call Trace.beginSection/endSection
 -keep class androidx.tracing.Trace { *; }
+
+# Keep Presage package intact for release instrumentation/tests
+-keep class com.anysoftkeyboard.dictionaries.presage.** { *; }
+-keep class com.anysoftkeyboard.dictionaries.neural.** { *; }
+-keep class com.anysoftkeyboard.debug.** { *; }
+-keep class com.anysoftkeyboard.ime.ImeTestApi { *; }
+-keep class com.anysoftkeyboard.keyboards.views.CandidateViewTestRegistry { *; }
+
+# Keep test harness layout/resource IDs so release instrumentation can find views
+-keepclassmembers class ** {
+    public static final int test_edit_text;
+    public static final int activity_test_input;
+}
+
+# Preserve the test harness resources from shrinking/obfuscation.
+# AGP/R8 doesn't support -keepresources here, so we disable shrinking for these
+# specific files via the Gradle packagingOptions (configured in build.gradle).

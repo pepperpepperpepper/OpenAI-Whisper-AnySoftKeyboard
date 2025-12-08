@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name="com.anysoftkeyboard.debug.TestInputActivity"
+            android:exported="true"
+            android:label="Keyboard Test Harness"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
+    </application>
+</manifest>
+
