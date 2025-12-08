@@ -575,13 +575,18 @@ public class SuggestionsProvider {
     int remainingSuggestions = maxSuggestions;
 
     int addedByPresage = 0;
+    boolean presageHadRaw = false;
     if (usesPresageEngine()) {
-      addedByPresage = appendPresageSuggestions(suggestionsHolder, remainingSuggestions);
+      final EngineOrchestrator.MergeOutcome outcome =
+          appendPresageSuggestions(suggestionsHolder, remainingSuggestions);
+      addedByPresage = outcome.added;
+      presageHadRaw = outcome.hadRaw;
       remainingSuggestions -= addedByPresage;
       if (remainingSuggestions <= 0) return;
     }
 
     int addedByNeural = 0;
+    boolean neuralHadRaw = false;
     if (mPredictionEngineMode == PredictionEngineMode.NEURAL
         || mPredictionEngineMode == PredictionEngineMode.HYBRID) {
       if (BuildConfig.DEBUG) {
@@ -592,7 +597,10 @@ public class SuggestionsProvider {
             Arrays.toString(ctx),
             remainingSuggestions);
       }
-      addedByNeural = appendNeuralSuggestions(suggestionsHolder, remainingSuggestions);
+      final EngineOrchestrator.MergeOutcome outcome =
+          appendNeuralSuggestions(suggestionsHolder, remainingSuggestions);
+      addedByNeural = outcome.added;
+      neuralHadRaw = outcome.hadRaw;
       remainingSuggestions -= addedByNeural;
       if (remainingSuggestions <= 0) return;
     }
@@ -600,13 +608,13 @@ public class SuggestionsProvider {
     final boolean shouldIncludeLegacyNextWords;
     switch (mPredictionEngineMode) {
       case NGRAM:
-        shouldIncludeLegacyNextWords = addedByPresage == 0;
+        shouldIncludeLegacyNextWords = !presageHadRaw;
         break;
       case NEURAL:
-        shouldIncludeLegacyNextWords = addedByNeural == 0;
+        shouldIncludeLegacyNextWords = !neuralHadRaw;
         break;
       case HYBRID:
-        shouldIncludeLegacyNextWords = (addedByPresage + addedByNeural) == 0;
+        shouldIncludeLegacyNextWords = !(presageHadRaw || neuralHadRaw);
         break;
       case NONE:
       default:
@@ -685,14 +693,14 @@ public class SuggestionsProvider {
     mPresageContext.addLast(word);
   }
 
-  private int appendPresageSuggestions(
+  private EngineOrchestrator.MergeOutcome appendPresageSuggestions(
       Collection<CharSequence> suggestionsHolder, int limit) {
-    if (limit <= 0) return 0;
+    if (limit <= 0) return EngineOrchestrator.MergeOutcome.empty();
     if (!mNgramEngine.isReady() && !mNgramEngine.activate()) {
-      return 0;
+      return EngineOrchestrator.MergeOutcome.empty();
     }
     if (mPresageContext.isEmpty()) {
-      return 0;
+      return EngineOrchestrator.MergeOutcome.empty();
     }
     return EngineOrchestrator.predictAndMerge(
         mNgramEngine,
@@ -704,13 +712,13 @@ public class SuggestionsProvider {
         TAG + "-Presage");
   }
 
-  private int appendNeuralSuggestions(
+  private EngineOrchestrator.MergeOutcome appendNeuralSuggestions(
       Collection<CharSequence> suggestionsHolder, int limit) {
     if (limit <= 0) {
-      return 0;
+      return EngineOrchestrator.MergeOutcome.empty();
     }
     if (mPresageContext.size() < NEURAL_MIN_CONTEXT_TOKENS) {
-      return 0;
+      return EngineOrchestrator.MergeOutcome.empty();
     }
     if (mPredictionEngineMode == PredictionEngineMode.HYBRID
         && mLastNeuralLatencyMs > NEURAL_LATENCY_BUDGET_MS
@@ -720,14 +728,14 @@ public class SuggestionsProvider {
           "Skipping neural cascade; last inference "
               + mLastNeuralLatencyMs
               + "ms exceeded budget.");
-      return 0;
+      return EngineOrchestrator.MergeOutcome.empty();
     }
     if (!mNeuralEngine.isReady() && !mNeuralEngine.activate()) {
       handleNeuralActivationFailure();
-      return 0;
+      return EngineOrchestrator.MergeOutcome.empty();
     }
     final long start = SystemClock.elapsedRealtime();
-    final int merged =
+    final EngineOrchestrator.MergeOutcome outcome =
         EngineOrchestrator.predictAndMerge(
             mNeuralEngine,
             mPresageContext,
@@ -743,10 +751,12 @@ public class SuggestionsProvider {
           "Neural inference latency " + mLastNeuralLatencyMs + "ms for current context");
     }
     clearNeuralActivationFailureStatus();
-    if (merged == 0 && !TextUtils.isEmpty(mNeuralPredictionManager.getLastActivationError())) {
+    if (outcome.added == 0
+        && !outcome.hadRaw
+        && !TextUtils.isEmpty(mNeuralPredictionManager.getLastActivationError())) {
       handleNeuralActivationFailure();
     }
-    return merged;
+    return outcome;
   }
 
   private void handleNeuralActivationFailure() {

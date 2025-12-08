@@ -43,6 +43,24 @@
 - IN PROGRESS: Legacy cleanup (remove unused ASK-only actions/resources/tasks/assets after confirming no references). Recent step: project root renamed to NewSoftKeyboard; README/links updated. Next: prune obsolete beta-promo strings and unused ASK Gradle tasks once verified unused.
 - DONE: Release notes and README branding updates.
 
+## Monolith audit (Jan 2026)
+- Largest app classes to split next (approx LOC):
+  - `AnyKeyboardViewBase.java` (~2.3k)
+  - `AnySoftKeyboard.java` (~2.0k)
+  - `AnySoftKeyboardSuggestions.java` (~1.4k)
+  - `AnyKeyboard.java` (~1.3k) and `Keyboard.java` (~1.0k)
+  - `KeyboardSwitcher.java` (~1.0k)
+  - `SuggestionsProvider.java` (~0.8k)
+  - `Dictionary.java` (~1.5k) and `BTreeDictionary.java` (~0.45k)
+  - `CandidateView.java` (~0.63k) and `PointerTracker.java` (~0.60k)
+  - Settings-heavy fragments: `MainFragment.java`, `NextWordSettingsFragment.java`, `PresageModelsFragment.java` (~0.75k/0.55k/0.33k)
+- Large data (dictionary XMLs in addons/…) are intentionally big; they are not refactor targets.
+- Priority slices (keep behavior unchanged, add light tests):
+  1) Finish carving `AnyKeyboardViewBase` + `PointerTracker` into input rendering vs. touch dispatch (TouchDispatcher exists; continue extraction).
+  2) Split `AnySoftKeyboard`/`AnySoftKeyboardSuggestions` into IME lifecycle vs. suggestion orchestration vs. UI hooks.
+  3) Extract dictionary core (`Dictionary`, `BTreeDictionary`) into smaller units (trie/search, scoring, persistence) as a follow-up.
+  4) Separate settings fragments into view vs. data/prefs helpers (start with `PresageModelsFragment`, `NextWordSettingsFragment`).
+
 ## Milestones
 1) Documentation and constants centralization (complete):
    - Added `PluginActions` facade with both namespaces.

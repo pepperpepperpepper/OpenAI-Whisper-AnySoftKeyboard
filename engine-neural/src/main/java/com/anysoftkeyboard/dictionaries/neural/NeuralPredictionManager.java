@@ -1,12 +1,5 @@
 package com.anysoftkeyboard.dictionaries.neural;
 
-import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.anysoftkeyboard.base.utils.Logger;
-import com.anysoftkeyboard.dictionaries.presage.PresageModelDefinition;
-import com.anysoftkeyboard.dictionaries.presage.PresageModelStore;
-import com.anysoftkeyboard.dictionaries.presage.PresageModelStore.ActiveModel;
 import ai.onnxruntime.NodeInfo;
 import ai.onnxruntime.OnnxTensor;
 import ai.onnxruntime.OrtEnvironment;
@@ -15,6 +8,13 @@ import ai.onnxruntime.OrtSession;
 import ai.onnxruntime.OrtSession.Result;
 import ai.onnxruntime.TensorInfo;
 import ai.onnxruntime.ValueInfo;
+import android.content.Context;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.anysoftkeyboard.base.utils.Logger;
+import com.anysoftkeyboard.dictionaries.presage.PresageModelDefinition;
+import com.anysoftkeyboard.dictionaries.presage.PresageModelStore;
+import com.anysoftkeyboard.dictionaries.presage.PresageModelStore.ActiveModel;
 import java.io.File;
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -32,7 +32,8 @@ import java.util.regex.Pattern;
 public final class NeuralPredictionManager {
 
   private static final String TAG = "NeuralPredictionManager";
-  private static final boolean ENABLE_TEST_LOGS = true;
+  private static final boolean ENABLE_TEST_LOGS =
+      Boolean.parseBoolean(System.getProperty("NSK_TEST_LOGS", "false"));
   private static final int MAX_CONTEXT_TOKENS = 64;
   private static final Pattern PAST_KEY_VALUE_PATTERN =
       Pattern.compile("past_key_values\\.(\\d+)\\.(key|value)");
@@ -173,7 +174,8 @@ public final class NeuralPredictionManager {
         return new java.util.ArrayList<>();
       }
       if (ENABLE_TEST_LOGS) {
-        Logger.d(TAG, "predictNextWords ctx='" + contextText + "' tokens=" + Arrays.toString(encoded));
+        Logger.d(
+            TAG, "predictNextWords ctx='" + contextText + "' tokens=" + Arrays.toString(encoded));
       }
       if (encoded.length > MAX_CONTEXT_TOKENS) {
         final int[] trimmed = new int[MAX_CONTEXT_TOKENS];
@@ -205,6 +207,7 @@ public final class NeuralPredictionManager {
           }
           if (ENABLE_TEST_LOGS && mTokenizer != null) {
             Logger.d(TAG, "top5 logits " + formatTopLogits(lastLogits, 5, mTokenizer));
+            Logger.d(TAG, "top5 decoded " + formatTopDecoded(lastLogits, 5, mTokenizer));
           }
           return extractTopTokens(lastLogits, maxResults);
         } finally {
@@ -392,6 +395,40 @@ public final class NeuralPredictionManager {
               + Float.intBitsToFloat(pair[1]));
     }
     java.util.Collections.reverse(out);
+    return out.toString();
+  }
+
+  private static String formatTopDecoded(
+      float[] lastLogits, int k, @NonNull Gpt2Tokenizer tokenizer) {
+    if (lastLogits == null || lastLogits.length == 0 || k <= 0) {
+      return "[]";
+    }
+    final int target = Math.min(lastLogits.length, Math.max(k * 6, k + 8));
+    final java.util.PriorityQueue<int[]> heap =
+        new java.util.PriorityQueue<>(java.util.Comparator.comparingDouble(a -> Float.intBitsToFloat(a[1])));
+    for (int i = 0; i < lastLogits.length; i++) {
+      final float score = lastLogits[i];
+      final int packed = Float.floatToRawIntBits(score);
+      if (heap.size() < target) {
+        heap.add(new int[] {i, packed});
+      } else if (score > Float.intBitsToFloat(heap.peek()[1])) {
+        heap.poll();
+        heap.add(new int[] {i, packed});
+      }
+    }
+    final java.util.ArrayList<int[]> sorted = new java.util.ArrayList<>(heap.size());
+    while (!heap.isEmpty()) {
+      sorted.add(heap.poll());
+    }
+    java.util.Collections.reverse(sorted);
+
+    final java.util.ArrayList<String> out = new java.util.ArrayList<>(Math.min(k, sorted.size()));
+    for (int idx = 0; idx < sorted.size() && out.size() < k; idx++) {
+      final int tokenId = sorted.get(idx)[0];
+      final float score = Float.intBitsToFloat(sorted.get(idx)[1]);
+      final String decoded = tokenizer.decodeId(tokenId).replace("\n", "\\n").replace("\r", "");
+      out.add(tokenId + ":" + decoded + "=" + score);
+    }
     return out.toString();
   }
 

@@ -24,15 +24,31 @@ Signing (when available):
 
 ## Devices & tests
 - Emulator target: Genymotion at `localhost:42865`; wrap `adb` in `timeout` for reliability.
-- Debug neural sentence test:
+- Build + install debug app & tests:
   ```bash
-  ./gradlew :ime:app:assembleDebug :ime:app:assembleAndroidTest -x lint
+  ./gradlew :ime:app:assembleNskDebug :ime:app:assembleAndroidTest -x lint
+  adb -s localhost:42865 install -r -t ime/app/build/outputs/apk/nsk/debug/app-nsk-debug.apk
+  adb -s localhost:42865 install -r -t ime/app/build/outputs/apk/androidTest/nsk/debug/app-nsk-debug-androidTest.apk
+  ```
+- Run neural sentence sanity (neural manager):
+  ```bash
+  adb -s localhost:42865 shell am instrument -w -r \
+    -e class com.anysoftkeyboard.dictionaries.presage.NeuralNonsenseSentenceInstrumentedTest#buildNonsenseSentenceFromNeuralPredictions \
+    wtf.uhoh.newsoftkeyboard.test/androidx.test.runner.AndroidJUnitRunner
+  ```
+- Run UI tap sentence test (end-to-end suggestions):
+  ```bash
   adb -s localhost:42865 shell am instrument -w -r \
     -e class com.anysoftkeyboard.dictionaries.presage.NextWordSuggestionsUiAutomatorTest#composeNonsenseSentenceUsingOnlySuggestions \
     wtf.uhoh.newsoftkeyboard.test/androidx.test.runner.AndroidJUnitRunner
-  adb -s localhost:42865 logcat -d | grep NON_SENSE_SENTENCE=
   ```
-- Host tokenizer sanity: `./gradlew :engine-neural:test --tests "*Tokenizer*"`
+- Inspect sentence:
+  ```bash
+  adb -s localhost:42865 logcat -d | grep NON_SENSE_SENTENCE=
+  # expected example: first time I had a chance to meet him in the
+  ```
+- Optional neural debug logs: set `adb -s localhost:42865 shell setprop NSK_TEST_LOGS true` before running tests to dump top‑k logits/decoded tokens.
+- Host tokenizer/neural sanity: `./gradlew :engine-neural:test`
 
 ## Models
 - Catalog URL baked in: `https://fdroid.uh-oh.wtf/models/catalog.json?v=3`

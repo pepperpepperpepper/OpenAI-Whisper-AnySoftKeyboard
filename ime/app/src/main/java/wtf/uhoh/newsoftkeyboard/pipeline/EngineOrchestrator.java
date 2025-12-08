@@ -17,7 +17,7 @@ public final class EngineOrchestrator {
 
   private EngineOrchestrator() {}
 
-  public static int predictAndMerge(
+  public static MergeOutcome predictAndMerge(
       PredictionEngine engine,
       Deque<String> contextTokens,
       int maxNextWordSuggestionsCount,
@@ -26,29 +26,48 @@ public final class EngineOrchestrator {
       boolean enableTestLogging,
       String logTag) {
     if (limit <= 0 || contextTokens.isEmpty()) {
-      return 0;
+      return MergeOutcome.empty();
     }
 
     final String[] contextArray = contextTokens.toArray(new String[0]);
     final PredictionResult result =
         engine.predict(contextArray, Math.min(limit, maxNextWordSuggestionsCount));
 
+    final List<String> raw = result.getCandidates();
     if (enableTestLogging) {
       Logger.d(
           logTag,
           "Engine "
               + engine.getType()
               + " raw candidates="
-              + result.getCandidates()
+              + raw
               + " ctx="
               + Arrays.toString(contextArray));
     }
 
-    final List<String> predictions = CandidateNormalizer.normalize(result.getCandidates());
+    final List<String> predictions = CandidateNormalizer.normalize(raw);
+    final boolean hadRaw = raw != null && !raw.isEmpty();
     if (predictions.isEmpty()) {
-      return 0;
+      return new MergeOutcome(0, hadRaw, false);
     }
 
-    return CandidateMerger.mergeUnique(suggestionsHolder, predictions, limit);
+    final int added = CandidateMerger.mergeUnique(suggestionsHolder, predictions, limit);
+    return new MergeOutcome(added, hadRaw, true);
+  }
+
+  public static final class MergeOutcome {
+    public final int added;
+    public final boolean hadRaw;
+    public final boolean hadNormalized;
+
+    MergeOutcome(int added, boolean hadRaw, boolean hadNormalized) {
+      this.added = added;
+      this.hadRaw = hadRaw;
+      this.hadNormalized = hadNormalized;
+    }
+
+    public static MergeOutcome empty() {
+      return new MergeOutcome(0, false, false);
+    }
   }
 }

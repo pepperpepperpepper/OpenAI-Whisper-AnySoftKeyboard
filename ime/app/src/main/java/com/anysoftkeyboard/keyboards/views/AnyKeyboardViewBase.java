@@ -87,7 +87,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;

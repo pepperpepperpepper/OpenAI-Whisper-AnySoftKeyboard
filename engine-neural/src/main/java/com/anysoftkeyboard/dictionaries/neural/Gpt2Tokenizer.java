@@ -17,9 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 /** Minimal GPT-2 byte-pair tokenizer compatible with Hugging Face DistilGPT-2 exports. */
 final class Gpt2Tokenizer {
