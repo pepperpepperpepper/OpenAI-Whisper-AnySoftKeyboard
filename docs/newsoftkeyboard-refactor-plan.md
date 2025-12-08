@@ -58,7 +58,7 @@
 
 ## Migration Checklist
 - [x] Replace scattered action strings with `PluginActions` (Keyboards, Dictionaries, Themes, Quick-text, Extension rows).
-- [ ] Keep both authorities for FileProvider and prefs where needed.
+- [x] Keep both authorities for FileProvider and prefs where needed.
 - [x] Verify add-on discovery via `KeyboardFactory` and `ExternalDictionaryFactory` under both actions.
 - [x] Add release notes and README branding updates.
 

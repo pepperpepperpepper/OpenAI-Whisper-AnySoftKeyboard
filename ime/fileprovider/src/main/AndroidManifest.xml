@@ -13,6 +13,17 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/fileprovider_file_paths" />
         </provider>
+
+        <!-- Legacy ASK authority retained for add-ons expecting the old package name -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.menny.android.anysoftkeyboard.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/fileprovider_file_paths" />
+        </provider>
     </application>
 
 </manifest>
