@@ -125,12 +125,12 @@ public class DeveloperToolsFragment extends Fragment implements View.OnClickList
             .setMessage(
                 "Tracing is now enabled, but not started!"
                     + DeveloperUtils.NEW_LINE
-                    + "To start tracing, you'll need to restart"
-                    + " AnySoftKeyboard. How? Either reboot your phone, or"
-                    + " switch to another keyboard app (like the stock)."
+                    + "To start tracing, you'll need to restart the keyboard."
+                    + " Either reboot your phone, or switch to another"
+                    + " keyboard app (like the stock)."
                     + DeveloperUtils.NEW_LINE
                     + "To stop tracing, first disable it, and then restart"
-                    + " AnySoftKeyboard (as above)."
+                    + " the keyboard (as above)."
                     + DeveloperUtils.NEW_LINE
                     + "Thanks!!")
             .setPositiveButton("Got it!", null);
@@ -143,9 +143,9 @@ public class DeveloperToolsFragment extends Fragment implements View.OnClickList
                 "Tracing is now disabled, but not ended!"
                     + DeveloperUtils.NEW_LINE
                     + "To end tracing (and to be able to send the file), you'll"
-                    + " need to restart AnySoftKeyboard. How? Either reboot"
-                    + " your phone (preferable), or switch to another keyboard"
-                    + " app (like the stock)."
+                    + " need to restart the keyboard. Either reboot your phone"
+                    + " (preferable), or switch to another keyboard app"
+                    + " (like the stock)."
                     + DeveloperUtils.NEW_LINE
                     + "Thanks!!")
             .setPositiveButton("Got it!", null);
