@@ -40,7 +40,7 @@
 - DONE: Extracted EditorStateTracker/InputConnectionRouter from AnySoftKeyboard*.
 - DONE: Extracted TouchDispatcher from AnyKeyboardViewBase/PointerTracker.
 - DONE: Host predictNextWords sanity test using mixed-case model (skips when runtime or model missing; default download hook added).
-- IN PROGRESS: Legacy cleanup (remove unused ASK-only actions/resources/tasks/assets after confirming no references). Recent step: project root renamed to NewSoftKeyboard; README/links updated. Next: prune obsolete beta-promo strings and unused ASK Gradle tasks once verified unused.
+- IN PROGRESS: Legacy cleanup (remove unused ASK-only actions/resources/tasks/assets after confirming no references). Recent steps: project root renamed to NewSoftKeyboard; README/links updated; added CTS-style add-on discovery test; removed obsolete `build_command.md`. Next: prune obsolete beta-promo strings and unused ASK Gradle tasks once verified unused.
 - DONE: Release notes and README branding updates.
 
 ## Monolith audit (Jan 2026)
