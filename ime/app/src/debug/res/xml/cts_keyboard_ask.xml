@@ -1,0 +1,9 @@
+<Keyboards>
+    <Keyboard
+        id="test_keyboard_ask"
+        name="Test Keyboard ASK"
+        description="Test keyboard (ASK namespace)"
+        layoutResId="@xml/keys_qwerty"
+        index="2001"
+        defaultEnabled="false" />
+</Keyboards>
