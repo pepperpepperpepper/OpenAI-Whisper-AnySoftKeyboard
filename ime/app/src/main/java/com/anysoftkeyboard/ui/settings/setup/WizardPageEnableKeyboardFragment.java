@@ -79,9 +79,8 @@ public class WizardPageEnableKeyboardFragment extends WizardPageBaseFragment {
                         if (!isResumed() && isStepCompleted(context)) {
                           // should we return to this task?
                           // this happens when the user is asked to enable
-                          // AnySoftKeyboard, which is
-                          // done on a different UI activity (outside of
-                          // my App).
+                          // the keyboard, which is done on a different UI
+                          // activity (outside of this app).
                           mGetBackHereHandler.removeMessages(KEY_MESSAGE_RETURN_TO_APP);
                           mGetBackHereHandler.sendMessageDelayed(
                               mGetBackHereHandler.obtainMessage(KEY_MESSAGE_RETURN_TO_APP),
