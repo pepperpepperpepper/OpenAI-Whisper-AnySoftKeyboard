@@ -14,7 +14,7 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="PlainDarkAnySoftKeyboard" parent="@style/AnyKeyboardBaseTheme">
+    <style name="PlainDarkNewSoftKeyboard" parent="@style/AnyKeyboardBaseTheme">
         <item name="android:background">@drawable/dark_background</item>
         <item name="keyBackground">@drawable/dark_btn_key</item>
         <item name="keyPreviewBackground">@drawable/dark_btn_key_preview_background</item>
@@ -22,12 +22,12 @@
         <item name="keyVerticalGap">@dimen/plain_theme_key_vertical_gap</item>
     </style>
 
-    <style name="PlainDarkAnySoftKeyboardPopup" parent="@style/AnyKeyboardPopupBaseTheme">
+    <style name="PlainDarkNewSoftKeyboardPopup" parent="@style/AnyKeyboardPopupBaseTheme">
         <item name="android:background">@drawable/dark_background_popup</item>
         <item name="keyBackground">@drawable/dark_btn_key</item>
     </style>
 
-    <style name="PlainBlackAnySoftKeyboard" parent="@style/AnyKeyboardBaseTheme">
+    <style name="PlainBlackNewSoftKeyboard" parent="@style/AnyKeyboardBaseTheme">
         <item name="android:background">@drawable/blacktheme_background</item>
         <item name="keyBackground">@drawable/blacktheme_key</item>
 
@@ -67,13 +67,13 @@
         <item name="suggestionStripHeight">@dimen/candidate_strip_height</item>
     </style>
 
-    <style name="PlainBlackAnySoftKeyboardPopup" parent="@style/AnyKeyboardPopupBaseTheme">
+    <style name="PlainBlackNewSoftKeyboardPopup" parent="@style/AnyKeyboardPopupBaseTheme">
         <item name="android:background">@drawable/blacktheme_popup_background</item>
         <item name="keyBackground">@drawable/blacktheme_popupkey</item>
         <item name="keyTextColor">@color/blacktheme_popup_keytext_color</item>
     </style>
 
-    <style name="PlainLightAnySoftKeyboard" parent="@style/AnyKeyboardBaseTheme">
+    <style name="PlainLightNewSoftKeyboard" parent="@style/AnyKeyboardBaseTheme">
         <item name="android:background">@drawable/light_background_tiled</item>
         <item name="keyBackground">@drawable/light_btn_key</item>
         <item name="keyTextColor">@color/light_btn_key_text_color</item>
@@ -96,7 +96,7 @@
         <item name="keyVerticalGap">@dimen/plain_theme_key_vertical_gap</item>
     </style>
 
-    <style name="PlainLightAnySoftKeyboardPopup" parent="@style/AnyKeyboardPopupBaseTheme">
+    <style name="PlainLightNewSoftKeyboardPopup" parent="@style/AnyKeyboardPopupBaseTheme">
         <item name="android:background">@drawable/light_background_popup</item>
         <item name="keyBackground">@drawable/light_btn_key</item>
         <item name="keyTextColor">@color/light_btn_key_text_color</item>

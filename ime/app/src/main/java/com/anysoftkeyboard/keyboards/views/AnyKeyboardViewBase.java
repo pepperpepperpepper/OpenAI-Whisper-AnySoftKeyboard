@@ -196,7 +196,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   private final ThemeOverlayCombiner mThemeOverlayCombiner = new ThemeOverlayCombiner();
 
   public AnyKeyboardViewBase(Context context, AttributeSet attrs) {
-    this(context, attrs, R.style.PlainLightAnySoftKeyboard);
+        this(context, attrs, R.style.PlainLightNewSoftKeyboard);
   }
 
   public AnyKeyboardViewBase(Context context, AttributeSet attrs, int defStyle) {

@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="top|start"
-        android:hint="Tap here to open AnySoftKeyboard"
+        android:hint="Tap here to open the keyboard"
         android:importantForAutofill="no"
         android:inputType="textCapSentences|textMultiLine"
         android:minLines="5"

@@ -48,24 +48,24 @@
         id="79809d30-2919-4ae6-a9ec-94fd4bb6bd92"
         index="6"
         nameResId="@string/light_plain_keyboard_theme_name"
-        popupThemeRes="@style/PlainLightAnySoftKeyboardPopup"
-        themeRes="@style/PlainLightAnySoftKeyboard" />
+        popupThemeRes="@style/PlainLightNewSoftKeyboardPopup"
+        themeRes="@style/PlainLightNewSoftKeyboard" />
     <KeyboardTheme
         description="@string/dark_plain_keyboard_theme_description"
         iconsThemeRes="@style/AnyKeyboardBaseKeyIconTheme"
         id="55d9797c-850c-40a8-9a5d-7467b55bd537"
         index="7"
         nameResId="@string/dark_plain_keyboard_theme_name"
-        popupThemeRes="@style/PlainDarkAnySoftKeyboardPopup"
-        themeRes="@style/PlainDarkAnySoftKeyboard" />
+        popupThemeRes="@style/PlainDarkNewSoftKeyboardPopup"
+        themeRes="@style/PlainDarkNewSoftKeyboard" />
     <KeyboardTheme
         description="@string/blacktheme_keyboard_theme_description"
         iconsThemeRes="@style/AnyKeyboardBaseKeyIconTheme"
         id="EC93C810-4FC5-4FC3-8CE4-1CDA44680A0D"
         index="8"
         nameResId="@string/blacktheme_keyboard_theme_name"
-        popupThemeRes="@style/PlainBlackAnySoftKeyboardPopup"
-        themeRes="@style/PlainBlackAnySoftKeyboard" />
+        popupThemeRes="@style/PlainBlackNewSoftKeyboardPopup"
+        themeRes="@style/PlainBlackNewSoftKeyboard" />
     <KeyboardTheme
         description="@string/lean_dark_keyboard_theme_description"
         iconsThemeRes="@style/AnyKeyboardBaseKeyIconTheme"
@@ -145,8 +145,8 @@
         id="b8d8d941-4e56-46a7-aa73-0ae593ca4aa3"
         index="17"
         nameResId="@string/power_saving_keyboard_theme_name"
-        popupThemeRes="@style/PowerSavingAnySoftKeyboardPopup"
-        themeRes="@style/PowerSavingAnySoftKeyboard" />
+        popupThemeRes="@style/PowerSavingNewSoftKeyboardPopup"
+        themeRes="@style/PowerSavingNewSoftKeyboard" />
     <KeyboardTheme
         description="@string/power_saving_keyboard_theme_description"
         devOnly="true"
@@ -154,8 +154,8 @@
         id="b8d8d941-4e56-46a7-aa73-0ae593ca4a11"
         index="18"
         nameResId="@string/power_saving_keyboard_theme_name"
-        popupThemeRes="@style/PowerSavingAnySoftKeyboardPopup"
-        themeRes="@style/PowerSavingAnySoftKeyboard" />
+        popupThemeRes="@style/PowerSavingNewSoftKeyboardPopup"
+        themeRes="@style/PowerSavingNewSoftKeyboard" />
     <KeyboardTheme
         description="@string/mike_rozoff_keyboard_theme_description"
         iconsThemeRes="@style/MikeRozoffKeyIconTheme"
