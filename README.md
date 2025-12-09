@@ -36,40 +36,18 @@ Supported Android: API 21+ (test matrix targets API 30/34). Older 4.x references
 - Voice input.
 - Incognito Mode - will not learn new words, will not keep history of what was typed (including emoji history).
 - Plenty of emojis - long-press the smiley key. You customize those by clicking the Settings icon in emojis window.
-- More on AnySoftKeyboard can be found [here](https://anysoftkeyboard.github.io/).
+- Upstream reference (for compatibility docs): https://anysoftkeyboard.github.io/
 
 ## Releases
 
-### from _main_ branch
+### Releases
 
-#### IME - AnySoftKeyboard
-
-- Every commit to _main_ branch will [deploy](.github/workflows/checks.yml) a new release to the _ALPHA_ channel in Google Play-Store. You can subscribe to this release channel by joining the [Google Groups](https://groups.google.com/d/forum/anysoftkeyboard-alpha-testers) group, and opt-in by visiting [this link](https://play.google.com/apps/testing/com.menny.android.anysoftkeyboard).
-- Every Wednesday the latest _ALPHA_ will be [promoted](.github/workflows/deployment_promote.yml) to _BETA_. You can opt-in to this channel by visiting [this link](https://play.google.com/apps/testing/com.menny.android.anysoftkeyboard).
-- Once all requirements for a release were finished, a _STABLE_ release branch (in the format of `release-branch-ime-vX.X-rX`) will be cut. Every commit to this branch will be automatically published to Google Play Store (_STABLE_ channel) and will roll-out users gradually.
-
-#### AddOns
-
-- Every commit to _main_ branch will [deploy](.github/workflows/checks.yml) all addons to closed-testing _ALPHA_ channel in Google Play-Store. If you want to subscribe to this channel, open a [ticket](https://github.com/AnySoftKeyboard/AnySoftKeyboard/discussions/3391) and asking to join.
-- Every Wednesday the latest _ALPHA_ will be promoted to _BETA_. This is only for supported packs. The _BETA_ channel is an open-testing group, you can subscribe to this release channel by joining the _BETA_ channel for each [addon](addons/languages/PACKS.md).
-- Once all requirements for a release were finished, a _STABLE_ release branch (in the format of `release-branch-addons-vX.X-rX`) will be cut. Every commit to this branch will be automatically published to Google Play Store (_STABLE_ channel) and will roll-out users gradually.
-
-### from _release-branch_
-
-#### IME - AnySoftKeyboard
-
-- Each new commit to the release-branch will be published to 10% of the users.
-- Each day - if no new commit was pushed to the release-branch - we will increase the roll-out.
-- When roll-out reaches 100%, an fdroid release will be made.
-
-#### AddOns
-
-- Each new commit to the release-branch will be published to 10% of the users.
-- Each day - if no new commit was pushed to the release-branch - we will increase the roll-out.
+- F-Droid: see `docs/FDROID.md` for the NewSoftKeyboard publishing flow.
+- Play Store: upstream AnySoftKeyboard Play deployments are not used for NewSoftKeyboard; keep upstream links only for legacy add-on guidance.
 
 ## Read more
 
-- Our fancy [web-site](https://anysoftkeyboard.github.io/)
+- Upstream reference site (compatibility docs): https://anysoftkeyboard.github.io/
 - [Language-Pack](addons/languages/PACKS.md) add-ons in this repo.
 - [Theme](addons/themes/PACKS.md) add-ons in this repo.
 - [Quick-Text](addons/quicktexts/PACKS.md) add-ons in this repo.
@@ -82,7 +60,7 @@ Contributors should adhere to the [Code of Conduct](CODE_OF_CONDUCT.md) document
 
 ## Copyright requirement
 
-_Remember:_ the components in this repository are released under the Apache2 license. By contributing to this repository you give all copyright and distribution rights to the [AnySoftKeyboard maintainer](https://github.com/menny).
+_Remember:_ the components in this repository are released under the Apache2 license. By contributing to this repository you give all copyright and distribution rights to the NewSoftKeyboard maintainers; upstream attribution is preserved where required.
 
 # License
 
