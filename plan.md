@@ -16,6 +16,6 @@
 - Host-side predictNextWords test exists; add small UI polish/normalization if desired.
 
 ## Immediate Next Steps
-1) Continue legacy cleanup (branding/tasks/resources); add-on discovery CTS test added (androidTest).
+1) Continue legacy cleanup (branding/tasks/resources); add-on discovery CTS test added; FileProvider dual authorities cleaned (NSK primary + legacy).
 2) Decide and implement the flavor branding split.
 3) Pick the next monolith slice from the audit list and refactor with tests.

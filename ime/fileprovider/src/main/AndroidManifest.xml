@@ -4,9 +4,21 @@
 
     <application>
 
+        <!-- Primary authority for NewSoftKeyboard. -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId};com.menny.android.anysoftkeyboard.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/fileprovider_file_paths" />
+        </provider>
+
+        <!-- Legacy authority retained for AnySoftKeyboard compatibility. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.menny.android.anysoftkeyboard.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
