@@ -123,6 +123,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       new PointerTracker.SharedPointerTrackersData();
 
   private final SparseArray<PointerTracker> mPointerTrackers = new SparseArray<>();
+  private final TouchDispatcher mTouchDispatcher = new TouchDispatcher(this);
   @NonNull private final KeyDetector mKeyDetector;
 
   /** The dirty region in the keyboard bitmap */
@@ -425,7 +426,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
         trackerIndex < trackersCount;
         trackerIndex++) {
       PointerTracker tracker = mPointerTrackers.valueAt(trackerIndex);
-      sendOnXEvent(MotionEvent.ACTION_CANCEL, 0, 0, 0, tracker);
+      dispatchPointerAction(MotionEvent.ACTION_CANCEL, 0, 0, 0, tracker);
       tracker.setAlreadyProcessed();
     }
 
@@ -2050,69 +2051,43 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     return mPointerTrackers.get(id);
   }
 
+  /* package */ void markTwoFingers(long timeMs) {
+    mLastTimeHadTwoFingers = timeMs;
+  }
+
+  /* package */ boolean areTouchesTemporarilyDisabled() {
+    return mTouchesAreDisabledTillLastFingerIsUp;
+  }
+
+  /* package */ void enableTouches() {
+    mTouchesAreDisabledTillLastFingerIsUp = false;
+  }
+
+  /* package */ boolean isInKeyRepeat() {
+    return mKeyPressTimingHandler.isInKeyRepeat();
+  }
+
+  /* package */ void cancelKeyRepeat() {
+    mKeyPressTimingHandler.cancelKeyRepeatTimer();
+  }
+
+  /* package */ int getKeyboardActionType() {
+    return mKeyboardActionType;
+  }
+
+  /* package */ void dispatchPointerAction(
+      final int action, final long eventTime, final int x, final int y, PointerTracker tracker) {
+    switch (action) {
+      case MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> onDownEvent(tracker, x, y, eventTime);
+      case MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> onUpEvent(tracker, x, y, eventTime);
+      case MotionEvent.ACTION_CANCEL -> onCancelEvent(tracker);
+      default -> Logger.d(TAG, "Unhandled pointer action %d", action);
+    }
+  }
+
   @Override
   public boolean onTouchEvent(@NonNull MotionEvent nativeMotionEvent) {
-    if (mKeyboard == null) {
-      // I mean, if there isn't any keyboard I'm handling, what's the point?
-      return false;
-    }
-
-    final int action = nativeMotionEvent.getActionMasked();
-    final int pointerCount = nativeMotionEvent.getPointerCount();
-    if (pointerCount > 1) {
-      mLastTimeHadTwoFingers =
-          SystemClock.elapsedRealtime(); // marking the time. Read isAtTwoFingersState()
-    }
-
-    if (mTouchesAreDisabledTillLastFingerIsUp) {
-      if (!areTouchesDisabled(nativeMotionEvent) /*this means it was just reset*/) {
-        mTouchesAreDisabledTillLastFingerIsUp = false;
-        // continue with onTouchEvent flow.
-        if (action != MotionEvent.ACTION_DOWN) {
-          // swallowing the event.
-          // in case this is a DOWN event, we do want to pass it
-          return true;
-        }
-      } else {
-        // swallowing touch event until we reset mTouchesAreDisabledTillLastFingerIsUp
-        return true;
-      }
-    }
-
-    final long eventTime = nativeMotionEvent.getEventTime();
-    final int index = nativeMotionEvent.getActionIndex();
-    final int id = nativeMotionEvent.getPointerId(index);
-    final int x = (int) nativeMotionEvent.getX(index);
-    final int y = (int) nativeMotionEvent.getY(index);
-
-    if (mKeyPressTimingHandler.isInKeyRepeat()) {
-      // It will keep being in the key repeating mode while the key is
-      // being pressed.
-      if (action == MotionEvent.ACTION_MOVE) {
-        return true;
-      }
-      final PointerTracker tracker = getPointerTracker(id);
-      // Key repeating timer will be canceled if 2 or more keys are in
-      // action, and current
-      // event (UP or DOWN) is non-modifier key.
-      if (pointerCount > 1 && !tracker.isModifier()) {
-        mKeyPressTimingHandler.cancelKeyRepeatTimer();
-      }
-      // Up event will pass through.
-    }
-
-    if (action == MotionEvent.ACTION_MOVE) {
-      for (int i = 0; i < pointerCount; i++) {
-        PointerTracker tracker = getPointerTracker(nativeMotionEvent.getPointerId(i));
-        tracker.onMoveEvent(
-            (int) nativeMotionEvent.getX(i), (int) nativeMotionEvent.getY(i), eventTime);
-      }
-    } else {
-      PointerTracker tracker = getPointerTracker(id);
-      sendOnXEvent(action, eventTime, x, y, tracker);
-    }
-
-    return true;
+    return mTouchDispatcher.onTouchEvent(nativeMotionEvent);
   }
 
   @NonNull
@@ -2126,13 +2101,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
   private void sendOnXEvent(
       final int action, final long eventTime, final int x, final int y, PointerTracker tracker) {
-    switch (action) {
-      case MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN ->
-          onDownEvent(tracker, x, y, eventTime);
-      case MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP ->
-          onUpEvent(tracker, x, y, eventTime);
-      case MotionEvent.ACTION_CANCEL -> onCancelEvent(tracker);
-    }
+    dispatchPointerAction(action, eventTime, x, y, tracker);
   }
 
   protected void onDownEvent(PointerTracker tracker, int x, int y, long eventTime) {

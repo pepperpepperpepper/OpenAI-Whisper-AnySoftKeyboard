@@ -1,65 +1,74 @@
 package com.anysoftkeyboard.keyboards.views;
 
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import java.util.ArrayList;
+import com.anysoftkeyboard.base.utils.Logger;
 
 /**
- * Extracted pointer queue/dispatch helper from AnyKeyboardViewBase to shrink the monolith.
+ * Small façade over touch handling to peel logic out of AnyKeyboardViewBase.
+ * It delegates to PointerTracker while keeping the view thin.
  */
-final class TouchDispatcher {
-  private final ArrayList<PointerTracker> mQueue = new ArrayList<>();
-  private static final PointerTracker[] EMPTY_TRACKERS = new PointerTracker[0];
+class TouchDispatcher {
 
-  void add(PointerTracker tracker) {
-    mQueue.add(tracker);
+  private static final String TAG = "TouchDispatcher";
+
+  private final AnyKeyboardViewBase hostView;
+
+  TouchDispatcher(@NonNull AnyKeyboardViewBase hostView) {
+    this.hostView = hostView;
   }
 
-  int lastIndexOf(PointerTracker tracker) {
-    for (int index = mQueue.size() - 1; index >= 0; index--) {
-      PointerTracker t = mQueue.get(index);
-      if (t == tracker) {
-        return index;
+  /**
+   * Handle a touch event routed from the view. Returns true if handled.
+   */
+  boolean onTouchEvent(@Nullable MotionEvent me) {
+    if (me == null || hostView.getKeyboard() == null) return false;
+
+    final int action = me.getActionMasked();
+    final int pointerCount = me.getPointerCount();
+    if (pointerCount > 1) {
+      hostView.markTwoFingers(SystemClock.elapsedRealtime());
+    }
+
+    if (hostView.areTouchesTemporarilyDisabled()) {
+      if (!hostView.areTouchesDisabled(me)) {
+        hostView.enableTouches();
+        if (action != MotionEvent.ACTION_DOWN) {
+          return true; // swallow non-DOWN while re-enabling
+        }
+      } else {
+        return true; // still disabled
       }
     }
-    return -1;
-  }
 
-  void releaseAllPointersOlderThan(final PointerTracker tracker, final long eventTime) {
-    PointerTracker[] trackers = mQueue.toArray(EMPTY_TRACKERS);
-    for (PointerTracker t : trackers) {
-      if (t == tracker) break;
-      if (!t.isModifier()) {
-        t.onUpEvent(t.getLastX(), t.getLastY(), eventTime);
-        t.setAlreadyProcessed();
-        mQueue.remove(t);
+    final long eventTime = me.getEventTime();
+    final int index = me.getActionIndex();
+    final int id = me.getPointerId(index);
+    final int x = (int) me.getX(index);
+    final int y = (int) me.getY(index);
+
+    if (hostView.isInKeyRepeat()) {
+      if (action == MotionEvent.ACTION_MOVE) {
+        return true;
+      }
+      final PointerTracker tracker = hostView.getPointerTracker(id);
+      if (pointerCount > 1 && !tracker.isModifier()) {
+        hostView.cancelKeyRepeat();
       }
     }
-  }
 
-  void cancelAllPointers() {
-    for (PointerTracker t : mQueue) {
-      t.onCancelEvent();
-    }
-    mQueue.clear();
-  }
-
-  void releaseAllPointersExcept(@Nullable PointerTracker tracker, long eventTime) {
-    for (PointerTracker t : mQueue) {
-      if (t == tracker) {
-        continue;
+    if (action == MotionEvent.ACTION_MOVE) {
+      for (int i = 0; i < pointerCount; i++) {
+        PointerTracker tracker = hostView.getPointerTracker(me.getPointerId(i));
+        tracker.onMoveEvent((int) me.getX(i), (int) me.getY(i), eventTime);
       }
-      t.onUpEvent(t.getLastX(), t.getLastY(), eventTime);
-      t.setAlreadyProcessed();
+    } else {
+      PointerTracker tracker = hostView.getPointerTracker(id);
+      tracker.setImeAction(hostView.getKeyboardActionType());
+      hostView.dispatchPointerAction(action, eventTime, x, y, tracker);
     }
-    mQueue.clear();
-    if (tracker != null) mQueue.add(tracker);
-  }
-
-  void remove(PointerTracker tracker) {
-    mQueue.remove(tracker);
-  }
-
-  int size() {
-    return mQueue.size();
+    return true;
   }
 }
