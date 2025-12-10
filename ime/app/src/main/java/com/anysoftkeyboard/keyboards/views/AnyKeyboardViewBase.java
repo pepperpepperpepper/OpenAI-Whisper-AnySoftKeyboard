@@ -123,7 +123,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
   private final Rect mKeyBackgroundPadding;
   private final Rect mClipRegion = new Rect(0, 0, 0, 0);
-  private final Map<TextWidthCacheKey, TextWidthCacheValue> mTextWidthCache = new ArrayMap<>();
+  private final TextWidthCache textWidthCache = new TextWidthCache();
   protected final CompositeDisposable mDisposables = new CompositeDisposable();
 
   /** Listener for {@link OnKeyboardActionListener}. */
@@ -276,7 +276,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
     clearKeyIconsCache(true);
     mKeysIconBuilders.clear();
-    mTextWidthCache.clear();
+    textWidthCache.clear();
     mLastSetTheme = theme;
     if (mKeyboard != null) setWillNotDraw(false);
 
@@ -1409,35 +1409,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
   private float adjustTextSizeForLabel(
       final Paint paint, final CharSequence label, final int width) {
-    TextWidthCacheKey cacheKey = new TextWidthCacheKey(label, width);
-    if (mTextWidthCache.containsKey(cacheKey)) {
-      return mTextWidthCache.get(cacheKey).setCachedValues(paint);
-    }
-    float textSize = paint.getTextSize();
-    float textWidth = paint.measureText(label, 0, label.length());
-    // I'm going to try something if the key is too small for the
-    // text:
-    // 1) divide the text size by 1.5
-    // 2) if still too large, divide by 2.5
-    // 3) show no text
-    if (textWidth > width) {
-      textSize = mKeyTextSize / 1.5f;
-      paint.setTextSize(textSize);
-      textWidth = paint.measureText(label, 0, label.length());
-      if (textWidth > width) {
-        textSize = mKeyTextSize / 2.5f;
-        paint.setTextSize(textSize);
-        textWidth = paint.measureText(label, 0, label.length());
-        if (textWidth > width) {
-          textSize = 0f;
-          paint.setTextSize(textSize);
-          textWidth = paint.measureText(label, 0, label.length());
-        }
-      }
-    }
-
-    mTextWidthCache.put(cacheKey, new TextWidthCacheValue(textSize, textWidth));
-    return textWidth;
+        return textWidthCache.getOrMeasure(paint, label, width, mKeyTextSize);
   }
 
   protected void setPaintForLabelText(Paint paint) {
@@ -1509,7 +1481,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     setSpecialKeyIconOrLabel(KeyCodes.MODE_SYMBOLS);
     setSpecialKeyIconOrLabel(KeyCodes.KEYBOARD_MODE_CHANGE);
 
-    mTextWidthCache.clear();
+    textWidthCache.clear();
   }
 
   private void setSpecialKeyIconOrLabel(int keyCode) {
@@ -2047,7 +2019,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
   /* package */ void setKeysHeightFactor(float factor) {
     mKeysHeightFactor = factor;
-    mTextWidthCache.clear();
+    textWidthCache.clear();
     invalidateAllKeys();
   }
 
@@ -2057,42 +2029,5 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
   /* package */ float getDisplayDensity() {
     return mDisplayDensity;
-  }
-
-  private static class TextWidthCacheValue {
-    private final float mTextSize;
-    private final float mTextWidth;
-
-    private TextWidthCacheValue(float textSize, float textWidth) {
-      mTextSize = textSize;
-      mTextWidth = textWidth;
-    }
-
-    float setCachedValues(Paint paint) {
-      paint.setTextSize(mTextSize);
-      return mTextWidth;
-    }
-  }
-
-  private static class TextWidthCacheKey {
-    private final CharSequence mLabel;
-    private final int mKeyWidth;
-
-    private TextWidthCacheKey(CharSequence label, int keyWidth) {
-      mLabel = label;
-      mKeyWidth = keyWidth;
-    }
-
-    @Override
-    public int hashCode() {
-      return mLabel.hashCode() + mKeyWidth;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      return o instanceof TextWidthCacheKey
-          && ((TextWidthCacheKey) o).mKeyWidth == mKeyWidth
-          && TextUtils.equals(((TextWidthCacheKey) o).mLabel, mLabel);
-    }
   }
 }
