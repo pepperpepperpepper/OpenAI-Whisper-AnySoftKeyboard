@@ -123,6 +123,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   private final Rect mKeyBackgroundPadding;
   private final Rect mClipRegion = new Rect(0, 0, 0, 0);
   private final TextWidthCache textWidthCache = new TextWidthCache();
+  private final SwipeConfiguration swipeConfiguration = new SwipeConfiguration();
   protected final CompositeDisposable mDisposables = new CompositeDisposable();
 
   /** Listener for {@link OnKeyboardActionListener}. */
@@ -137,10 +138,6 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   protected float mOriginalVerticalCorrection;
   protected CharSequence mNextAlphabetKeyboardName;
   protected CharSequence mNextSymbolsKeyboardName;
-  int mSwipeVelocityThreshold;
-  int mSwipeXDistanceThreshold;
-  int mSwipeYDistanceThreshold;
-  int mSwipeSpaceXDistanceThreshold;
   int mKeyboardActionType = EditorInfo.IME_ACTION_UNSPECIFIED;
   private KeyDrawableStateProvider mDrawableStatesProvider;
   // XML attribute
@@ -752,17 +749,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   private void calculateSwipeDistances() {
-    final AnyKeyboard kbd = getKeyboard();
-    if (kbd == null) {
-      mSwipeYDistanceThreshold = 0;
-    } else {
-      mSwipeYDistanceThreshold =
-          (int)
-              (mSwipeXDistanceThreshold
-                  * (((float) kbd.getHeight()) / ((float) kbd.getMinWidth())));
-    }
-    mSwipeSpaceXDistanceThreshold = mSwipeXDistanceThreshold / 2;
-    mSwipeYDistanceThreshold = mSwipeYDistanceThreshold / 2;
+    swipeConfiguration.recomputeForKeyboard(getKeyboard());
   }
 
   /**
@@ -1985,12 +1972,12 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   /* package */ void setSwipeXDistanceThreshold(int threshold) {
-    mSwipeXDistanceThreshold = threshold;
+    swipeConfiguration.setSwipeXDistanceThreshold(threshold);
     calculateSwipeDistances();
   }
 
   /* package */ void setSwipeVelocityThreshold(int threshold) {
-    mSwipeVelocityThreshold = threshold;
+    swipeConfiguration.setSwipeVelocityThreshold(threshold);
   }
 
   /* package */ void setAlwaysUseDrawText(boolean alwaysUseDrawText) {
@@ -2009,5 +1996,21 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
   /* package */ float getDisplayDensity() {
     return mDisplayDensity;
+  }
+
+  /* package */ int getSwipeVelocityThreshold() {
+    return swipeConfiguration.getSwipeVelocityThreshold();
+  }
+
+  /* package */ int getSwipeXDistanceThreshold() {
+    return swipeConfiguration.getSwipeXDistanceThreshold();
+  }
+
+  /* package */ int getSwipeSpaceXDistanceThreshold() {
+    return swipeConfiguration.getSwipeSpaceXDistanceThreshold();
+  }
+
+  /* package */ int getSwipeYDistanceThreshold() {
+    return swipeConfiguration.getSwipeYDistanceThreshold();
   }
 }

@@ -41,3 +41,4 @@ Recent extractions:
 - PointerConfigLoader binds long-press/multitap prefs to shared pointer config.
 - TextWidthCache caches label measurement.
 - InvalidateTracker handles dirty-rect bookkeeping for AnyKeyboardViewBase.
+- SwipeConfiguration owns swipe thresholds and recomputation per keyboard.
