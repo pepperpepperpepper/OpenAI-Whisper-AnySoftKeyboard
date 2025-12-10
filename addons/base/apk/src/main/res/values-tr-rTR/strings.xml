@@ -5,12 +5,12 @@
     <string name="release_notes_template">v<xliff:g id="app_version">%s</xliff:g>sürüm notları:\n<xliff:g id="release_notes">%s</xliff:g></string>
     <string name="add_on_website_template">Bizi <xliff:g id="web_site">%s</xliff:g> adresinde ziyaret edin</string>
     <string name="screenshot_content_description">Eklentinin ekran görüntüsü</string>
-    <string name="not_standalone_app_text">Bu uygulama bağımsız bir uygulama <b>değildir</b>, AnySoftKeyboard için bir genişletme paketidir (eklenti).</string>
+    <string name="not_standalone_app_text">Bu uygulama bağımsız bir uygulama <b>değildir</b>, NewSoftKeyboard için bir genişletme paketidir (eklenti).</string>
     <string name="add_on_type_language" tools:ignore="UnusedResources">Dil paketi</string>
     <string name="add_on_type_theme" tools:ignore="UnusedResources">Klavye teması</string>
-    <string name="ask_is_missing_need_install">AnySoftKeyboard cihazınızda yüklü değil.\nBu genişletme paketini kullanabilmek için öncelikle AnySoftKeyboard\'u yüklemelisiniz.</string>
+    <string name="ask_is_missing_need_install">NewSoftKeyboard cihazınızda yüklü değil.\nBu genişletme paketini kullanabilmek için öncelikle NewSoftKeyboard\'u yüklemelisiniz.</string>
     <string name="open_ask_in_vending">Play Store\'a git</string>
-    <string name="ask_installed">AnySoftKeyboard yüklü.  Bu genişletme paketini kullanmaya başlamak için ayarlamanız gerekebilir.</string>
-    <string name="open_ask_main_settings">AnySoftKeyboard\'ı aç</string>
+    <string name="ask_installed">NewSoftKeyboard yüklü.  Bu genişletme paketini kullanmaya başlamak için ayarlamanız gerekebilir.</string>
+    <string name="open_ask_main_settings">NewSoftKeyboard\'ı aç</string>
     <string name="test_add_on_description">Bu, açıklamaya eklenen bir test eklentisidir, herhangi bir şey olabilir</string>
 </resources>

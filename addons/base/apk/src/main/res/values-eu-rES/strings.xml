@@ -5,12 +5,12 @@
     <string name="release_notes_template">v<xliff:g id="app_version">%s</xliff:g> bertsioaren argitaratze-oharrak:\n<xliff:g id="release_notes">%s</xliff:g></string>
     <string name="add_on_website_template">Bisitatu gaitzazu <xliff:g id="web_site">%s</xliff:g> helbidean</string>
     <string name="screenshot_content_description">Gehigarriaren pantaila-irudia</string>
-    <string name="not_standalone_app_text">Aplikazio hau <b>ez da</b> aplikazio arrunt bat, AnySoftKeyboard-entzako gehigarri bat baizik.</string>
+    <string name="not_standalone_app_text">Aplikazio hau <b>ez da</b> aplikazio arrunt bat, NewSoftKeyboard-entzako gehigarri bat baizik.</string>
     <string name="add_on_type_language" tools:ignore="UnusedResources">Hizkuntza-paketea</string>
     <string name="add_on_type_theme" tools:ignore="UnusedResources">Teklatuaren itxura</string>
-    <string name="ask_is_missing_need_install">AnySoftKeyboard ez dago zure gailuan instalatu.\nGehigarri hau erabiltzeko, AnySoftKeyboard instalatu behar duzu lehendabizi.</string>
+    <string name="ask_is_missing_need_install">NewSoftKeyboard ez dago zure gailuan instalatu.\nGehigarri hau erabiltzeko, NewSoftKeyboard instalatu behar duzu lehendabizi.</string>
     <string name="open_ask_in_vending">Joan Play Storera</string>
     <string name="ask_installed">AnySoftKeybaord instalatuta dago. Gehigarri hau erabiltzeko konfiguratu egin beharko duzu.</string>
-    <string name="open_ask_main_settings">Ireki AnySoftKeyboard</string>
+    <string name="open_ask_main_settings">Ireki NewSoftKeyboard</string>
     <string name="test_add_on_description">Hau testerako gehigarriaren deskribapena da, edozer izan daiteke</string>
 </resources>

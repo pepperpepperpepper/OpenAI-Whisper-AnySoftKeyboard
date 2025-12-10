@@ -5,12 +5,12 @@
     <string name="release_notes_template">Release notes voor v<xliff:g id="app_version">%s</xliff:g>:n<xliff:g id="release_notes">%s</xliff:g></string>
     <string name="add_on_website_template">Bezoek ons op <xliff:g id="web_site">%s</xliff:g></string>
     <string name="screenshot_content_description">Een schermafbeelding van de add-on</string>
-    <string name="not_standalone_app_text">Deze app is <b>geen</b> op zichzelf staande app, maar een uitbreidingspakket (add-on) voor AnySoftKeyboard.</string>
+    <string name="not_standalone_app_text">Deze app is <b>geen</b> op zichzelf staande app, maar een uitbreidingspakket (add-on) voor NewSoftKeyboard.</string>
     <string name="add_on_type_language" tools:ignore="UnusedResources">Taalpakket</string>
     <string name="add_on_type_theme" tools:ignore="UnusedResources">Toetsenbordthema</string>
-    <string name="ask_is_missing_need_install">AnySoftKeyboard is niet geïnstalleerd op uw apparaat.\nOm dit uitbreidingspakket te gebruiken, moet u eerst AnySoftKeyboard installeren.</string>
+    <string name="ask_is_missing_need_install">NewSoftKeyboard is niet geïnstalleerd op uw apparaat.\nOm dit uitbreidingspakket te gebruiken, moet u eerst NewSoftKeyboard installeren.</string>
     <string name="open_ask_in_vending">Ga naar Play Store</string>
-    <string name="ask_installed">AnySoftKeyboard is geïnstalleerd. Mogelijk moet u het instellen om dit uitbreidingspakket te kunnen gebruiken.</string>
-    <string name="open_ask_main_settings">AnySoftKeyboard openen</string>
+    <string name="ask_installed">NewSoftKeyboard is geïnstalleerd. Mogelijk moet u het instellen om dit uitbreidingspakket te kunnen gebruiken.</string>
+    <string name="open_ask_main_settings">NewSoftKeyboard openen</string>
     <string name="test_add_on_description">Dit is een test-add-on-beschrijving, het kan van alles zijn</string>
 </resources>

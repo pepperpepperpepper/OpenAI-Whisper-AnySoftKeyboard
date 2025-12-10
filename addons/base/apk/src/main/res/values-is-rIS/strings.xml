@@ -5,12 +5,12 @@
     <string name="release_notes_template">Útgáfuupplýsingar fyrir útgáfu<xliff:g id="app_version">%s</xliff:g>:\n<xliff:g id="release_notes">%s</xliff:g></string>
     <string name="add_on_website_template">Heimsæktu okkur á <xliff:g id="web_site">%s</xliff:g></string>
     <string name="screenshot_content_description">Skjámynd af viðbótinni</string>
-    <string name="not_standalone_app_text">Þetta forrit er <b>ekki</b> sjálfstætt forrit, heldur frekar eins og aukapakki (viðbót) fyrir AnySoftKeyboard forritið.</string>
+    <string name="not_standalone_app_text">Þetta forrit er <b>ekki</b> sjálfstætt forrit, heldur frekar eins og aukapakki (viðbót) fyrir NewSoftKeyboard forritið.</string>
     <string name="add_on_type_language" tools:ignore="UnusedResources">Tungumálapakki</string>
     <string name="add_on_type_theme" tools:ignore="UnusedResources">Lyklaborðsþema</string>
-    <string name="ask_is_missing_need_install">AnySoftKeyboard er ekki uppsett á tækinu þínu.\nTil að geta notað þennan aukapakka, þarft þú fyrst að setja upp AnySoftKeyboard.</string>
+    <string name="ask_is_missing_need_install">NewSoftKeyboard er ekki uppsett á tækinu þínu.\nTil að geta notað þennan aukapakka, þarft þú fyrst að setja upp NewSoftKeyboard.</string>
     <string name="open_ask_in_vending">Fara í Play Store hugbúnaðarsafnið</string>
-    <string name="ask_installed">AnySoftKeyboard er uppsett. Þú gætir þurft að stilla það til að geta farið að nota þennan aukapakka.</string>
-    <string name="open_ask_main_settings">Opna AnySoftKeyboard</string>
+    <string name="ask_installed">NewSoftKeyboard er uppsett. Þú gætir þurft að stilla það til að geta farið að nota þennan aukapakka.</string>
+    <string name="open_ask_main_settings">Opna NewSoftKeyboard</string>
     <string name="test_add_on_description">Þetta er prófun á lýsingu viðbótar, það má vera hvað sem er</string>
 </resources>

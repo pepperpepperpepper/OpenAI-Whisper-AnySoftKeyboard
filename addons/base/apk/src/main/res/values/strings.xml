@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Default (en) messaging for add-on packs; keep keys for compatibility -->
-    <string name="not_standalone_app_text">This app is <b>not</b> a standalone app; it is an expansion pack for NewSoftKeyboard (compatible with AnySoftKeyboard add-ons).</string>
+    <string name="not_standalone_app_text">This app is <b>not</b> a standalone app; it is an expansion pack for NewSoftKeyboard (compatible with NewSoftKeyboard add-ons).</string>
     <string name="ask_is_missing_need_install">NewSoftKeyboard is not installed on your device. To use this expansion pack, please install NewSoftKeyboard first.</string>
     <string name="ask_installed">NewSoftKeyboard is installed. You may need to configure it to start using this expansion pack.</string>
     <string name="open_ask_main_settings">Open NewSoftKeyboard</string>
