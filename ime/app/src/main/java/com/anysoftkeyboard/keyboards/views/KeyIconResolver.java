@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.base.utils.CompatUtils;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
 import com.anysoftkeyboard.overlay.ThemeOverlayCombiner;
 

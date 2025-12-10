@@ -123,6 +123,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   private final SwipeConfiguration swipeConfiguration = new SwipeConfiguration();
   private final HintLayoutCalculator hintLayoutCalculator = new HintLayoutCalculator();
   private final KeyIconResolver keyIconResolver;
+  private final LabelPaintConfigurator labelPaintConfigurator = new LabelPaintConfigurator(textWidthCache);
+  private final DirtyRegionDecider dirtyRegionDecider = new DirtyRegionDecider();
   protected final CompositeDisposable mDisposables = new CompositeDisposable();
 
   /** Listener for {@link OnKeyboardActionListener}. */
@@ -179,6 +181,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   @NonNull protected OverlayData mThemeOverlay = new OverlayDataImpl();
   // overrideable theme resources
   private final ThemeOverlayCombiner mThemeOverlayCombiner = new ThemeOverlayCombiner();
+  private ActionIconStateSetter actionIconStateSetter;
+  private SpecialKeyLabelProvider specialKeyLabelProvider;
 
   public AnyKeyboardViewBase(Context context, AttributeSet attrs) {
         this(context, attrs, R.style.PlainLightNewSoftKeyboard);
@@ -193,6 +197,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
     mKeyPressTimingHandler = new KeyPressTimingHandler(this);
     keyIconResolver = new KeyIconResolver(mThemeOverlayCombiner);
+    actionIconStateSetter = new ActionIconStateSetter(mDrawableStatesProvider);
+    specialKeyLabelProvider = new SpecialKeyLabelProvider(context);
 
     mPaint = new Paint();
     mPaint.setAntiAlias(true);
@@ -397,6 +403,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
             keyActionTypeDoneAttrId,
             keyActionTypeSearchAttrId,
             keyActionTypeGoAttrId);
+    actionIconStateSetter = new ActionIconStateSetter(mDrawableStatesProvider);
 
     // settings.
     // don't forget that there are THREE padding,
@@ -924,17 +931,9 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     final Keyboard.Key[] keys = mKeys;
     final Keyboard.Key invalidKey = invalidateTracker.invalidatedKey();
 
-    boolean drawSingleKey = false;
-    // TODO we should use Rect.inset and Rect.contains here.
-    // Is clipRegion completely contained within the invalidated key?
-    if (invalidKey != null
-        && canvas.getClipBounds(clipRegion)
-        && invalidKey.x + kbdPaddingLeft - 1 <= clipRegion.left
-        && invalidKey.y + kbdPaddingTop - 1 <= clipRegion.top
-        && Keyboard.Key.getEndX(invalidKey) + kbdPaddingLeft + 1 >= clipRegion.right
-        && Keyboard.Key.getEndY(invalidKey) + kbdPaddingTop + 1 >= clipRegion.bottom) {
-      drawSingleKey = true;
-    }
+    final boolean drawSingleKey =
+        dirtyRegionDecider.shouldDrawSingleKey(
+            canvas, invalidKey, clipRegion, kbdPaddingLeft, kbdPaddingTop);
 
     for (Keyboard.Key keyBase : keys) {
       final AnyKey key = (AnyKey) keyBase;
@@ -1226,17 +1225,15 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
   private float adjustTextSizeForLabel(
       final Paint paint, final CharSequence label, final int width) {
-        return textWidthCache.getOrMeasure(paint, label, width, mKeyTextSize);
+    return labelPaintConfigurator.adjustTextSizeForLabel(paint, label, width, mKeyTextSize);
   }
 
   protected void setPaintForLabelText(Paint paint) {
-    paint.setTextSize(mLabelTextSize);
-    paint.setTypeface(Typeface.DEFAULT_BOLD);
+    labelPaintConfigurator.setPaintForLabelText(paint, mLabelTextSize);
   }
 
   public void setPaintToKeyText(final Paint paint) {
-    paint.setTextSize(mKeyTextSize);
-    paint.setTypeface(mKeyTextStyle);
+    labelPaintConfigurator.setPaintToKeyText(paint, mKeyTextSize, mKeyTextStyle);
   }
 
   @Override
@@ -1346,29 +1343,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       case KeyCodes.MODE_SYMBOLS -> {
         return mNextSymbolsKeyboardName;
       }
-      case KeyCodes.TAB -> {
-        return getContext().getText(R.string.label_tab_key);
-      }
-      case KeyCodes.MOVE_HOME -> {
-        return getContext().getText(R.string.label_home_key);
-      }
-      case KeyCodes.MOVE_END -> {
-        return getContext().getText(R.string.label_end_key);
-      }
-      case KeyCodes.ARROW_DOWN -> {
-        return "▼";
-      }
-      case KeyCodes.ARROW_LEFT -> {
-        return "◀";
-      }
-      case KeyCodes.ARROW_RIGHT -> {
-        return "▶";
-      }
-      case KeyCodes.ARROW_UP -> {
-        return "▲";
-      }
       default -> {
-        return "";
+        return specialKeyLabelProvider.labelFor(keyCode);
       }
     }
   }
@@ -1399,25 +1375,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     // maybe a drawable state is required
     if (icon != null) {
       switch (keyCode) {
-        case KeyCodes.ENTER -> {
-          Logger.d(TAG, "Action key action ID is %d", mKeyboardActionType);
-          switch (mKeyboardActionType) {
-            case EditorInfo.IME_ACTION_DONE:
-              icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_ACTION_DONE);
-              break;
-            case EditorInfo.IME_ACTION_GO:
-              icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_ACTION_GO);
-              break;
-            case EditorInfo.IME_ACTION_SEARCH:
-              icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_ACTION_SEARCH);
-              break;
-            case EditorInfo.IME_ACTION_NONE:
-            case EditorInfo.IME_ACTION_UNSPECIFIED:
-            default:
-              icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_ACTION_NORMAL);
-              break;
-          }
-        }
+        case KeyCodes.ENTER -> actionIconStateSetter.applyState(mKeyboardActionType, icon);
         case KeyCodes.SHIFT -> {
           if (mKeyboard.isShiftLocked()) {
             icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_LOCKED);

@@ -47,3 +47,8 @@ Recent extractions:
 - HintLayoutCalculator handles hint icon/text placement math.
 - KeyPreviewManagerFacade wraps preview show/dismiss logic.
 - KeyIconResolver holds icon builders/cache and keycode-based lookup.
+- DirtyRegionDecider chooses single-key vs. full redraw based on clip/invalidated key.
+- ActionIconStateSetter applies IME action states to enter icons.
+- LabelPaintConfigurator owns label/key paint sizing and typeface setup.
+- SpecialKeyLabelProvider supplies fallback labels for special keys.
+- Render helper list captured in docs/render-helpers.md for future slices.
