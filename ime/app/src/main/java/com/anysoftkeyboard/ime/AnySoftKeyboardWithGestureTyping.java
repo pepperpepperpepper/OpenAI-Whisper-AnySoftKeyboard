@@ -376,7 +376,7 @@ public abstract class AnySoftKeyboardWithGestureTyping extends AnySoftKeyboardWi
     if (mGestureLastTime - mGestureStartTime < MINIMUM_GESTURE_TIME_MS) return false;
     if (mGesturePathLength < mMinimumGesturePathLength) return false;
 
-    InputConnection ic = currentInputConnection();
+    InputConnection ic = getInputConnectionRouter().current();
 
     final GestureTypingDetector currentGestureDetector = mCurrentGestureDetector;
     if (ic != null && currentGestureDetector != null) {
@@ -517,10 +517,10 @@ public abstract class AnySoftKeyboardWithGestureTyping extends AnySoftKeyboardWi
     @Override
     public @NonNull View inflateActionView(@NonNull ViewGroup parent) {
       mRootView =
-          LayoutInflater.from(mKeyboard).inflate(R.layout.clear_gesture_action, parent, false);
+        LayoutInflater.from(mKeyboard).inflate(R.layout.clear_gesture_action, parent, false);
       mRootView.setOnClickListener(
           view -> {
-            InputConnection ic = mKeyboard.currentInputConnection();
+            InputConnection ic = mKeyboard.getInputConnectionRouter().current();
             mKeyboard.handleBackWord(ic);
             mKeyboard.mJustPerformedGesture = false;
             var prefs = AnyApplication.prefs(mKeyboard);

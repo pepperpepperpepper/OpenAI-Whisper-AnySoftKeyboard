@@ -108,6 +108,12 @@ public abstract class AnySoftKeyboardBase extends InputMethodService
     mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
   }
 
+  /** Exposes the shared input-connection router so collaborators avoid direct IME calls. */
+  @NonNull
+  protected InputConnectionRouter getInputConnectionRouter() {
+    return mInputConnectionRouter;
+  }
+
   @Nullable
   public final InputViewBinder getInputView() {
     return mInputView;
