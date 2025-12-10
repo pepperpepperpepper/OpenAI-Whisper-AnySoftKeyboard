@@ -179,6 +179,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   private final KeyboardNameRenderer keyboardNameRenderer = new KeyboardNameRenderer();
   private final KeyHintRenderer keyHintRenderer = new KeyHintRenderer(hintLayoutCalculator);
   private final KeyLabelRenderer keyLabelRenderer = new KeyLabelRenderer();
+  private final KeyIconDrawer keyIconDrawer = new KeyIconDrawer();
+  private final KeyTextColorResolver keyTextColorResolver = new KeyTextColorResolver();
 
   public AnyKeyboardViewBase(Context context, AttributeSet attrs) {
         this(context, attrs, R.style.PlainLightNewSoftKeyboard);
@@ -951,22 +953,18 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       }
       int[] drawableState = key.getCurrentDrawableState(mDrawableStatesProvider);
 
-      int resolvedTextColor;
-      if (keyIsSpace) {
-        resolvedTextColor = themeResourcesHolder.getNameTextColor();
-      } else {
-        resolvedTextColor = keyTextColor.getColorForState(drawableState, 0xFF000000);
-      }
-      if (activeKeyboard != null) {
-        final int primaryCode = key.getPrimaryCode();
-        if (primaryCode == KeyCodes.FUNCTION && functionModeActive) {
-          resolvedTextColor = modifierActiveTextColor;
-        } else if (primaryCode == KeyCodes.CTRL && controlModeActive) {
-          resolvedTextColor = modifierActiveTextColor;
-        } else if (primaryCode == KeyCodes.ALT_MODIFIER && altModeActive) {
-          resolvedTextColor = modifierActiveTextColor;
-        }
-      }
+      int resolvedTextColor =
+          keyTextColorResolver.resolveTextColor(
+              key,
+              themeResourcesHolder,
+              keyTextColor,
+              keyIsSpace,
+              functionModeActive,
+              controlModeActive,
+              altModeActive,
+              modifierActiveTextColor,
+              mDrawableStatesProvider);
+
       paint.setColor(resolvedTextColor);
       keyBackground.setState(drawableState);
 
@@ -985,41 +983,9 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       canvas.translate(key.x + kbdPaddingLeft, key.y + kbdPaddingTop);
       keyBackground.draw(canvas);
 
-      if (TextUtils.isEmpty(label)) {
-        Drawable iconToDraw = keyIconResolver.getIconToDrawForKey(key, false);
-        if (iconToDraw != null /* && shouldDrawIcon */) {
-          // http://developer.android.com/reference/android/graphics/drawable/Drawable.html#getCurrent()
-          // http://stackoverflow.com/a/103600/1324235
-          final boolean is9Patch = iconToDraw.getCurrent() instanceof NinePatchDrawable;
-
-          // Special handing for the upper-right number hint icons
-          final int drawableWidth;
-          final int drawableHeight;
-          final int drawableX;
-          final int drawableY;
-
-          drawableWidth = is9Patch ? key.width : iconToDraw.getIntrinsicWidth();
-          drawableHeight = is9Patch ? key.height : iconToDraw.getIntrinsicHeight();
-          drawableX =
-              (key.width + mKeyBackgroundPadding.left - mKeyBackgroundPadding.right - drawableWidth)
-                  / 2;
-          drawableY =
-              (key.height
-                      + mKeyBackgroundPadding.top
-                      - mKeyBackgroundPadding.bottom
-                      - drawableHeight)
-                  / 2;
-
-          canvas.translate(drawableX, drawableY);
-          iconToDraw.setBounds(0, 0, drawableWidth, drawableHeight);
-          iconToDraw.draw(canvas);
-          canvas.translate(-drawableX, -drawableY);
-        } else {
-          // ho... no icon.
-          // I'll try to guess the text
-          label = guessLabelForKey(key.getPrimaryCode());
-        }
-      }
+      label =
+          keyIconDrawer.drawIconIfNeeded(
+              canvas, key, keyIconResolver, label, mKeyBackgroundPadding, this);
 
       label =
           keyboardNameRenderer.applyKeyboardNameIfNeeded(
@@ -1153,7 +1119,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   @NonNull
-  private CharSequence guessLabelForKey(int keyCode) {
+  CharSequence guessLabelForKey(int keyCode) {
     switch (keyCode) {
       case KeyCodes.ENTER -> {
         switch (mKeyboardActionType) {

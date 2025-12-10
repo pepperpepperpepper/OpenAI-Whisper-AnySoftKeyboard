@@ -13,5 +13,7 @@
 - KeyboardNameRenderer: substitutes keyboard name on space and prepares paint/metrics.
 - KeyHintRenderer: draws hint text/icons with placement from HintLayoutCalculator.
 - KeyLabelRenderer: draws main key labels (text sizing, shadow, StaticLayout handling).
+- KeyIconDrawer: centers/draws icons or falls back to guessed labels when missing.
+- KeyTextColorResolver: resolves per-key text color including modifier-active states.
 
 Status: all integrated; behavior unchanged. Use this list when peeling more render logic.

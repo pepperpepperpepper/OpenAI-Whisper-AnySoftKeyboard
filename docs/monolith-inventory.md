@@ -54,4 +54,6 @@ Recent extractions:
 - KeyboardNameRenderer substitutes the space-key label when showing keyboard name.
 - KeyHintRenderer draws hint text/icons using HintLayoutCalculator placement.
 - KeyLabelRenderer draws key labels (text sizing, emoji scaling, StaticLayout handling).
+- KeyIconDrawer draws centered icons and guesses labels when no icon is available.
+- KeyTextColorResolver computes per-key text color with modifier state handling.
 - Render helper list captured in docs/render-helpers.md for future slices.
