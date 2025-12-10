@@ -10,8 +10,8 @@ This repo is the active source of truth for NewSoftKeyboard; legacy ASK badges a
 Quick links
 - Build and test: see `BUILDING.md`.
 - Refactor roadmap: `docs/newsoftkeyboard-refactor-plan.md`.
-- Neural quality work: `fix_plan.md`.
-- F-Droid packaging notes: `outputs/fdroid/wtf.uhoh.newsoftkeyboard.yaml`.
+- Neural/suggestions progress: `suggestions-progress.md`.
+- F-Droid packaging notes: `docs/FDROID.md`.
 
 Supported Android: API 21+ (test matrix targets API 30/34). Older 4.x references have been removed.
 

@@ -1,6 +1,6 @@
 # NewSoftKeyboard Refactor Plan
 
-> Single source of truth: this file is the canonical roadmap. Topic-specific fix efforts (for example neural quality) live in focused docs such as `fix_plan.md`; keep their status in sync here.
+> Single source of truth: this file is the canonical roadmap. Topic-specific efforts (for example neural quality) live in focused docs such as `suggestions-progress.md`; keep their status in sync here.
 
 ## Goals
 - Establish NewSoftKeyboard as a distinct, branded app while retaining runtime compatibility with existing AnySoftKeyboard (ASK) add-ons (keyboards, dictionaries, themes, quick-text).
