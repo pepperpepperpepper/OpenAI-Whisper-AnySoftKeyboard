@@ -38,3 +38,4 @@ Recent extractions:
 - TouchDispatcher (AnyKeyboardViewBase/PointerTracker) now owns touch gating flags.
 - PointerTrackerRegistry (PointerTracker ownership/iteration).
 - KeyPressTimingHandler extracted from AnyKeyboardViewBase.
+- PointerConfigLoader binds long-press/multitap prefs to shared pointer config.
