@@ -118,8 +118,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   protected final TouchDispatcher mTouchDispatcher = new TouchDispatcher(this);
   @NonNull private final KeyDetector mKeyDetector;
 
-  /** The dirty region in the keyboard bitmap */
-  private final Rect mDirtyRect = new Rect();
+  private final InvalidateTracker invalidateTracker = new InvalidateTracker();
 
   private final Rect mKeyBackgroundPadding;
   private final Rect mClipRegion = new Rect(0, 0, 0, 0);
@@ -169,7 +168,6 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   private Keyboard.Key[] mKeys;
   private KeyPreviewsController mKeyPreviewsManager = new NullKeyPreviewsManager();
 
-  private Keyboard.Key mInvalidatedKey;
   private int mTextCaseForceOverrideType;
   private int mTextCaseType;
 
@@ -1044,7 +1042,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       mKeyboardChanged = false;
     }
 
-    canvas.getClipBounds(mDirtyRect);
+    final Rect dirtyRect = invalidateTracker.dirtyRect();
+    canvas.getClipBounds(dirtyRect);
 
     if (mKeyboard == null) {
       return;
@@ -1088,7 +1087,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     final int kbdPaddingLeft = getPaddingLeft();
     final int kbdPaddingTop = getPaddingTop();
     final Keyboard.Key[] keys = mKeys;
-    final Keyboard.Key invalidKey = mInvalidatedKey;
+    final Keyboard.Key invalidKey = invalidateTracker.invalidatedKey();
 
     boolean drawSingleKey = false;
     // TODO we should use Rect.inset and Rect.contains here.
@@ -1109,7 +1108,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       if (drawSingleKey && (invalidKey != key)) {
         continue;
       }
-      if (!mDirtyRect.intersects(
+      if (!dirtyRect.intersects(
           key.x + kbdPaddingLeft,
           key.y + kbdPaddingTop,
           Keyboard.Key.getEndX(key) + kbdPaddingLeft,
@@ -1402,9 +1401,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
       canvas.translate(-key.x - kbdPaddingLeft, -key.y - kbdPaddingTop);
     }
-    mInvalidatedKey = null;
-
-    mDirtyRect.setEmpty();
+    invalidateTracker.clearAfterDraw();
   }
 
   private float adjustTextSizeForLabel(
@@ -1730,8 +1727,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
    * @see #invalidateKey(Keyboard.Key)
    */
   public void invalidateAllKeys() {
-    mDirtyRect.union(0, 0, getWidth(), getHeight());
-    invalidate();
+    invalidateTracker.invalidateAll(this);
   }
 
   /**
@@ -1744,23 +1740,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
    */
   @Override
   public void invalidateKey(Keyboard.Key key) {
-    if (key == null) {
-      return;
-    }
-    mInvalidatedKey = key;
-    // TODO we should clean up this and record key's region to use in
-    // onBufferDraw.
-    mDirtyRect.union(
-        key.x + getPaddingLeft(),
-        key.y + getPaddingTop(),
-        Keyboard.Key.getEndX(key) + getPaddingLeft(),
-        Keyboard.Key.getEndY(key) + getPaddingTop());
-    // doOnBufferDrawWithMemProtection(mCanvas);
-    invalidate(
-        key.x + getPaddingLeft(),
-        key.y + getPaddingTop(),
-        Keyboard.Key.getEndX(key) + getPaddingLeft(),
-        Keyboard.Key.getEndY(key) + getPaddingTop());
+    invalidateTracker.invalidateKey(this, key, getPaddingLeft(), getPaddingTop());
   }
 
   @NonNull

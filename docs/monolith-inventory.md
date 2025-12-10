@@ -39,3 +39,5 @@ Recent extractions:
 - PointerTrackerRegistry (PointerTracker ownership/iteration).
 - KeyPressTimingHandler extracted from AnyKeyboardViewBase.
 - PointerConfigLoader binds long-press/multitap prefs to shared pointer config.
+- TextWidthCache caches label measurement.
+- InvalidateTracker handles dirty-rect bookkeeping for AnyKeyboardViewBase.
