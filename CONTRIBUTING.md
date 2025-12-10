@@ -4,11 +4,11 @@ To develop this project, you'll need:
 
 - Java 17 - get [OpenJDK](https://jdk.java.net/archive/) or [AdoptOpenJDK](https://adoptopenjdk.net/releases.html?variant=openjdk17&jvmVariant=hotspot). If you are using [jEnv](https://www.jenv.be/) then we have a `.java-version` file already set up.
 - git
-- [Android Studio](https://developer.android.com/studio/install) version 4.0.
+- [Android Studio](https://developer.android.com/studio/install) (recent stable).
 - You will need to point your Android-Studio to use the installed Java. You can configure the path inside Android Studio menu: File > Project Structure > JDK Location.
-- Android SDK API Level 28 installed.
+- Android SDK API Level 34 installed.
   - Set up `local.properties` file to point to it (that is, ensure you have `sdk.dir=/path/to/android/sdk` in it).
-- Android NDK [r14b](https://developer.android.com/ndk/downloads/older_releases.html) installed.
+- Android NDK r27 installed.
   Set up `local.properties` file to point to it (that is, ensure you have `ndk.dir=/path/to/android/ndk` in it).
 
 ## Continuous Integration and Pull-Requests Verifications
@@ -20,8 +20,8 @@ Each PR is verified by multiple tasks:
 
 ## Components
 
-- Main app (AnySoftKeyboard) is located under `ime/`.
-  - to build the APK use following command: `gradlew :ime:app:assembleDebug`
+- Main app (NewSoftKeyboard) is located under `ime/`.
+  - to build the APK use following command: `./gradlew :ime:app:assembleDebug`
 - All add-ons are under `addons/`.
   - Language-packs are under `addons/languages/`.
   - Themes are under `addons/themes/`.
@@ -31,8 +31,8 @@ Each PR is verified by multiple tasks:
 # License
 
 The components in this repository are released under the [Apache2](https://www.apache.org/licenses/LICENSE-2.0) license.
-By contributing to this repository you give all copyright and distribution rights or AnySoftKeyboard maintainer.<br/>
-Of course, since this is Apache2, you may fork and do whatever you want with the code, you do not have to share back only give attribute.<br/>
+By contributing to this repository you grant NewSoftKeyboard maintainers the rights needed to distribute your contributions under Apache 2.0.<br/>
+Of course, since this is Apache2, you may fork and do whatever you want with the code, you do not have to share back—only provide attribution.<br/>
 Read more about this license [here](<https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)>).
 
 # Contributors
