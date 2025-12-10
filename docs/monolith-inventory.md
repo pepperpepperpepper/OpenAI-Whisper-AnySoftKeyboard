@@ -42,3 +42,4 @@ Recent extractions:
 - TextWidthCache caches label measurement.
 - InvalidateTracker handles dirty-rect bookkeeping for AnyKeyboardViewBase.
 - SwipeConfiguration owns swipe thresholds and recomputation per keyboard.
+- KeyLabelAdjuster holds shift/function label logic used by the view.

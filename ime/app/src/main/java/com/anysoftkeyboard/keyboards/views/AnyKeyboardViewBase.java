@@ -857,128 +857,15 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     mKeyDetector.setProximityCorrectionEnabled(enabled);
   }
 
-  private boolean isShiftedAccordingToCaseType(boolean keyShiftState) {
-    switch (mTextCaseForceOverrideType) {
-      case -1 -> {
-        return switch (mTextCaseType) {
-          case 0 -> keyShiftState; // auto
-          case 1 -> false; // lowercase always
-          case 2 -> true; // uppercase always
-          default -> keyShiftState;
-        };
-      }
-      case 1 -> {
-        return false; // lowercase always
-      }
-      case 2 -> {
-        return true; // uppercase always
-      }
-      default -> {
-        return keyShiftState;
-      }
-    }
-  }
-
   @VisibleForTesting
   CharSequence adjustLabelToShiftState(AnyKey key) {
-    CharSequence label = key.label;
-    if (isShiftedAccordingToCaseType(mKeyboard.isShifted())) {
-      if (!TextUtils.isEmpty(key.shiftedKeyLabel)) {
-        return key.shiftedKeyLabel;
-      } else if (key.shiftedText != null) {
-        label = key.shiftedText;
-      } else if (label != null && label.length() == 1) {
-        label =
-            Character.toString(
-                (char)
-                    key.getCodeAtIndex(
-                        0, isShiftedAccordingToCaseType(mKeyDetector.isKeyShifted(key))));
-      }
-      // remembering for next time
-      if (key.isShiftCodesAlways()) key.shiftedKeyLabel = label;
-    }
-    return label;
+    return KeyLabelAdjuster.adjustLabelToShiftState(
+        mKeyboard, mKeyDetector, mTextCaseForceOverrideType, mTextCaseType, key);
   }
 
   @VisibleForTesting
   CharSequence adjustLabelForFunctionState(AnyKey key, CharSequence currentLabel) {
-    if (!(mKeyboard instanceof AnyKeyboard)) {
-      return currentLabel;
-    }
-    final AnyKeyboard anyKeyboard = (AnyKeyboard) mKeyboard;
-    final boolean functionLocked = anyKeyboard.isFunctionLocked();
-    final boolean functionEngaged = anyKeyboard.isFunctionActive() || functionLocked;
-    if (!functionEngaged) {
-      return currentLabel;
-    }
-    final int primaryCode = key.getCodeAtIndex(0, false);
-    if (primaryCode == KeyCodes.FUNCTION && functionLocked) {
-      final CharSequence baseLabel = currentLabel != null ? currentLabel : key.label;
-      if (!TextUtils.isEmpty(baseLabel)) {
-        final SpannableString underlined = new SpannableString("Fn");
-        underlined.setSpan(
-            new UnderlineSpan(), 0, underlined.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        return underlined;
-      }
-    }
-    final String fnLabel;
-    switch (primaryCode) {
-      case KeyCodes.ARROW_UP:
-        fnLabel = "PgUp";
-        break;
-      case KeyCodes.ARROW_DOWN:
-        fnLabel = "PgDn";
-        break;
-      case KeyCodes.ARROW_LEFT:
-        fnLabel = "Home";
-        break;
-      case KeyCodes.ARROW_RIGHT:
-        fnLabel = "End";
-        break;
-      default:
-        fnLabel = null;
-        break;
-    }
-    if (fnLabel != null && functionEngaged) {
-      return fnLabel;
-    }
-    final String functionDigitLabel;
-    switch (primaryCode) {
-      case '1':
-        functionDigitLabel = "F1";
-        break;
-      case '2':
-        functionDigitLabel = "F2";
-        break;
-      case '3':
-        functionDigitLabel = "F3";
-        break;
-      case '4':
-        functionDigitLabel = "F4";
-        break;
-      case '5':
-        functionDigitLabel = "F5";
-        break;
-      case '6':
-        functionDigitLabel = "F6";
-        break;
-      case '7':
-        functionDigitLabel = "F7";
-        break;
-      case '8':
-        functionDigitLabel = "F8";
-        break;
-      case '9':
-        functionDigitLabel = "F9";
-        break;
-      case '0':
-        functionDigitLabel = "F10";
-        break;
-      default:
-        functionDigitLabel = null;
-        break;
-    }
-    return functionDigitLabel != null ? functionDigitLabel : currentLabel;
+    return KeyLabelAdjuster.adjustLabelForFunctionState(mKeyboard, key, currentLabel);
   }
 
   @Override
@@ -1124,8 +1011,12 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       keyBackground.setState(drawableState);
 
       // Switch the character to uppercase if shift is pressed
-      CharSequence label = key.label == null ? null : adjustLabelToShiftState(key);
-      label = adjustLabelForFunctionState(key, label);
+      CharSequence label =
+          key.label == null
+              ? null
+              : KeyLabelAdjuster.adjustLabelToShiftState(
+                  mKeyboard, mKeyDetector, mTextCaseForceOverrideType, mTextCaseType, key);
+      label = KeyLabelAdjuster.adjustLabelForFunctionState(mKeyboard, key, label);
 
       final Rect bounds = keyBackground.getBounds();
       if ((key.width != bounds.right) || (key.height != bounds.bottom)) {
@@ -1692,12 +1583,12 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       } else {
         CharSequence label = tracker.getPreviewText(key);
         if (key instanceof AnyKeyboard.AnyKey anyKey) {
-          label = adjustLabelForFunctionState(anyKey, label);
+          label = KeyLabelAdjuster.adjustLabelForFunctionState(mKeyboard, anyKey, label);
         }
         if (TextUtils.isEmpty(label)) {
           label = guessLabelForKey(key.getPrimaryCode());
           if (key instanceof AnyKeyboard.AnyKey anyKey) {
-            label = adjustLabelForFunctionState(anyKey, label);
+            label = KeyLabelAdjuster.adjustLabelForFunctionState(mKeyboard, anyKey, label);
           }
         }
 
