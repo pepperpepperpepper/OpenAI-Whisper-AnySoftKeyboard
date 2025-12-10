@@ -51,4 +51,7 @@ Recent extractions:
 - ActionIconStateSetter applies IME action states to enter icons.
 - LabelPaintConfigurator owns label/key paint sizing and typeface setup.
 - SpecialKeyLabelProvider supplies fallback labels for special keys.
+- KeyboardNameRenderer substitutes the space-key label when showing keyboard name.
+- KeyHintRenderer draws hint text/icons using HintLayoutCalculator placement.
+- KeyLabelRenderer draws key labels (text sizing, emoji scaling, StaticLayout handling).
 - Render helper list captured in docs/render-helpers.md for future slices.
