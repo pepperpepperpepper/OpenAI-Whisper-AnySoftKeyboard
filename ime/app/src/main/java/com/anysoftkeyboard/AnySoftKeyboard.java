@@ -494,20 +494,15 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
 
   @Override
   public void onMultiTapStarted() {
-    final InputConnection ic = currentInputConnection();
-    if (ic != null) {
-      ic.beginBatchEdit();
-    }
+    final InputConnection ic = mInputConnectionRouter.current();
+    mInputConnectionRouter.beginBatchEdit();
     handleDeleteLastCharacter(true);
     super.onMultiTapStarted();
   }
 
   @Override
   public void onMultiTapEnded() {
-    final InputConnection ic = currentInputConnection();
-    if (ic != null) {
-      ic.endBatchEdit();
-    }
+    mInputConnectionRouter.endBatchEdit();
     updateShiftStateNow();
   }
 
@@ -1193,8 +1188,8 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
     // Ensure editor state tracker is in sync before applying wrap/separator logic.
     getCursorPosition();
 
-    final InputConnection ic = currentInputConnection();
-    if (ic != null) ic.beginBatchEdit();
+    final InputConnection ic = mInputConnectionRouter.current();
+    mInputConnectionRouter.beginBatchEdit();
     boolean handledByOverlay =
         isEmojiSearchOverlayShowing()
             && mEmojiSearchOverlay.handleKey(primaryCode, key);
@@ -1206,7 +1201,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
         onFunctionKey(primaryCode, key, fromUI);
       }
     }
-    if (ic != null) ic.endBatchEdit();
+    mInputConnectionRouter.endBatchEdit();
   }
 
   @Override
@@ -1608,7 +1603,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void toggleCaseOfSelectedCharacters() {
-    InputConnection ic = currentInputConnection();
+    InputConnection ic = mInputConnectionRouter.current();
     if (ic == null) return;
     // we have not received notification that something is selected.
     // no need to make a costly getExtractedText call.
@@ -1625,7 +1620,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
     final CharSequence selectedText = et.text.subSequence(selectionStart, selectionEnd);
 
     if (selectedText.length() > 0) {
-      ic.beginBatchEdit();
+      mInputConnectionRouter.beginBatchEdit();
       final String selectedTextString = selectedText.toString();
       AnyKeyboard currentAlphabetKeyboard = getCurrentAlphabetKeyboard();
       @NonNull
@@ -1660,13 +1655,13 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
         }
       }
       ic.setComposingText(mTextCapitalizerWorkspace.toString(), 0);
-      ic.endBatchEdit();
+      mInputConnectionRouter.endBatchEdit();
       ic.setSelection(selectionStart, selectionEnd);
     }
   }
 
   private void wrapSelectionWithCharacters(int prefix, int postfix) {
-    InputConnection ic = currentInputConnection();
+    InputConnection ic = mInputConnectionRouter.current();
     if (ic == null) return;
     final ExtractedText et = getExtractedText();
     if (et == null) return;
@@ -1683,9 +1678,9 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
       StringBuilder outputText = new StringBuilder();
       char[] prefixChars = Character.toChars(prefix);
       outputText.append(prefixChars).append(selectedText).append(Character.toChars(postfix));
-      ic.beginBatchEdit();
+      mInputConnectionRouter.beginBatchEdit();
       ic.commitText(outputText.toString(), 0);
-      ic.endBatchEdit();
+      mInputConnectionRouter.endBatchEdit();
       ic.setSelection(selectionStart + prefixChars.length, selectionEnd + prefixChars.length);
     }
   }
