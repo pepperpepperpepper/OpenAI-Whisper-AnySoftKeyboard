@@ -123,6 +123,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   private final Rect mKeyBackgroundPadding;
   private final Rect mClipRegion = new Rect(0, 0, 0, 0);
   private final TextWidthCache textWidthCache = new TextWidthCache();
+  private final ProximityCalculator proximityCalculator = new ProximityCalculator();
   private final SwipeConfiguration swipeConfiguration = new SwipeConfiguration();
   protected final CompositeDisposable mDisposables = new CompositeDisposable();
 
@@ -735,7 +736,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     // Hint to reallocate the buffer if the size changed
     mKeyboardChanged = true;
     invalidateAllKeys();
-    computeProximityThreshold(keyboard);
+    mKeyDetector.setProximityThreshold(
+        proximityCalculator.computeProximityThreshold(keyboard, mKeys));
     calculateSwipeDistances();
   }
 
@@ -888,25 +890,6 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
    * to get the proximity threshold. We use a square here and in computing the touch distance from a
    * key's center to avoid taking a square root.
    */
-  private void computeProximityThreshold(Keyboard keyboard) {
-    if (keyboard == null) {
-      return;
-    }
-    final Keyboard.Key[] keys = mKeys;
-    if (keys == null) {
-      return;
-    }
-    int length = keys.length;
-    int dimensionSum = 0;
-    for (Keyboard.Key key : keys) {
-      dimensionSum += Math.min(key.width, key.height) + key.gap;
-    }
-    if (dimensionSum < 0 || length == 0) {
-      return;
-    }
-    mKeyDetector.setProximityThreshold((int) (dimensionSum * 1.4f / length));
-  }
-
   @Override
   @CallSuper
   public void onDraw(@NonNull final Canvas canvas) {

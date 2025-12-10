@@ -43,3 +43,4 @@ Recent extractions:
 - InvalidateTracker handles dirty-rect bookkeeping for AnyKeyboardViewBase.
 - SwipeConfiguration owns swipe thresholds and recomputation per keyboard.
 - KeyLabelAdjuster holds shift/function label logic used by the view.
+- ProximityCalculator computes proximity threshold outside the view.
