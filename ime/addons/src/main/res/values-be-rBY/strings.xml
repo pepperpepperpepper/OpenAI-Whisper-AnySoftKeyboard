@@ -3,7 +3,7 @@
     <string name="search_market_for_addons">Пошук дапаўненняў</string>
     <string name="no_market_store_available_title">Немагчыма знайсці дапаўненні!</string>
     <string name="no_market_store_available">Не атрымалася знайсці краму праграм на вашай прыладзе.\nПошук дапаўненняў немагчымы!</string>
-    <string name="leaving_ask_to_market_title">Выхад з AnySoftKeyboard</string>
-    <string name="leaving_ask_to_market_message">Пошук дадатковых дапаўненняў выконваецца ў знешняй праграме.\nPlay Store можа паказваць рэкламу і/або адсочваць тое, што вы выкарыстоўваеце. Кантраляваць гэта AnySoftKeyboard не можа.</string>
+    <string name="leaving_ask_to_market_title">Выхад з NewSoftKeyboard</string>
+    <string name="leaving_ask_to_market_message">Пошук дадатковых дапаўненняў выконваецца ў знешняй праграме.\nPlay Store можа паказваць рэкламу і/або адсочваць тое, што вы выкарыстоўваеце. Кантраляваць гэта NewSoftKeyboard не можа.</string>
     <string name="cta_continue_to_market">Пошук</string>
 </resources>

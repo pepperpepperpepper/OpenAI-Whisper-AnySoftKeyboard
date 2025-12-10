@@ -3,7 +3,7 @@
     <string name="search_market_for_addons">Caută suplimente</string>
     <string name="no_market_store_available_title">Nu se pot căuta suplimente!</string>
     <string name="no_market_store_available">Nu s-a putut găsi un magazin de aplicații pe dispozitiv.\nNu se pot căuta suplimente!</string>
-    <string name="leaving_ask_to_market_title">Părăsire AnySoftKeyboard</string>
-    <string name="leaving_ask_to_market_message">Căutarea suplimentelor se face într-o aplicație externă.\nMagazinul Play poate afișa reclame și/sau îți urmări utilizarea. Acest lucru nu mai este controlat de AnySoftKeyboard.</string>
+    <string name="leaving_ask_to_market_title">Părăsire NewSoftKeyboard</string>
+    <string name="leaving_ask_to_market_message">Căutarea suplimentelor se face într-o aplicație externă.\nMagazinul Play poate afișa reclame și/sau îți urmări utilizarea. Acest lucru nu mai este controlat de NewSoftKeyboard.</string>
     <string name="cta_continue_to_market">Caută</string>
 </resources>

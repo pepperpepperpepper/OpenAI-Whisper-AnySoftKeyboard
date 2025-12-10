@@ -3,7 +3,7 @@
     <string name="search_market_for_addons">Cerca complements</string>
     <string name="no_market_store_available_title">No s\'ha pogut cercar complements!</string>
     <string name="no_market_store_available">No es pot trobar una aplicació de botiga al vostre dispositiu.\nNo es pot cercar complements!</string>
-    <string name="leaving_ask_to_market_title">abandonant AnySoftKeyboard</string>
-    <string name="leaving_ask_to_market_message">La cerca de complements es realitza mitjançant una aplicació externa.\nEl Play Store pot mostrar anuncis i/o rastrejar el vostre dispositiu. L\'AnySoftKeyboard no té cap control en aquest sentit.</string>
+    <string name="leaving_ask_to_market_title">abandonant NewSoftKeyboard</string>
+    <string name="leaving_ask_to_market_message">La cerca de complements es realitza mitjançant una aplicació externa.\nEl Play Store pot mostrar anuncis i/o rastrejar el vostre dispositiu. L\'NewSoftKeyboard no té cap control en aquest sentit.</string>
     <string name="cta_continue_to_market">Cerca</string>
 </resources>

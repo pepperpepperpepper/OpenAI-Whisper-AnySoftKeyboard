@@ -3,7 +3,7 @@
     <string name="search_market_for_addons">Eklenti ara</string>
     <string name="no_market_store_available_title">Eklentiler aranamıyor!</string>
     <string name="no_market_store_available">Cihazınızda uygulama mağazası bulunamadı.\nEklentiler aranamıyor!</string>
-    <string name="leaving_ask_to_market_title">AnySoftKeyboard\'dan çıkılıyor</string>
-    <string name="leaving_ask_to_market_message">Eklenti araması harici bir uygulamada yapılır.\nPlay Store reklam gösterebilir ve/veya kullanımınızı izleyebilir. Bu AnySoftKeyboard\'ın kontrolü dışındadır.</string>
+    <string name="leaving_ask_to_market_title">NewSoftKeyboard\'dan çıkılıyor</string>
+    <string name="leaving_ask_to_market_message">Eklenti araması harici bir uygulamada yapılır.\nPlay Store reklam gösterebilir ve/veya kullanımınızı izleyebilir. Bu NewSoftKeyboard\'ın kontrolü dışındadır.</string>
     <string name="cta_continue_to_market">Ara</string>
 </resources>

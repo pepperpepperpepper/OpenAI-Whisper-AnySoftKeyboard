@@ -3,7 +3,7 @@
     <string name="search_market_for_addons">Leita að viðbótum</string>
     <string name="no_market_store_available_title">Tókst ekki að leita að viðbótum!</string>
     <string name="no_market_store_available">Fann ekkert forritasafn á tækinu þínu.\nTókst ekki að leita að viðbótum!</string>
-    <string name="leaving_ask_to_market_title">Hætti í AnySoftKeyboard</string>
-    <string name="leaving_ask_to_market_message">Leit að viðbótum fer fram í öðru forriti.\nPlay Store forritasafnið gæti birt auglýsingar og/eða fylgst með athöfnum þínum. Þetta er ekki eitthvað sem AnySoftKeyboard stjórnar.</string>
+    <string name="leaving_ask_to_market_title">Hætti í NewSoftKeyboard</string>
+    <string name="leaving_ask_to_market_message">Leit að viðbótum fer fram í öðru forriti.\nPlay Store forritasafnið gæti birt auglýsingar og/eða fylgst með athöfnum þínum. Þetta er ekki eitthvað sem NewSoftKeyboard stjórnar.</string>
     <string name="cta_continue_to_market">Leita</string>
 </resources>

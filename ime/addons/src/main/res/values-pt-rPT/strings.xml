@@ -3,7 +3,7 @@
     <string name="search_market_for_addons">Procurar complementos</string>
     <string name="no_market_store_available_title">Não foi possível procurar complementos!</string>
     <string name="no_market_store_available">Não foi possível encontrar uma loja de aplicações no seu dispositivo.\nImpossibilidade de procurar complementos!</string>
-    <string name="leaving_ask_to_market_title">A sair do AnySoftKeyboard</string>
-    <string name="leaving_ask_to_market_message">A procura de complementos adicionais é feita numa aplicação externa.\nA Play Store pode mostrar anúncios e/ou rastrear a sua utilização. O AnySoftKeyboard não tem qualquer controlo sobre isso.</string>
+    <string name="leaving_ask_to_market_title">A sair do NewSoftKeyboard</string>
+    <string name="leaving_ask_to_market_message">A procura de complementos adicionais é feita numa aplicação externa.\nA Play Store pode mostrar anúncios e/ou rastrear a sua utilização. O NewSoftKeyboard não tem qualquer controlo sobre isso.</string>
     <string name="cta_continue_to_market">Procurar</string>
 </resources>

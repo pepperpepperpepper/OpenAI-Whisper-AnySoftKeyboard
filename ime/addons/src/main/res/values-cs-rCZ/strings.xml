@@ -3,7 +3,7 @@
     <string name="search_market_for_addons">Hledat doplňky</string>
     <string name="no_market_store_available_title">Doplňky se nepodařilo najít!</string>
     <string name="no_market_store_available">Obchod s aplikacemi na vašem zařízení nebyl nalezen.\nDoplňky není možné vyhledat!</string>
-    <string name="leaving_ask_to_market_title">Opouštíte AnySoftKeyboard</string>
-    <string name="leaving_ask_to_market_message">Vyhledávání dalších doplňků probíhá v externí aplikaci.\nObchod Play může zobrazovat reklamy a/nebo sledovat vaše používání. AnySoftKeyboard to nemůže ovlivnit.</string>
+    <string name="leaving_ask_to_market_title">Opouštíte NewSoftKeyboard</string>
+    <string name="leaving_ask_to_market_message">Vyhledávání dalších doplňků probíhá v externí aplikaci.\nObchod Play může zobrazovat reklamy a/nebo sledovat vaše používání. NewSoftKeyboard to nemůže ovlivnit.</string>
     <string name="cta_continue_to_market">Hledat</string>
 </resources>

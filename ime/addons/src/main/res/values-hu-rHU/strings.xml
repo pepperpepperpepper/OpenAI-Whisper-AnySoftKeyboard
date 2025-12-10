@@ -3,7 +3,7 @@
     <string name="search_market_for_addons">Bővítmények keresése</string>
     <string name="no_market_store_available_title">A bővítmények keresése nem lehetséges!</string>
     <string name="no_market_store_available">Nem található alkalmazásbolt az eszközön.\nA bővítmények nem kereshetők!</string>
-    <string name="leaving_ask_to_market_title">Az AnySoftKeyboard elhagyása</string>
-    <string name="leaving_ask_to_market_message">A további bővítmények keresése külső alkalmazásban történik.\nA Play Áruház hirdetéseket jeleníthet meg és/vagy nyomon követheti a használatot. Erre az AnySoftKeyboard-nak nincs ráhatása.</string>
+    <string name="leaving_ask_to_market_title">Az NewSoftKeyboard elhagyása</string>
+    <string name="leaving_ask_to_market_message">A további bővítmények keresése külső alkalmazásban történik.\nA Play Áruház hirdetéseket jeleníthet meg és/vagy nyomon követheti a használatot. Erre az NewSoftKeyboard-nak nincs ráhatása.</string>
     <string name="cta_continue_to_market">Keresés</string>
 </resources>
