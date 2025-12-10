@@ -111,6 +111,8 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   private boolean mAutoComplete;
 
   private final InputFieldConfigurator inputFieldConfigurator = new InputFieldConfigurator();
+  private final SelectionUpdateProcessor selectionUpdateProcessor = new SelectionUpdateProcessor();
+  private SuggestionStripController suggestionStripController;
 
   private static void fillSeparatorsSparseArray(
       SparseBooleanArray sparseBooleanArray, char[] chars) {
@@ -276,7 +278,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     mPredictionOn = mPredictionOn && mShowSuggestions;
 
     mCancelSuggestionsAction.setCancelIconVisible(false);
-    getInputViewContainer().addStripAction(mCancelSuggestionsAction, false);
+    suggestionStripController.attachToStrip(getInputViewContainer());
     getInputViewContainer().setActionsStripVisibility(isPredictionOn());
     clearSuggestions();
   }
@@ -313,98 +315,95 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     final int oldCandidateEnd = getCandidateEndPositionDangerous();
     super.onUpdateSelection(
         oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd);
-    Logger.v(
-        TAG,
-        "onUpdateSelection: word '%s', position %d.",
-        mWord.getTypedWord(),
-        mWord.cursorPosition());
-    final boolean noChange =
-        newSelStart == oldSelStart
-            && oldSelEnd == newSelEnd
-            && oldCandidateStart == candidatesStart
-            && oldCandidateEnd == candidatesEnd;
-    final boolean isExpectedEvent = SystemClock.uptimeMillis() < mExpectingSelectionUpdateBy;
-    if (noChange) {
-      Logger.v(TAG, "onUpdateSelection: no-change. Discarding.");
-      return;
-    }
-    mExpectingSelectionUpdateBy = NEVER_TIME_STAMP;
 
-    if (isExpectedEvent) {
-      Logger.v(TAG, "onUpdateSelection: Expected event. Discarding.");
-      return;
-    }
+    selectionUpdateProcessor.onUpdateSelection(
+        oldSelStart,
+        oldSelEnd,
+        newSelStart,
+        newSelEnd,
+        candidatesStart,
+        candidatesEnd,
+        new SelectionUpdateProcessor.Host() {
+          @Override
+          public boolean isPredictionOn() {
+            return AnySoftKeyboardSuggestions.this.isPredictionOn();
+          }
 
-    final boolean cursorMovedUnexpectedly = (oldSelStart != newSelStart || oldSelEnd != newSelEnd);
-    if (cursorMovedUnexpectedly) {
-      mLastSpaceTimeStamp = NEVER_TIME_STAMP;
-      if (shouldRevertOnDelete()) {
-        Logger.d(
-            TAG,
-            "onUpdateSelection: user moved cursor from a undo-commit sensitive"
-                + " position. Will not be able to undo-commit.");
-        mWordRevertLength = 0;
-      }
-    }
+          @Override
+          public boolean isCurrentlyPredicting() {
+            return AnySoftKeyboardSuggestions.this.isCurrentlyPredicting();
+          }
 
-    if (!isPredictionOn()) {
-      return; // not relevant if no prediction is needed.
-    }
+          @Override
+          public InputConnection currentInputConnection() {
+            return mInputConnectionRouter.current();
+          }
 
-    final InputConnection ic = mInputConnectionRouter.current();
-    if (ic == null) {
-      return; // well, I can't do anything without this connection
-    }
+          @Override
+          public void abortCorrectionAndResetPredictionState(boolean force) {
+            AnySoftKeyboardSuggestions.this.abortCorrectionAndResetPredictionState(force);
+          }
 
-    Logger.d(TAG, "onUpdateSelection: ok, let's see what can be done");
+          @Override
+          public void postRestartWordSuggestion() {
+            AnySoftKeyboardSuggestions.this.postRestartWordSuggestion();
+          }
 
-    if (newSelStart != newSelEnd) {
-      // text selection. can't predict in this mode
-      Logger.d(TAG, "onUpdateSelection: text selection.");
-      abortCorrectionAndResetPredictionState(false);
-    } else if (cursorMovedUnexpectedly) {
-      // we have the following options (we are in an input which requires
-      // predicting (mPredictionOn == true):
-      // 1) predicting and moved inside the word
-      // 2) predicting and moved outside the word
-      // 2.1) to a new word
-      // 2.2) to no word land
-      // 3) not predicting
-      // 3.1) to a new word
-      // 3.2) to no word land
+          @Override
+          public boolean shouldRevertOnDelete() {
+            return AnySoftKeyboardSuggestions.this.shouldRevertOnDelete();
+          }
 
-      // so, 1 and 2 requires that predicting is currently done, and the
-      // cursor moved
-      if (isCurrentlyPredicting()) {
-        final var newPosition = newSelEnd - candidatesStart;
-        if (newSelStart >= candidatesStart
-            && newSelStart <= candidatesEnd
-            && newPosition >= 0
-            && newPosition <= mWord.charCount()) {
-          // 1) predicting and moved inside the word - just update the
-          // cursor position and shift state
-          // inside the currently typed word
-          Logger.d(
-              TAG,
-              "onUpdateSelection: inside the currently typed word to location %d.",
-              newPosition);
-          mWord.setCursorPosition(newPosition);
-        } else {
-          Logger.d(
-              TAG, "onUpdateSelection: cursor moving outside the currently predicting" + " word");
-          abortCorrectionAndResetPredictionState(false);
-          postRestartWordSuggestion();
-        }
-      } else {
-        Logger.d(
-            TAG,
-            "onUpdateSelection: not predicting at this moment, maybe the cursor is now"
-                + " at a new word?");
-        postRestartWordSuggestion();
-      }
-    } else {
-      Logger.v(TAG, "onUpdateSelection: cursor moved expectedly");
-    }
+          @Override
+          public void setWordRevertLength(int length) {
+            mWordRevertLength = length;
+          }
+
+          @Override
+          public int getWordRevertLength() {
+            return mWordRevertLength;
+          }
+
+          @Override
+          public void resetLastSpaceTimeStamp() {
+            mLastSpaceTimeStamp = NEVER_TIME_STAMP;
+          }
+
+          @Override
+          public long getExpectingSelectionUpdateBy() {
+            return mExpectingSelectionUpdateBy;
+          }
+
+          @Override
+          public void clearExpectingSelectionUpdate() {
+            mExpectingSelectionUpdateBy = NEVER_TIME_STAMP;
+          }
+
+          @Override
+          public void setExpectingSelectionUpdateBy(long value) {
+            mExpectingSelectionUpdateBy = value;
+          }
+
+          @Override
+          public int getCandidateStartPositionDangerous() {
+            return oldCandidateStart;
+          }
+
+          @Override
+          public int getCandidateEndPositionDangerous() {
+            return oldCandidateEnd;
+          }
+
+          @Override
+          public WordComposer getCurrentWord() {
+            return mWord;
+          }
+
+          @Override
+          public String logTag() {
+            return TAG;
+          }
+        });
   }
 
   @Override
