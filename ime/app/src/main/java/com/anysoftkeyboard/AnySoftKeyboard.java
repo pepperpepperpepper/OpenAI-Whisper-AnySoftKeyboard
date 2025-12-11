@@ -64,6 +64,7 @@ import com.anysoftkeyboard.ime.FullscreenModeDecider;
 import com.anysoftkeyboard.ime.MultiTapEditCoordinator;
 import com.anysoftkeyboard.ime.PackageBroadcastRegistrar;
 import com.anysoftkeyboard.ime.CondenseModeManager;
+import com.anysoftkeyboard.ime.LanguageSelectionDialog;
 import com.anysoftkeyboard.ime.StatusIconController;
 import com.anysoftkeyboard.ime.VoiceInputController;
 import com.anysoftkeyboard.ime.VoiceInputController.VoiceInputState;
@@ -1175,44 +1176,30 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void showLanguageSelectionDialog() {
-    List<KeyboardAddOnAndBuilder> builders = getKeyboardSwitcher().getEnabledKeyboardsBuilders();
-    ArrayList<CharSequence> keyboardsIds = new ArrayList<>();
-    ArrayList<CharSequence> keyboards = new ArrayList<>();
-    // going over all enabled keyboards
-    for (KeyboardAddOnAndBuilder keyboardBuilder : builders) {
-      keyboardsIds.add(keyboardBuilder.getId());
-      CharSequence name = keyboardBuilder.getName();
+    LanguageSelectionDialog.show(
+        new LanguageSelectionDialog.Host() {
+          @Override
+          public KeyboardSwitcher getKeyboardSwitcher() {
+            return AnySoftKeyboard.this.getKeyboardSwitcher();
+          }
 
-      keyboards.add(name);
-    }
+          @Override
+          public void showOptionsDialogWithData(
+              int titleResId,
+              int iconResId,
+              CharSequence[] items,
+              android.content.DialogInterface.OnClickListener listener) {
+            AnySoftKeyboard.this.showOptionsDialogWithData(titleResId, iconResId, items, listener);
+          }
 
-    // An extra item for the settings line
-    final CharSequence[] ids = new CharSequence[keyboardsIds.size() + 1];
-    final CharSequence[] items = new CharSequence[keyboards.size() + 1];
-    keyboardsIds.toArray(ids);
-    keyboards.toArray(items);
-    final String SETTINGS_ID = "ASK_LANG_SETTINGS_ID";
-    ids[ids.length - 1] = SETTINGS_ID;
-    items[ids.length - 1] = getText(R.string.setup_wizard_step_three_action_languages);
+          @Override
+          public EditorInfo getCurrentInputEditorInfo() {
+            return AnySoftKeyboard.this.getCurrentInputEditorInfo();
+          }
 
-    showOptionsDialogWithData(
-        R.string.select_keyboard_popup_title,
-        R.drawable.ic_keyboard_globe_menu,
-        items,
-        (di, position) -> {
-          CharSequence id = ids[position];
-          Logger.d(TAG, "User selected '%s' with id %s", items[position], id);
-          EditorInfo currentEditorInfo = getCurrentInputEditorInfo();
-          if (SETTINGS_ID.equals(id.toString())) {
-            startActivity(
-                new Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse(getString(R.string.deeplink_url_keyboards)),
-                        getApplicationContext(),
-                        MainSettingsActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-          } else {
-            getKeyboardSwitcher().nextAlphabetKeyboard(currentEditorInfo, id.toString());
+          @Override
+          public android.content.Context getContext() {
+            return AnySoftKeyboard.this;
           }
         });
   }
