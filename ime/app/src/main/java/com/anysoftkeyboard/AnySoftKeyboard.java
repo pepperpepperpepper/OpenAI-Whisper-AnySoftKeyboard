@@ -67,10 +67,12 @@ import com.anysoftkeyboard.ime.CondenseModeManager;
 import com.anysoftkeyboard.ime.LanguageSelectionDialog;
 import com.anysoftkeyboard.ime.OptionsMenuLauncher;
 import com.anysoftkeyboard.ime.DictionaryOverrideDialog;
+import com.anysoftkeyboard.ime.SettingsLauncher;
 import com.anysoftkeyboard.ime.StatusIconController;
 import com.anysoftkeyboard.ime.VoiceInputController;
 import com.anysoftkeyboard.ime.VoiceInputController.VoiceInputState;
 import com.anysoftkeyboard.ime.VoiceStatusRenderer;
+import com.anysoftkeyboard.ime.VoiceKeyUiUpdater;
 import com.anysoftkeyboard.utils.IMEUtil;
 import com.google.android.voiceime.VoiceRecognitionTrigger;
 import com.menny.android.anysoftkeyboard.AnyApplication;
@@ -101,6 +103,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   private VoiceRecognitionTrigger mVoiceRecognitionTrigger;
   private VoiceInputController voiceInputController;
   private VoiceStatusRenderer voiceStatusRenderer = new VoiceStatusRenderer();
+  private final VoiceKeyUiUpdater voiceKeyUiUpdater = new VoiceKeyUiUpdater();
   private final FullscreenModeDecider fullscreenModeDecider = new FullscreenModeDecider();
   private View mFullScreenExtractView;
   private EditText mFullScreenExtractTextView;
@@ -1349,18 +1352,8 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void handleVoice() {
-    android.util.Log.d("VoiceKeyDebug", "handleVoice called - active: " + mVoiceKeyState.isActive() + ", locked: " + mVoiceKeyState.isLocked());
-    if (getInputView() != null) {
-      Logger.d(
-          TAG,
-          "voice Setting UI active:%s, locked: %s",
-          mVoiceKeyState.isActive(),
-          mVoiceKeyState.isLocked());
-      android.util.Log.d("VoiceKeyDebug", "handleVoice: calling getInputView().setVoice(" + mVoiceKeyState.isActive() + ", " + mVoiceKeyState.isLocked() + ")");
-      getInputView().setVoice(mVoiceKeyState.isActive(), mVoiceKeyState.isLocked());
-    } else {
-      android.util.Log.d("VoiceKeyDebug", "handleVoice: getInputView() is null!");
-    }
+    voiceKeyUiUpdater.applyState(
+        getInputView(), mVoiceKeyState.isActive(), mVoiceKeyState.isLocked());
   }
 
   private void handleShift() {
@@ -1606,10 +1599,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
 
   private void launchSettings() {
     hideWindow();
-    Intent intent = new Intent();
-    intent.setClass(AnySoftKeyboard.this, MainSettingsActivity.class);
-    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    startActivity(intent);
+    SettingsLauncher.launch(this);
   }
 
   private boolean isStickyModifier(int primaryCode) {
@@ -1627,12 +1617,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
 
   private void launchOpenAISettings() {
     hideWindow();
-    Intent intent = new Intent();
-    intent.setClass(AnySoftKeyboard.this, MainSettingsActivity.class);
-    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    // Add extra to navigate directly to OpenAI settings
-    intent.putExtra("navigate_to_openai_settings", true);
-    startActivity(intent);
+    SettingsLauncher.launchOpenAI(this);
   }
 
   private void launchDictionaryOverriding() {
