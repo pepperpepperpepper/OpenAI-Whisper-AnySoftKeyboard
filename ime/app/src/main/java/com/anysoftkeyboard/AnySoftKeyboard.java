@@ -18,7 +18,6 @@ package com.anysoftkeyboard;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
@@ -55,7 +54,6 @@ import com.anysoftkeyboard.keyboards.KeyboardAddOnAndBuilder;
 import com.anysoftkeyboard.keyboards.KeyboardSwitcher;
 import com.anysoftkeyboard.keyboards.KeyboardSwitcher.NextKeyboardType;
 import com.anysoftkeyboard.keyboards.views.AnyKeyboardView;
-import com.anysoftkeyboard.prefs.AnimationsLevel;
 import com.anysoftkeyboard.rx.GenericOnError;
 import com.anysoftkeyboard.ime.WindowAnimationSetter;
 import com.anysoftkeyboard.ui.VoiceInputNotInstalledActivity;
@@ -65,6 +63,7 @@ import com.anysoftkeyboard.ui.settings.MainSettingsActivity;
 import com.anysoftkeyboard.ime.FullscreenModeDecider;
 import com.anysoftkeyboard.ime.MultiTapEditCoordinator;
 import com.anysoftkeyboard.ime.PackageBroadcastRegistrar;
+import com.anysoftkeyboard.ime.CondenseModeManager;
 import com.anysoftkeyboard.ime.StatusIconController;
 import com.anysoftkeyboard.ime.VoiceInputController;
 import com.anysoftkeyboard.ime.VoiceInputController.VoiceInputState;
@@ -92,9 +91,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   @NonNull private final SparseArrayCompat<int[]> mSpecialWrapCharacters;
 
   private DevStripActionProvider mDevToolsAction;
-  private CondenseType mPrefKeyboardInCondensedLandscapeMode = CondenseType.None;
-  private CondenseType mPrefKeyboardInCondensedPortraitMode = CondenseType.None;
-  private CondenseType mKeyboardInCondensedMode = CondenseType.None;
+  private CondenseModeManager condenseModeManager;
   private InputMethodManager mInputMethodManager;
   private StatusIconController statusIconController;
   private VoiceRecognitionTrigger mVoiceRecognitionTrigger;
@@ -171,6 +168,13 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
 
     addDisposable(WindowAnimationSetter.subscribe(this, getWindow().getWindow()));
 
+    condenseModeManager =
+        new CondenseModeManager(
+            () -> {
+              getKeyboardSwitcher().flushKeyboardsCache();
+              hideWindow();
+            });
+
     addDisposable(
         prefs()
             .getBoolean(
@@ -190,8 +194,8 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
             .map(AnySoftKeyboard::parseCondenseType)
             .subscribe(
                 type -> {
-                  mPrefKeyboardInCondensedPortraitMode = type;
-                  setInitialCondensedState(getCurrentOrientation());
+                  condenseModeManager.setPortraitPref(type);
+                  condenseModeManager.updateForOrientation(getCurrentOrientation());
                 },
                 GenericOnError.onError("settings_key_default_split_state_portrait")));
     addDisposable(
@@ -203,12 +207,12 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
             .map(AnySoftKeyboard::parseCondenseType)
             .subscribe(
                 type -> {
-                  mPrefKeyboardInCondensedLandscapeMode = type;
-                  setInitialCondensedState(getCurrentOrientation());
+                  condenseModeManager.setLandscapePref(type);
+                  condenseModeManager.updateForOrientation(getCurrentOrientation());
                 },
                 GenericOnError.onError("settings_key_default_split_state_landscape")));
 
-    setInitialCondensedState(getCurrentOrientation());
+    condenseModeManager.updateForOrientation(getCurrentOrientation());
 
     mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
     statusIconController = new StatusIconController(mInputMethodManager);
@@ -697,8 +701,9 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
       case KeyCodes.COMPACT_LAYOUT_TO_RIGHT:
       case KeyCodes.COMPACT_LAYOUT_TO_LEFT:
         if (getInputView() != null) {
-          mKeyboardInCondensedMode = CondenseType.fromKeyCode(primaryCode);
-          setKeyboardForView(getCurrentKeyboard());
+          if (condenseModeManager.setModeFromKeyCode(primaryCode)) {
+            setKeyboardForView(getCurrentKeyboard());
+          }
         }
         break;
       case KeyCodes.QUICK_TEXT:
@@ -1165,7 +1170,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
 
   @Override
   protected void setKeyboardForView(@NonNull AnyKeyboard currentKeyboard) {
-    currentKeyboard.setCondensedKeys(mKeyboardInCondensedMode);
+    currentKeyboard.setCondensedKeys(condenseModeManager.getCurrentMode());
     super.setKeyboardForView(currentKeyboard);
   }
 
@@ -1860,20 +1865,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   @Override
   protected void onOrientationChanged(int oldOrientation, int newOrientation) {
     super.onOrientationChanged(oldOrientation, newOrientation);
-    setInitialCondensedState(newOrientation);
-  }
-
-  private void setInitialCondensedState(int orientation) {
-    final CondenseType previousCondenseType = mKeyboardInCondensedMode;
-    mKeyboardInCondensedMode =
-        orientation == Configuration.ORIENTATION_LANDSCAPE
-            ? mPrefKeyboardInCondensedLandscapeMode
-            : mPrefKeyboardInCondensedPortraitMode;
-
-    if (previousCondenseType != mKeyboardInCondensedMode) {
-      getKeyboardSwitcher().flushKeyboardsCache();
-      hideWindow();
-    }
+    condenseModeManager.updateForOrientation(newOrientation);
   }
 
   @Override

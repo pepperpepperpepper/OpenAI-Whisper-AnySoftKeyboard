@@ -69,3 +69,4 @@ Recent extractions:
 - PackageBroadcastRegistrar registers/unregisters package and user-unlock receivers.
 - VoiceInputController encapsulates VoiceRecognitionTrigger callbacks.
 - WindowAnimationSetter applies IME window animations from prefs.
+- CondenseModeManager owns split/condensed mode selection and orientation prefs.
