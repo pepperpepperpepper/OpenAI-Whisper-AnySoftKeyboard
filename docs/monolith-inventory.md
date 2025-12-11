@@ -68,3 +68,4 @@ Recent extractions:
 - MultiTapEditCoordinator wraps multi-tap batch edit lifecycle.
 - PackageBroadcastRegistrar registers/unregisters package and user-unlock receivers.
 - VoiceInputController encapsulates VoiceRecognitionTrigger callbacks.
+- WindowAnimationSetter applies IME window animations from prefs.

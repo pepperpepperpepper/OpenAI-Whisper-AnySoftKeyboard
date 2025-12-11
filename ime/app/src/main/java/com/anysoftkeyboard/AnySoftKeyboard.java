@@ -57,6 +57,7 @@ import com.anysoftkeyboard.keyboards.KeyboardSwitcher.NextKeyboardType;
 import com.anysoftkeyboard.keyboards.views.AnyKeyboardView;
 import com.anysoftkeyboard.prefs.AnimationsLevel;
 import com.anysoftkeyboard.rx.GenericOnError;
+import com.anysoftkeyboard.ime.WindowAnimationSetter;
 import com.anysoftkeyboard.ui.VoiceInputNotInstalledActivity;
 import com.anysoftkeyboard.ui.dev.DevStripActionProvider;
 import com.anysoftkeyboard.ui.dev.DeveloperUtils;
@@ -168,30 +169,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
       throw new RuntimeException("You can not run a 'RELEASE' build with a SNAPSHOT postfix!");
     }
 
-    addDisposable(
-        AnimationsLevel.createPrefsObservable(this)
-            .subscribe(
-                animationsLevel -> {
-                  final int fancyAnimation =
-                      getResources()
-                          .getIdentifier("Animation_InputMethodFancy", "style", "android");
-                  final Window window = getWindow().getWindow();
-                  if (window == null) return;
-
-                  if (fancyAnimation != 0) {
-                    Logger.i(
-                        TAG,
-                        "Found Animation_InputMethodFancy as %d, so I'll" + " use this",
-                        fancyAnimation);
-                    window.setWindowAnimations(fancyAnimation);
-                  } else {
-                    Logger.w(
-                        TAG,
-                        "Could not find Animation_InputMethodFancy, using" + " default animation");
-                    window.setWindowAnimations(android.R.style.Animation_InputMethod);
-                  }
-                },
-                GenericOnError.onError("AnimationsLevel")));
+    addDisposable(WindowAnimationSetter.subscribe(this, getWindow().getWindow()));
 
     addDisposable(
         prefs()
