@@ -7,7 +7,7 @@ Generated from `wc -l` over *.java and *.kt. Focus on files ≥500 LOC.
 | 1590 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
 | 1778 | ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java |
 | 1471 | ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/Dictionary.java |
-| 1185 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
+| 1117 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
 | 1296 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/AnyKeyboard.java |
 | 1047 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/KeyboardSwitcher.java |
 | 1037 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/Keyboard.java |
@@ -72,4 +72,5 @@ Recent extractions:
 - CondenseModeManager owns split/condensed mode selection and orientation prefs.
 - EmojiSearchController now owns emoji search overlay show/handle/dismiss logic.
 - KeyboardSwitchHandler handles keyboard-cycle/split/utility switching logic.
-- NavigationKeyHandler handles DPAD/home/end/page navigation keys (including Fn combos).\n*** End Patch
+- NavigationKeyHandler handles DPAD/home/end/page navigation keys (including Fn combos).
+- SuggestionSettingsController centralizes suggestion prefs + correction tuning.\n*** End Patch

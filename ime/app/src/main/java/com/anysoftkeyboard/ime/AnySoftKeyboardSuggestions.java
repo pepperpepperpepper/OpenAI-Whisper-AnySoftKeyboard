@@ -27,7 +27,6 @@ import com.anysoftkeyboard.keyboards.Keyboard;
 import com.anysoftkeyboard.keyboards.KeyboardSwitcher;
 import com.anysoftkeyboard.keyboards.views.CandidateView;
 import com.anysoftkeyboard.keyboards.views.KeyboardViewContainerView;
-import com.anysoftkeyboard.rx.GenericOnError;
 import com.anysoftkeyboard.rx.RxSchedulers;
 import com.anysoftkeyboard.utils.Triple;
 import com.menny.android.anysoftkeyboard.AnyApplication;
@@ -82,6 +81,8 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   private boolean mInputFieldSupportsAutoPick;
   private boolean mAutoCorrectOn;
   private boolean mAllowSuggestionsRestart = true;
+  private boolean mShowSuggestions = false;
+  private boolean mAutoComplete;
 
   private boolean mJustAutoAddedWord = false;
 
@@ -89,22 +90,42 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   final CancelSuggestionsAction mCancelSuggestionsAction =
       new CancelSuggestionsAction(() -> abortCorrectionAndResetPredictionState(true));
 
-  /*
-   * Configuration flag. Should we support dictionary suggestions
-   */
-  private boolean mShowSuggestions = false;
-  private boolean mAutoComplete;
-
   private final InputFieldConfigurator inputFieldConfigurator = new InputFieldConfigurator();
   private final SelectionUpdateProcessor selectionUpdateProcessor = new SelectionUpdateProcessor();
   private SuggestionStripController suggestionStripController;
   private final CompletionHandler completionHandler = new CompletionHandler();
   private final WordRestartHelper wordRestartHelper = new WordRestartHelper();
   private final SeparatorOutputHandler separatorOutputHandler = new SeparatorOutputHandler();
+  private final SuggestionSettingsController suggestionSettingsController =
+      new SuggestionSettingsController();
 
   @Nullable
   protected Keyboard.Key getLastUsedKey() {
     return mLastKey;
+  }
+
+  void setAllowSuggestionsRestart(boolean allow) {
+    mAllowSuggestionsRestart = allow;
+  }
+
+  void applySuggestionSettings(
+      boolean showSuggestions,
+      boolean autoComplete,
+      int commonalityMaxLengthDiff,
+      int commonalityMaxDistance,
+      boolean trySplitting) {
+    final boolean showChanged = mShowSuggestions != showSuggestions;
+    mShowSuggestions = showSuggestions;
+    mAutoComplete = autoComplete;
+    mSuggest.setCorrectionMode(
+        mShowSuggestions, commonalityMaxLengthDiff, commonalityMaxDistance, trySplitting);
+    if (showChanged) {
+      if (mShowSuggestions) {
+        setDictionariesForCurrentKeyboard();
+      } else {
+        closeDictionaries();
+      }
+    }
   }
 
   @Override
@@ -122,96 +143,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
       }
     }
 
-    addDisposable(
-        prefs()
-            .getBoolean(
-                R.string.settings_key_allow_suggestions_restart,
-                R.bool.settings_default_allow_suggestions_restart)
-            .asObservable()
-            .subscribe(
-                aBoolean -> mAllowSuggestionsRestart = aBoolean,
-                GenericOnError.onError("settings_key_allow_suggestions_restart")));
-
-    final Observable<Boolean> powerSavingShowSuggestionsObservable =
-        Observable.combineLatest(
-            prefs()
-                .getBoolean(
-                    R.string.settings_key_show_suggestions,
-                    R.bool.settings_default_show_suggestions)
-                .asObservable(),
-            PowerSaving.observePowerSavingState(
-                getApplicationContext(), R.string.settings_key_power_save_mode_suggestions_control),
-            (prefsShowSuggestions, powerSavingState) -> {
-              if (powerSavingState) {
-                return false;
-              } else {
-                return prefsShowSuggestions;
-              }
-            });
-
-    addDisposable(
-        Observable.combineLatest(
-                powerSavingShowSuggestionsObservable,
-                prefs()
-                    .getString(
-                        R.string.settings_key_auto_pick_suggestion_aggressiveness,
-                        R.string.settings_default_auto_pick_suggestion_aggressiveness)
-                    .asObservable(),
-                prefs()
-                    .getBoolean(
-                        R.string.settings_key_try_splitting_words_for_correction,
-                        R.bool.settings_default_try_splitting_words_for_correction)
-                    .asObservable(),
-                Triple::create)
-            .subscribe(
-                triple -> {
-                  final boolean showSuggestionsChanged = mShowSuggestions != triple.getFirst();
-                  mShowSuggestions = triple.getFirst();
-                  final String autoPickAggressiveness = triple.getSecond();
-
-                  final int calculatedCommonalityMaxLengthDiff;
-                  final int calculatedCommonalityMaxDistance;
-                  switch (autoPickAggressiveness) {
-                    case "none":
-                      calculatedCommonalityMaxLengthDiff = 0;
-                      calculatedCommonalityMaxDistance = 0;
-                      mAutoComplete = false;
-                      break;
-                    case "minimal_aggressiveness":
-                      calculatedCommonalityMaxLengthDiff = 1;
-                      calculatedCommonalityMaxDistance = 1;
-                      mAutoComplete = true;
-                      break;
-                    case "high_aggressiveness":
-                      calculatedCommonalityMaxLengthDiff = 3;
-                      calculatedCommonalityMaxDistance = 4;
-                      mAutoComplete = true;
-                      break;
-                    case "extreme_aggressiveness":
-                      calculatedCommonalityMaxLengthDiff = 5;
-                      calculatedCommonalityMaxDistance = 5;
-                      mAutoComplete = true;
-                      break;
-                    default:
-                      calculatedCommonalityMaxLengthDiff = 2;
-                      calculatedCommonalityMaxDistance = 3;
-                      mAutoComplete = true;
-                  }
-                  mSuggest.setCorrectionMode(
-                      mShowSuggestions,
-                      calculatedCommonalityMaxLengthDiff,
-                      calculatedCommonalityMaxDistance,
-                      triple.getThird());
-                  // starting over
-                  if (showSuggestionsChanged) {
-                    if (mShowSuggestions) {
-                      setDictionariesForCurrentKeyboard();
-                    } else {
-                      closeDictionaries();
-                    }
-                  }
-                },
-                GenericOnError.onError("combineLatest settings_key_show_suggestions")));
+    suggestionSettingsController.attach(this, mSuggest);
   }
 
   @Override
