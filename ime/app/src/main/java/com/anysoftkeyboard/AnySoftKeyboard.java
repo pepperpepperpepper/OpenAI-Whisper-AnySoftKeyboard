@@ -65,6 +65,7 @@ import com.anysoftkeyboard.ime.MultiTapEditCoordinator;
 import com.anysoftkeyboard.ime.PackageBroadcastRegistrar;
 import com.anysoftkeyboard.ime.CondenseModeManager;
 import com.anysoftkeyboard.ime.LanguageSelectionDialog;
+import com.anysoftkeyboard.ime.OptionsMenuLauncher;
 import com.anysoftkeyboard.ime.StatusIconController;
 import com.anysoftkeyboard.ime.VoiceInputController;
 import com.anysoftkeyboard.ime.VoiceInputController.VoiceInputState;
@@ -1708,33 +1709,45 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void showOptionsMenu() {
-    showOptionsDialogWithData(
-        R.string.ime_name,
-        R.mipmap.ic_launcher,
-        new CharSequence[] {
-          getText(R.string.ime_settings),
-          getText(R.string.override_dictionary),
-          getText(R.string.change_ime),
-          getString(R.string.switch_incognito_template, getText(R.string.switch_incognito))
-        },
-        (di, position) -> {
-          switch (position) {
-            case 0:
-              launchSettings();
-              break;
-            case 1:
-              launchDictionaryOverriding();
-              break;
-            case 2:
-              ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                  .showInputMethodPicker();
-              break;
-            case 3:
-              setIncognito(!getSuggest().isIncognitoMode(), true);
-              break;
-            default:
-              throw new IllegalArgumentException(
-                  "Position " + position + " is not covered by the ASK settings dialog.");
+    OptionsMenuLauncher.show(
+        new OptionsMenuLauncher.Host() {
+          @Override
+          public void showOptionsDialogWithData(
+              int titleResId,
+              int iconResId,
+              CharSequence[] items,
+              android.content.DialogInterface.OnClickListener listener) {
+            AnySoftKeyboard.this.showOptionsDialogWithData(titleResId, iconResId, items, listener);
+          }
+
+          @Override
+          public InputMethodManager getInputMethodManager() {
+            return (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+          }
+
+          @Override
+          public boolean isIncognito() {
+            return getSuggest().isIncognitoMode();
+          }
+
+          @Override
+          public void setIncognito(boolean incognito, boolean notify) {
+            AnySoftKeyboard.this.setIncognito(incognito, notify);
+          }
+
+          @Override
+          public void launchSettings() {
+            AnySoftKeyboard.this.launchSettings();
+          }
+
+          @Override
+          public void launchDictionaryOverriding() {
+            AnySoftKeyboard.this.launchDictionaryOverriding();
+          }
+
+          @Override
+          public Context getContext() {
+            return AnySoftKeyboard.this.getApplicationContext();
           }
         });
   }
