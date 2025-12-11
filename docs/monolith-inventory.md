@@ -4,7 +4,7 @@ Generated from `wc -l` over *.java and *.kt. Focus on files ≥500 LOC.
 
 | LOC | File |
 | ---:| --- |
-| 1561 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
+| 1383 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
 | 1778 | ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java |
 | 1471 | ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/Dictionary.java |
 | 1117 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
@@ -75,3 +75,6 @@ Recent extractions:
 - NavigationKeyHandler handles DPAD/home/end/page navigation keys (including Fn combos).
 - SuggestionSettingsController centralizes suggestion prefs + correction tuning.
 - ThemeAttributeLoader owns theme/icon attribute parsing for AnyKeyboardViewBase.
+- SpecialKeyAppearanceUpdater sets enter/mode icons & labels outside AnyKeyboardViewBase.
+- PreviewPopupPresenter owns preview popup show/hide logic.
+- PointerActionDispatcher owns pointer down/up/cancel sequencing.

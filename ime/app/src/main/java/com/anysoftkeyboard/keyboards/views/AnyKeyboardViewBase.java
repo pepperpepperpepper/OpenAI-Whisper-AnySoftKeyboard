@@ -109,6 +109,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       new PointerTracker.SharedPointerTrackersData();
   private final PointerTrackerRegistry mPointerTrackerRegistry;
   protected final TouchDispatcher mTouchDispatcher = new TouchDispatcher(this);
+  private final PointerActionDispatcher pointerActionDispatcher;
   @NonNull private final KeyDetector mKeyDetector;
 
   private final InvalidateTracker invalidateTracker = new InvalidateTracker();
@@ -122,6 +123,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   private final KeyIconResolver keyIconResolver;
   private final LabelPaintConfigurator labelPaintConfigurator = new LabelPaintConfigurator(textWidthCache);
   private final PreviewThemeConfigurator previewThemeConfigurator;
+  private final PreviewPopupPresenter previewPopupPresenter;
   private final DirtyRegionDecider dirtyRegionDecider = new DirtyRegionDecider();
   protected final CompositeDisposable mDisposables = new CompositeDisposable();
 
@@ -197,6 +199,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     mKeyPressTimingHandler = new KeyPressTimingHandler(this);
     keyIconResolver = new KeyIconResolver(mThemeOverlayCombiner);
     previewThemeConfigurator = new PreviewThemeConfigurator(mPreviewPopupTheme);
+    previewPopupPresenter = new PreviewPopupPresenter(this, keyIconResolver, keyPreviewManager, previewThemeConfigurator);
+    pointerActionDispatcher = new PointerActionDispatcher(mTouchDispatcher);
     actionIconStateSetter = new ActionIconStateSetter(mDrawableStatesProvider);
     specialKeyLabelProvider = new SpecialKeyLabelProvider(context);
 
@@ -1040,108 +1044,34 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   private void setSpecialKeysIconsAndLabels() {
-    Keyboard.Key enterKey = findKeyByPrimaryKeyCode(KeyCodes.ENTER);
-    if (enterKey != null) {
-      enterKey.icon = null;
-      enterKey.iconPreview = null;
-      enterKey.label = null;
-      ((AnyKey) enterKey).shiftedKeyLabel = null;
-      Drawable icon = getIconToDrawForKey(enterKey, false);
-      if (icon != null) {
-        enterKey.icon = icon;
-        enterKey.iconPreview = icon;
-      } else {
-        CharSequence label = guessLabelForKey(enterKey.getPrimaryCode());
-        enterKey.label = label;
-        ((AnyKey) enterKey).shiftedKeyLabel = label;
-      }
-      // making sure something is shown
-      if (enterKey.icon == null && TextUtils.isEmpty(enterKey.label)) {
-        Logger.i(
-            TAG, "Wow. Unknown ACTION ID " + mKeyboardActionType + ". Will default to ENTER icon.");
-        // I saw devices (Galaxy Tab 10") which say the action
-        // type is 255...
-        // D/ASKKbdViewBase( 3594): setKeyboardActionType
-        // imeOptions:33554687 action:255
-        // which means it is not a known ACTION
-        Drawable enterIcon = getIconForKeyCode(KeyCodes.ENTER);
-        enterIcon.setState(mDrawableStatesProvider.DRAWABLE_STATE_ACTION_NORMAL);
-        enterKey.icon = enterIcon;
-        enterKey.iconPreview = enterIcon;
-      }
+    if (mKeyboard == null || mDrawableStatesProvider == null) {
+      return;
     }
-    // these are dynamic keys
-    setSpecialKeyIconOrLabel(KeyCodes.MODE_ALPHABET);
-    setSpecialKeyIconOrLabel(KeyCodes.MODE_SYMBOLS);
-    setSpecialKeyIconOrLabel(KeyCodes.KEYBOARD_MODE_CHANGE);
 
-    textWidthCache.clear();
-  }
-
-  private void setSpecialKeyIconOrLabel(int keyCode) {
-    Keyboard.Key key = findKeyByPrimaryKeyCode(keyCode);
-    if (key != null && TextUtils.isEmpty(key.label)) {
-      if (key.dynamicEmblem == Keyboard.KEY_EMBLEM_TEXT) {
-        key.label = guessLabelForKey(keyCode);
-      } else {
-        key.icon = getIconForKeyCode(keyCode);
-      }
-    }
+    SpecialKeyAppearanceUpdater.applySpecialKeys(
+        mKeyboard,
+        mKeyboardActionType,
+        mNextAlphabetKeyboardName,
+        mNextSymbolsKeyboardName,
+        mDrawableStatesProvider,
+        keyIconResolver,
+        actionIconStateSetter,
+        specialKeyLabelProvider,
+        textWidthCache,
+        this::findKeyByPrimaryKeyCode,
+        getContext());
   }
 
   @NonNull
   CharSequence guessLabelForKey(int keyCode) {
-    switch (keyCode) {
-      case KeyCodes.ENTER -> {
-        switch (mKeyboardActionType) {
-          case EditorInfo.IME_ACTION_DONE:
-            return getContext().getText(R.string.label_done_key);
-          case EditorInfo.IME_ACTION_GO:
-            return getContext().getText(R.string.label_go_key);
-          case EditorInfo.IME_ACTION_NEXT:
-            return getContext().getText(R.string.label_next_key);
-          case 0x00000007: // API 11: EditorInfo.IME_ACTION_PREVIOUS:
-            return getContext().getText(R.string.label_previous_key);
-          case EditorInfo.IME_ACTION_SEARCH:
-            return getContext().getText(R.string.label_search_key);
-          case EditorInfo.IME_ACTION_SEND:
-            return getContext().getText(R.string.label_send_key);
-          default:
-            return "";
-        }
-      }
-      case KeyCodes.KEYBOARD_MODE_CHANGE -> {
-        if (mKeyboard instanceof GenericKeyboard) {
-          return guessLabelForKey(KeyCodes.MODE_ALPHABET);
-        } else {
-          return guessLabelForKey(KeyCodes.MODE_SYMBOLS);
-        }
-      }
-      case KeyCodes.MODE_ALPHABET -> {
-        return mNextAlphabetKeyboardName;
-      }
-      case KeyCodes.MODE_SYMBOLS -> {
-        return mNextSymbolsKeyboardName;
-      }
-      default -> {
-        return specialKeyLabelProvider.labelFor(keyCode);
-      }
-    }
-  }
-
-  private Drawable getIconToDrawForKey(Keyboard.Key key, boolean feedback) {
-    if (key.dynamicEmblem == Keyboard.KEY_EMBLEM_TEXT) {
-      return null;
-    }
-
-    if (feedback && key.iconPreview != null) {
-      return key.iconPreview;
-    }
-    if (key.icon != null) {
-      return key.icon;
-    }
-
-    return getIconForKeyCode(key.getPrimaryCode());
+    return SpecialKeyAppearanceUpdater.guessLabelForKey(
+        keyCode,
+        mKeyboardActionType,
+        mNextAlphabetKeyboardName,
+        mNextSymbolsKeyboardName,
+        specialKeyLabelProvider,
+        mKeyboard,
+        getContext());
   }
 
   @Nullable
@@ -1151,104 +1081,27 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
   @Nullable
   private Drawable getIconForKeyCode(int keyCode) {
-    Drawable icon = keyIconResolver.getIconForKeyCode(keyCode);
-    // maybe a drawable state is required
-    if (icon != null) {
-      switch (keyCode) {
-        case KeyCodes.ENTER -> actionIconStateSetter.applyState(mKeyboardActionType, icon);
-        case KeyCodes.SHIFT -> {
-          if (mKeyboard.isShiftLocked()) {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_LOCKED);
-          } else if (mKeyboard.isShifted()) {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_PRESSED);
-          } else {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_NORMAL);
-          }
-        }
-        case KeyCodes.CTRL -> {
-          if (mKeyboard.isControl()) {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_PRESSED);
-          } else {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_NORMAL);
-          }
-        }
-        case KeyCodes.ALT_MODIFIER -> {
-          if (mKeyboard.isAltLocked()) {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_LOCKED);
-          } else if (mKeyboard.isAltActive()) {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_PRESSED);
-          } else {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_NORMAL);
-          }
-        }
-        case KeyCodes.FUNCTION -> {
-          if (mKeyboard.isFunctionLocked()) {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_LOCKED);
-          } else if (mKeyboard.isFunctionActive()) {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_PRESSED);
-          } else {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_NORMAL);
-          }
-        }
-        case KeyCodes.VOICE_INPUT -> {
-          if (mKeyboard.isVoiceLocked()) {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_LOCKED);
-          } else if (mKeyboard.isVoiceActive()) {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_PRESSED);
-          } else {
-            icon.setState(mDrawableStatesProvider.DRAWABLE_STATE_MODIFIER_NORMAL);
-          }
-        }
-      }
-    }
-    return icon;
+    return SpecialKeyAppearanceUpdater.getIconForKeyCode(
+        keyCode,
+        mKeyboardActionType,
+        mDrawableStatesProvider,
+        actionIconStateSetter,
+        keyIconResolver,
+        mKeyboard);
   }
 
   void dismissAllKeyPreviews() {
-    /*for (int trackerIndex = 0, trackersCount = mPointerTrackers.size(); trackerIndex < trackersCount; trackerIndex++) {
-        PointerTracker tracker = mPointerTrackers.valueAt(trackerIndex);
-        tracker.updateKey(NOT_A_KEY);
-    }*/
-    keyPreviewManager.dismissAll();
+    previewPopupPresenter.dismissAll();
   }
 
   @Override
   public void hidePreview(int keyIndex, PointerTracker tracker) {
-    final Keyboard.Key key = tracker.getKey(keyIndex);
-    if (keyIndex != NOT_A_KEY && key != null) {
-      keyPreviewManager.getController().hidePreviewForKey(key);
-    }
+    previewPopupPresenter.hidePreview(keyIndex, tracker);
   }
 
   @Override
   public void showPreview(int keyIndex, PointerTracker tracker) {
-    // We should re-draw popup preview when 1) we need to hide the preview,
-    // 2) we will show
-    // the space key preview and 3) pointer moves off the space key to other
-    // letter key, we
-    // should hide the preview of the previous key.
-    final boolean hidePreviewOrShowSpaceKeyPreview = (tracker == null);
-    // If key changed and preview is on or the key is space (language switch
-    // is enabled)
-    final Keyboard.Key key = hidePreviewOrShowSpaceKeyPreview ? null : tracker.getKey(keyIndex);
-    // this will ensure that in case the key is marked as NO preview, we will just dismiss the
-    // previous popup.
-    if (keyIndex != NOT_A_KEY && key != null) {
-      Drawable iconToDraw = keyIconResolver.getIconToDrawForKey(key, true);
-
-      CharSequence label = tracker.getPreviewText(key);
-      if (key instanceof AnyKeyboard.AnyKey anyKey) {
-        label = KeyLabelAdjuster.adjustLabelForFunctionState(mKeyboard, anyKey, label);
-      }
-      if (TextUtils.isEmpty(label)) {
-        label = guessLabelForKey(key.getPrimaryCode());
-        if (key instanceof AnyKeyboard.AnyKey anyKey) {
-          label = KeyLabelAdjuster.adjustLabelForFunctionState(mKeyboard, anyKey, label);
-        }
-      }
-
-      keyPreviewManager.showPreviewForKey(key, iconToDraw, this, previewThemeConfigurator.theme(), label);
-    }
+    previewPopupPresenter.showPreview(keyIndex, tracker, mKeyboard, this::guessLabelForKey);
   }
 
   /**
@@ -1372,12 +1225,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
   /* package */ void dispatchPointerAction(
       final int action, final long eventTime, final int x, final int y, PointerTracker tracker) {
-    switch (action) {
-      case MotionEvent.ACTION_DOWN, MotionEvent.ACTION_POINTER_DOWN -> onDownEvent(tracker, x, y, eventTime);
-      case MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP -> onUpEvent(tracker, x, y, eventTime);
-      case MotionEvent.ACTION_CANCEL -> onCancelEvent(tracker);
-      default -> Logger.d(TAG, "Unhandled pointer action %d", action);
-    }
+    pointerActionDispatcher.dispatchPointerAction(action, eventTime, x, y, tracker);
   }
 
   @Override
@@ -1400,41 +1248,15 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   protected void onDownEvent(PointerTracker tracker, int x, int y, long eventTime) {
-    if (tracker.isOnModifierKey(x, y)) {
-      // Before processing a down event of modifier key, all pointers
-      // already being tracked
-      // should be released.
-      mTouchDispatcher.releaseAllPointersExcept(tracker, eventTime);
-    }
-    tracker.onDownEvent(x, y, eventTime);
-    mTouchDispatcher.add(tracker);
+    pointerActionDispatcher.onDownEvent(tracker, x, y, eventTime);
   }
 
   protected void onUpEvent(PointerTracker tracker, int x, int y, long eventTime) {
-    if (tracker.isModifier()) {
-      // Before processing an up event of modifier key, all pointers
-      // already being tracked
-      // should be released.
-      mTouchDispatcher.releaseAllPointersExcept(tracker, eventTime);
-    } else {
-      int index = mTouchDispatcher.lastIndexOf(tracker);
-      if (index >= 0) {
-        mTouchDispatcher.releaseAllPointersOlderThan(tracker, eventTime);
-      } else {
-        Logger.w(
-            TAG,
-            "onUpEvent: corresponding down event not found for pointer %d",
-            tracker.mPointerId);
-        return;
-      }
-    }
-    tracker.onUpEvent(x, y, eventTime);
-    mTouchDispatcher.remove(tracker);
+    pointerActionDispatcher.onUpEvent(tracker, x, y, eventTime);
   }
 
   protected void onCancelEvent(PointerTracker tracker) {
-    tracker.onCancelEvent();
-    mTouchDispatcher.remove(tracker);
+    pointerActionDispatcher.onCancelEvent(tracker);
   }
 
   @Nullable
@@ -1501,7 +1323,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   public void setKeyPreviewController(@NonNull KeyPreviewsController controller) {
-    keyPreviewManager.setController(controller);
+    previewPopupPresenter.setKeyPreviewController(controller);
   }
 
   /* package */ void setShowKeyboardNameOnKeyboard(boolean show) {
