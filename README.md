@@ -12,7 +12,7 @@ Quick links
 - Build and test: see `BUILDING.md`.
 - Refactor roadmap: `docs/newsoftkeyboard-refactor-plan.md`.
 - Neural/suggestions progress: `suggestions-progress.md`.
-- F-Droid packaging notes: `docs/FDROID.md`.
+- F-Droid: see `FDROID_PUBLISHING.md` and run `fdroid/scripts/publish.sh`.
 
 Supported Android: API 21+ (test matrix targets API 30/34). Older 4.x references have been removed.
 
@@ -43,7 +43,7 @@ Supported Android: API 21+ (test matrix targets API 30/34). Older 4.x references
 
 ### Releases
 
-- F-Droid: see `docs/FDROID.md` for the NewSoftKeyboard publishing flow.
+- F-Droid: see `FDROID_PUBLISHING.md` for the NewSoftKeyboard publishing flow.
 - Play Store: upstream AnySoftKeyboard Play deployments are not used for NewSoftKeyboard; keep upstream links only for legacy add-on guidance.
 
 ## Read more
