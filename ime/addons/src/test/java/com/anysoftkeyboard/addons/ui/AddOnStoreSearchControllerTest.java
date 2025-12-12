@@ -28,7 +28,7 @@ public class AddOnStoreSearchControllerTest {
 
     var leaveDialog = GeneralDialogTestUtil.getLatestShownDialog();
     Assert.assertEquals(
-        "Leaving AnySoftKeyboard", GeneralDialogTestUtil.getTitleFromDialog(leaveDialog));
+        "Leaving NewSoftKeyboard", GeneralDialogTestUtil.getTitleFromDialog(leaveDialog));
 
     var button = leaveDialog.getButton(DialogInterface.BUTTON_POSITIVE);
     Shadows.shadowOf(button).getOnClickListener().onClick(button);
@@ -39,7 +39,7 @@ public class AddOnStoreSearchControllerTest {
     var intent = shadowApplication.getNextStartedActivity();
     Assert.assertEquals(Intent.ACTION_VIEW, intent.getAction());
     Assert.assertEquals(
-        Uri.parse("market://search?q=AnySoftKeyboard%20add%20on"), intent.getData());
+        Uri.parse("market://search?q=NewSoftKeyboard%20add%20on"), intent.getData());
   }
 
   @Test
@@ -53,7 +53,7 @@ public class AddOnStoreSearchControllerTest {
 
     var leaveDialog = GeneralDialogTestUtil.getLatestShownDialog();
     Assert.assertEquals(
-        "Leaving AnySoftKeyboard", GeneralDialogTestUtil.getTitleFromDialog(leaveDialog));
+        "Leaving NewSoftKeyboard", GeneralDialogTestUtil.getTitleFromDialog(leaveDialog));
 
     var button = leaveDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
     Shadows.shadowOf(button).getOnClickListener().onClick(button);
@@ -95,6 +95,6 @@ public class AddOnStoreSearchControllerTest {
 
     var intent = Shadows.shadowOf(context).getNextStartedActivity();
     Assert.assertEquals(Intent.ACTION_VIEW, intent.getAction());
-    Assert.assertEquals(Uri.parse("market://search?q=AnySoftKeyboard%20play"), intent.getData());
+    Assert.assertEquals(Uri.parse("market://search?q=NewSoftKeyboard%20play"), intent.getData());
   }
 }

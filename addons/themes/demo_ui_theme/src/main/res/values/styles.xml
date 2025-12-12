@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Minimal demo theme wiring for tests; inherits existing plain theme assets -->
+    <!-- Use platform parents so the demo theme is self-contained for tests. -->
+    <style name="DemoUITheme" parent="@android:style/Theme.Material.Light.NoActionBar" />
+    <style name="DemoUIPopupTheme" parent="@android:style/Theme.Material.Dialog" />
+    <style name="DemoUIGeneralTheme" parent="@android:style/Theme.Material.Light" />
+</resources>

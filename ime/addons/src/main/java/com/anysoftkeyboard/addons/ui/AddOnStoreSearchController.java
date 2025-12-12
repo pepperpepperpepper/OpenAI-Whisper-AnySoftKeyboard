@@ -97,7 +97,7 @@ public class AddOnStoreSearchController {
           new Uri.Builder()
               .scheme("market")
               .authority("search")
-              .appendQueryParameter("q", "AnySoftKeyboard " + marketKeyword)
+              .appendQueryParameter("q", "NewSoftKeyboard " + marketKeyword)
               .build();
       search.setData(uri);
       search.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -54,14 +54,17 @@ public abstract class ChewbaccaUncaughtExceptionHandler implements UncaughtExcep
   @NonNull protected final Context mApp;
   @Nullable private final UncaughtExceptionHandler mOsDefaultHandler;
   @NonNull private final NotificationDriver mNotificationDriver;
+  private final boolean mNotificationsEnabled;
 
   public ChewbaccaUncaughtExceptionHandler(
       @NonNull Context app,
       @Nullable UncaughtExceptionHandler previous,
-      @NonNull NotificationDriver notificationDriver) {
+      @NonNull NotificationDriver notificationDriver,
+      boolean notificationsEnabled) {
     mApp = app;
     mOsDefaultHandler = previous;
     mNotificationDriver = notificationDriver;
+    mNotificationsEnabled = notificationsEnabled;
   }
 
   private static String getAckReportFilename() {
@@ -209,6 +212,10 @@ public abstract class ChewbaccaUncaughtExceptionHandler implements UncaughtExcep
 
   private void sendNotification(
       @NonNull String reportHeader, @NonNull String crashReport, @NonNull File reportFile) {
+    if (!mNotificationsEnabled) {
+      Logger.i(TAG, "Skipping crash notification (notifications disabled for this build).");
+      return;
+    }
     final Intent notificationIntent = createBugReportingActivityIntent();
     notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     notificationIntent.putExtra(

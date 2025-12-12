@@ -40,7 +40,8 @@ public class ChewbaccaUncaughtExceptionHandlerTest {
         new TestableChewbaccaUncaughtExceptionHandler(
             ApplicationProvider.getApplicationContext(),
             handler,
-            Mockito.mock(NotificationDriver.class));
+            Mockito.mock(NotificationDriver.class),
+            true);
 
     Thread thread = new Thread();
     IOException exception = new IOException("an error");
@@ -56,7 +57,8 @@ public class ChewbaccaUncaughtExceptionHandlerTest {
         new TestableChewbaccaUncaughtExceptionHandler(
             ApplicationProvider.getApplicationContext(),
             null,
-            Mockito.mock(NotificationDriver.class));
+            Mockito.mock(NotificationDriver.class),
+            true);
 
     underTest.uncaughtException(Thread.currentThread(), new IOException("an error"));
   }
@@ -66,7 +68,7 @@ public class ChewbaccaUncaughtExceptionHandlerTest {
     Context app = ApplicationProvider.getApplicationContext();
     var notificationDriver = Mockito.mock(NotificationDriver.class);
     TestableChewbaccaUncaughtExceptionHandler underTest =
-        new TestableChewbaccaUncaughtExceptionHandler(app, null, notificationDriver);
+        new TestableChewbaccaUncaughtExceptionHandler(app, null, notificationDriver, true);
     Assert.assertFalse(underTest.performCrashDetectingFlow());
     Assert.assertFalse(new File(app.getFilesDir(), "crashes").exists());
     Mockito.verify(notificationDriver, Mockito.never()).notify(Mockito.any(), Mockito.anyBoolean());
@@ -92,7 +94,7 @@ public class ChewbaccaUncaughtExceptionHandlerTest {
         .setOnlyAlertOnce(Mockito.anyBoolean());
 
     TestableChewbaccaUncaughtExceptionHandler underTest =
-        new TestableChewbaccaUncaughtExceptionHandler(app, null, notificationDriver);
+        new TestableChewbaccaUncaughtExceptionHandler(app, null, notificationDriver, true);
     File newReport =
         new File(app.getFilesDir(), ChewbaccaUncaughtExceptionHandler.NEW_CRASH_FILENAME);
     List<String> reportTextLines =
@@ -151,7 +153,7 @@ public class ChewbaccaUncaughtExceptionHandlerTest {
     Application app = ApplicationProvider.getApplicationContext();
     NotificationDriver notificationDriver = Mockito.mock(NotificationDriver.class);
     TestableChewbaccaUncaughtExceptionHandler underTest =
-        new TestableChewbaccaUncaughtExceptionHandler(app, null, notificationDriver);
+        new TestableChewbaccaUncaughtExceptionHandler(app, null, notificationDriver, true);
 
     underTest.uncaughtException(Thread.currentThread(), new IOException("an error"));
 
@@ -162,7 +164,7 @@ public class ChewbaccaUncaughtExceptionHandlerTest {
     Assert.assertTrue(newReport.isFile());
     List<String> text = Files.readAllLines(newReport.toPath());
     Assert.assertEquals(
-        44 /*this is fragile, and can change when crash report is changed*/, text.size());
+        42 /*this is fragile, and can change when crash report is changed*/, text.size());
     Assert.assertEquals(
         "Hi. It seems that we have crashed.... Here are some details:", text.get(0));
     Assert.assertEquals(
@@ -179,8 +181,9 @@ public class ChewbaccaUncaughtExceptionHandlerTest {
     public TestableChewbaccaUncaughtExceptionHandler(
         @NonNull Context app,
         @Nullable Thread.UncaughtExceptionHandler previous,
-        @NonNull NotificationDriver driver) {
-      super(app, previous, driver);
+        @NonNull NotificationDriver driver,
+        boolean notificationsEnabled) {
+      super(app, previous, driver, notificationsEnabled);
     }
 
     @NonNull

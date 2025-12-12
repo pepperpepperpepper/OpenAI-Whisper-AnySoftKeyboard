@@ -401,8 +401,13 @@ public class AnyApplication extends MultiDexApplication {
     if (sp.getBoolean(
         resources.getString(R.string.settings_key_show_chewbacca),
         resources.getBoolean(R.bool.settings_default_show_chewbacca))) {
+      final boolean enableCrashNotifications = !BuildConfig.TESTING_BUILD || !BuildConfig.DEBUG;
       final ChewbaccaUncaughtExceptionHandler chewbaccaUncaughtExceptionHandler =
-          new AnyChewbaccaUncaughtExceptionHandler(this, globalErrorHandler, mNotificationDriver);
+          new AnyChewbaccaUncaughtExceptionHandler(
+              this,
+              globalErrorHandler,
+              mNotificationDriver,
+              enableCrashNotifications);
       Thread.setDefaultUncaughtExceptionHandler(chewbaccaUncaughtExceptionHandler);
       RxJavaPlugins.setErrorHandler(
           e -> chewbaccaUncaughtExceptionHandler.uncaughtException(Thread.currentThread(), e));
@@ -457,8 +462,9 @@ public class AnyApplication extends MultiDexApplication {
     public AnyChewbaccaUncaughtExceptionHandler(
         @NonNull Context app,
         @Nullable Thread.UncaughtExceptionHandler previous,
-        @NonNull NotificationDriver notificationDriver) {
-      super(app, previous, notificationDriver);
+        @NonNull NotificationDriver notificationDriver,
+        boolean notificationsEnabled) {
+      super(app, previous, notificationDriver, notificationsEnabled);
     }
 
     @NonNull

@@ -88,7 +88,8 @@ public abstract class AnySoftKeyboardBase extends InputMethodService
         BuildConfig.VERSION_NAME,
         BuildConfig.VERSION_CODE);
     super.onCreate();
-    mInputConnectionRouter = new InputConnectionRouter(this::currentInputConnection);
+    mInputConnectionRouter =
+        new InputConnectionRouter(() -> AnySoftKeyboardBase.super.getCurrentInputConnection());
     mOrientation = getResources().getConfiguration().orientation;
     if (!BuildConfig.DEBUG && DeveloperUtils.hasTracingRequested(getApplicationContext())) {
       try {
@@ -366,7 +367,7 @@ public abstract class AnySoftKeyboardBase extends InputMethodService
   }
 
   protected InputConnection currentInputConnection() {
-    return mInputConnectionRouter.current();
+    return AnySoftKeyboardBase.super.getCurrentInputConnection();
   }
 
   @Override

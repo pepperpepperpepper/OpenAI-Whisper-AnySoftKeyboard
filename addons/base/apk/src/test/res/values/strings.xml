@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="test_app_name">Test Add-on</string>
+    <string name="test_add_on_description">Test add-on description</string>
+    <string name="test_web_site">https://example.com/test-addon</string>
+    <string name="test_release_notes">Initial test release</string>
+</resources>

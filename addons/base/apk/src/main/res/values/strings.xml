@@ -5,4 +5,15 @@
     <string name="ask_is_missing_need_install">NewSoftKeyboard is not installed on your device. To use this expansion pack, please install NewSoftKeyboard first.</string>
     <string name="ask_installed">NewSoftKeyboard is installed. You may need to configure it to start using this expansion pack.</string>
     <string name="open_ask_main_settings">Open NewSoftKeyboard</string>
+    <string name="open_ask_in_vending">Install NewSoftKeyboard</string>
+    <string name="welcome_title">Welcome</string>
+    <string name="welcome_subtitle_template">You are installing the “%1$s” add-on for NewSoftKeyboard.</string>
+    <string name="add_on_website_template">Website: %1$s</string>
+    <string name="screenshot_content_description">Add-on screenshot</string>
+    <string name="release_notes_template">Release notes (%1$s): %2$s</string>
+    <!-- Test-only placeholders used by robolectric fixtures -->
+    <string name="test_app_name">Test Add-on</string>
+    <string name="test_add_on_description">Test add-on description</string>
+    <string name="test_web_site">https://example.com/test-addon</string>
+    <string name="test_release_notes">Initial test release</string>
 </resources>

@@ -326,6 +326,8 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     mCandidateView = getInputViewContainer().getCandidateView();
     mCandidateView.setService(this);
     mCancelSuggestionsAction.setOwningCandidateView(mCandidateView);
+    suggestionStripController =
+        new SuggestionStripController(mCancelSuggestionsAction, mCandidateView);
     return view;
   }
 

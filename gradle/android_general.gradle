@@ -54,4 +54,8 @@ afterEvaluate {
             task.options.compilerArgs << '-Xlint:-rawtypes' << '-Xlint:-cast' << '-Xlint:-unchecked' << '-Xlint:-classfile'
         }
     }
+    tasks.matching { it.hasProperty('kotlinOptions') }
+        .configureEach { task ->
+            task.kotlinOptions.jvmTarget = "17"
+        }
 }

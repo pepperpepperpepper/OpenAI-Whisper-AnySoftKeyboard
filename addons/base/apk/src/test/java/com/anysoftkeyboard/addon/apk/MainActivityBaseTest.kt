@@ -25,7 +25,7 @@ class MainActivityBaseTest {
       scenario.moveToState(Lifecycle.State.RESUMED).onActivity { activity ->
         activity.findViewById<TextView>(R.id.welcome_description).let {
           Assert.assertEquals(
-              "Thank you for installing Test Add On App Name.",
+              "You are installing the “Test Add-on” add-on for NewSoftKeyboard.",
               it.text,
           )
         }
@@ -37,21 +37,19 @@ class MainActivityBaseTest {
         }
         activity.findViewById<TextView>(R.id.pack_description).let {
           Assert.assertEquals(
-              "This is a test add on description, it can be anything",
+              "Test add-on description",
               it.text,
           )
         }
         activity.findViewById<TextView>(R.id.add_on_web_site).let {
           Assert.assertEquals(
-              "Visit us at https://example.com",
+              "Website: https://example.com/test-addon",
               it.text.toString(),
           )
         }
         activity.findViewById<TextView>(R.id.release_notes).let {
           Assert.assertEquals(
-              """Release notes for vnull (0):
-* this
-* and that""",
+              "Release notes (null (0)): Initial test release",
               it.text,
           )
         }
@@ -68,15 +66,13 @@ class MainActivityBaseTest {
       scenario.moveToState(Lifecycle.State.RESUMED).onActivity { activity ->
         activity.findViewById<TextView>(R.id.action_description).run {
           Assert.assertEquals(
-              "AnySoftKeyboard is not installed on your device.\n" +
-                  "In order to use this expansion pack, " +
-                  "you must first install AnySoftKeyboard.",
+              "NewSoftKeyboard is not installed on your device. To use this expansion pack, please install NewSoftKeyboard first.",
               text,
           )
         }
         activity.findViewById<Button>(R.id.action_button).run {
           Assert.assertEquals(
-              "Go to Play Store",
+              "Install NewSoftKeyboard",
               text,
           )
           Shadows.shadowOf(this).onClickListener.onClick(this)
@@ -125,13 +121,13 @@ class MainActivityBaseTest {
       scenario.moveToState(Lifecycle.State.RESUMED).onActivity { activity ->
         activity.findViewById<TextView>(R.id.action_description).run {
           Assert.assertEquals(
-              "AnySoftKeyboard is installed. You may need to set it up to start using this expansion pack.",
+              "NewSoftKeyboard is installed. You may need to configure it to start using this expansion pack.",
               text,
           )
         }
         activity.findViewById<Button>(R.id.action_button).run {
           Assert.assertEquals(
-              "Open AnySoftKeyboard",
+              "Open NewSoftKeyboard",
               text,
           )
           Shadows.shadowOf(this).onClickListener.onClick(this)
