@@ -5,7 +5,7 @@ Generated from `wc -l` over *.java and *.kt. Focus on files ≥500 LOC.
 | LOC | File |
 | ---:| --- |
 | 1383 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
-| 1673 | ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java |
+| 1606 | ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java |
 | 1471 | ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/Dictionary.java |
 | 1117 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
 | 1296 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/AnyKeyboard.java |
@@ -84,3 +84,4 @@ Recent extractions:
 - PreviewPopupPresenter owns preview popup show/hide logic.
 - PointerActionDispatcher owns pointer down/up/cancel sequencing.
 - ModifierKeyEventHelper moves Fn/Alt combination handling out of AnySoftKeyboard.
+- SelectionEditHelper holds selection wrap/case toggle logic out of AnySoftKeyboard.

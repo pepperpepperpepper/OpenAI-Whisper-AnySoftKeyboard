@@ -40,6 +40,7 @@ import androidx.collection.SparseArrayCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import com.anysoftkeyboard.ModifierKeyEventHelper;
+import com.anysoftkeyboard.SelectionEditHelper;
 import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.dictionaries.DictionaryAddOnAndBuilder;
@@ -1262,86 +1263,18 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void toggleCaseOfSelectedCharacters() {
-    InputConnection ic = mInputConnectionRouter.current();
-    if (ic == null) return;
-    // we have not received notification that something is selected.
-    // no need to make a costly getExtractedText call.
     if (getSelectionStartPositionDangerous() == getCursorPosition()) return;
     final ExtractedText et = getExtractedText();
-    if (et == null) return;
-    final int selectionStart = et.selectionStart;
-    final int selectionEnd = et.selectionEnd;
-
-    // https://github.com/AnySoftKeyboard/AnySoftKeyboard/issues/2481
-    // the host app may report -1 as indexes (when nothing is selected)
-    if (et.text == null || selectionStart == selectionEnd || selectionEnd < 0 || selectionStart < 0)
-      return;
-    final CharSequence selectedText = et.text.subSequence(selectionStart, selectionEnd);
-
-    if (selectedText.length() > 0) {
-      mInputConnectionRouter.beginBatchEdit();
-      final String selectedTextString = selectedText.toString();
-      AnyKeyboard currentAlphabetKeyboard = getCurrentAlphabetKeyboard();
-      @NonNull
-      Locale locale =
-          currentAlphabetKeyboard != null ? currentAlphabetKeyboard.getLocale() : Locale.ROOT;
-      // The rules:
-      // lowercase -> Capitalized
-      // UPPERCASE -> lowercase
-      // Capitalized (only first character is uppercase, more than one letter string) ->
-      // UPPERCASE
-      // mixed -> lowercase
-      mTextCapitalizerWorkspace.setLength(0);
-      if (selectedTextString.compareTo(selectedTextString.toLowerCase(locale)) == 0) {
-        // Convert to Capitalized
-        mTextCapitalizerWorkspace.append(selectedTextString.toLowerCase(locale));
-        mTextCapitalizerWorkspace.setCharAt(0, Character.toUpperCase(selectedTextString.charAt(0)));
-      } else if (selectedTextString.compareTo(selectedTextString.toUpperCase(locale)) == 0) {
-        // Convert to lower case
-        mTextCapitalizerWorkspace.append(selectedTextString.toLowerCase(locale));
-      } else {
-        // this has to mean the text is longer than 1 (otherwise, it would be entirely
-        // uppercase or lowercase)
-        final String textWithoutFirst = selectedTextString.substring(1);
-        if (Character.isUpperCase(selectedTextString.charAt(0))
-            && textWithoutFirst.compareTo(textWithoutFirst.toLowerCase(locale)) == 0) {
-          // this means it's capitalized
-          mTextCapitalizerWorkspace.append(selectedTextString.toUpperCase(locale));
-        } else {
-          // mixed (the first letter is not uppercase, and at least one character from the
-          // rest is not lowercase
-          mTextCapitalizerWorkspace.append(selectedTextString.toLowerCase(locale));
-        }
-      }
-      ic.setComposingText(mTextCapitalizerWorkspace.toString(), 0);
-      mInputConnectionRouter.endBatchEdit();
-      ic.setSelection(selectionStart, selectionEnd);
-    }
+    AnyKeyboard currentAlphabetKeyboard = getCurrentAlphabetKeyboard();
+    @NonNull
+    Locale locale = currentAlphabetKeyboard != null ? currentAlphabetKeyboard.getLocale() : Locale.ROOT;
+    SelectionEditHelper.toggleCaseOfSelectedCharacters(
+        et, mInputConnectionRouter, mTextCapitalizerWorkspace, locale);
   }
 
   private void wrapSelectionWithCharacters(int prefix, int postfix) {
-    InputConnection ic = mInputConnectionRouter.current();
-    if (ic == null) return;
     final ExtractedText et = getExtractedText();
-    if (et == null) return;
-    final int selectionStart = et.selectionStart;
-    final int selectionEnd = et.selectionEnd;
-
-    // https://github.com/AnySoftKeyboard/AnySoftKeyboard/issues/2481
-    // the host app may report -1 as indexes (when nothing is selected)
-    if (et.text == null || selectionStart == selectionEnd || selectionEnd < 0 || selectionStart < 0)
-      return;
-    final CharSequence selectedText = et.text.subSequence(selectionStart, selectionEnd);
-
-    if (selectedText.length() > 0) {
-      StringBuilder outputText = new StringBuilder();
-      char[] prefixChars = Character.toChars(prefix);
-      outputText.append(prefixChars).append(selectedText).append(Character.toChars(postfix));
-      mInputConnectionRouter.beginBatchEdit();
-      ic.commitText(outputText.toString(), 0);
-      mInputConnectionRouter.endBatchEdit();
-      ic.setSelection(selectionStart + prefixChars.length, selectionEnd + prefixChars.length);
-    }
+    SelectionEditHelper.wrapSelectionWithCharacters(et, mInputConnectionRouter, prefix, postfix);
   }
 
   @Override
