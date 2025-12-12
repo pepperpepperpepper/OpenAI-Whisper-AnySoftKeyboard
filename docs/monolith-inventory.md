@@ -5,7 +5,7 @@ Generated from `wc -l` over *.java and *.kt. Focus on files ≥500 LOC.
 | LOC | File |
 | ---:| --- |
 | 1383 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
-| 1778 | ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java |
+| 1687 | ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java |
 | 1471 | ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/Dictionary.java |
 | 1117 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
 | 1296 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/AnyKeyboard.java |
