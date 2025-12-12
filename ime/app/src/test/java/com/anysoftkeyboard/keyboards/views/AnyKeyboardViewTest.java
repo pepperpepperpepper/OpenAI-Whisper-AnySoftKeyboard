@@ -464,7 +464,7 @@ public class AnyKeyboardViewTest extends AnyKeyboardViewWithMiniKeyboardTest {
     // flinging up
     final Keyboard.Key spaceKey = findKey(' ');
     final Point upPoint = getKeyCenterPoint(spaceKey);
-    upPoint.offset(0, -(mViewUnderTest.mSwipeYDistanceThreshold + 1));
+    upPoint.offset(0, -(mViewUnderTest.getSwipeYDistanceThreshold() + 1));
     Assert.assertFalse(mViewUnderTest.areTouchesDisabled(null));
     ViewTestUtils.navigateFromTo(
         mViewUnderTest, getKeyCenterPoint(spaceKey), upPoint, 30, true, true);
@@ -781,7 +781,9 @@ public class AnyKeyboardViewTest extends AnyKeyboardViewWithMiniKeyboardTest {
     final int margin =
         getApplicationContext().getResources().getDimensionPixelOffset(R.dimen.watermark_margin);
     final int y = mViewUnderTest.getHeight() - dimen - margin;
-    final int x = 477; // location of the edge of the last key
+    final Keyboard.Key lastKey =
+        mViewUnderTest.getKeyboard().getKeys().get(mViewUnderTest.getKeyboard().getKeys().size() - 1);
+    final int x = Keyboard.Key.getEndX(lastKey); // location of the edge of the last key
     final InOrder inOrder = Mockito.inOrder(canvas);
 
     inOrder.verify(canvas).translate(x - dimen - margin, y);

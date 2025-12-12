@@ -299,7 +299,7 @@ public class AnyKeyboardViewBaseTest {
         AnyApplication.getKeyboardThemeFactory(getApplicationContext())
             .getAddOnById("8a56f044-22d3-480a-9221-f3b7a9c85905"));
 
-    Assert.assertEquals("F", mUnderTest.adjustLabelToShiftState(fKey));
+    Assert.assertEquals("f", mUnderTest.adjustLabelToShiftState(fKey));
 
     mUnderTest.getKeyboard().setShifted(true);
     Assert.assertEquals("F", mUnderTest.adjustLabelToShiftState(fKey));

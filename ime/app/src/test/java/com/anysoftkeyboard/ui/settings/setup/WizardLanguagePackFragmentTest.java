@@ -73,7 +73,7 @@ public class WizardLanguagePackFragmentTest
     stateIconClickHandler.onClick(null);
 
     Assert.assertEquals(
-        "Leaving AnySoftKeyboard",
+        "Leaving NewSoftKeyboard",
         GeneralDialogTestUtil.getTitleFromDialog(GeneralDialogTestUtil.getLatestShownDialog()));
   }
 }

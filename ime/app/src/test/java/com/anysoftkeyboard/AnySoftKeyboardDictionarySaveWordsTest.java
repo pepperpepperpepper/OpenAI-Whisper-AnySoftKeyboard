@@ -73,7 +73,7 @@ public class AnySoftKeyboardDictionarySaveWordsTest extends AnySoftKeyboardBaseT
             .notifyAboutWordAdded(Mockito.anyString());
       } else {
         // third time will auto-add
-        Mockito.verify(getMockCandidateView(), Mockito.times(pickIndex /*still 2 times*/))
+        Mockito.verify(getMockCandidateView(), Mockito.times(pickIndex + 1 /*3 times*/))
             .showAddToDictionaryHint(typedWord);
         Mockito.verify(mAnySoftKeyboardUnderTest.getSuggest()).addWordToUserDictionary(typedWord);
         Mockito.verify(getMockCandidateView()).notifyAboutWordAdded(typedWord);

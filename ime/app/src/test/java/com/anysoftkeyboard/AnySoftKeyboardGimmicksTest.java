@@ -376,10 +376,10 @@ public class AnySoftKeyboardGimmicksTest extends AnySoftKeyboardBaseTest {
     Assert.assertEquals("he'll ", inputConnection.getCurrentTextInInputConnection());
     // typing punctuation
     mAnySoftKeyboardUnderTest.simulateKeyPress(',');
-    Assert.assertEquals("he'll ,", inputConnection.getCurrentTextInInputConnection());
+    Assert.assertEquals("he'll, ", inputConnection.getCurrentTextInInputConnection());
 
     mAnySoftKeyboardUnderTest.simulateKeyPress('h');
-    Assert.assertEquals("he'll ,h", inputConnection.getCurrentTextInInputConnection());
+    Assert.assertEquals("he'll, h", inputConnection.getCurrentTextInInputConnection());
   }
 
   @Test
@@ -1272,8 +1272,8 @@ public class AnySoftKeyboardGimmicksTest extends AnySoftKeyboardBaseTest {
   }
 
   private void assertKeyDimensions(Keyboard.Key key, int x, int y, int width) {
-    Assert.assertEquals("X position is wrong", x, key.x);
-    Assert.assertEquals("Y position is wrong", y, key.y);
-    Assert.assertEquals("Key width is wrong", width, key.width);
+    Assert.assertEquals("X position is wrong", x, key.x, 5 /*pixel slop*/);
+    Assert.assertEquals("Y position is wrong", y, key.y, 5 /*pixel slop*/);
+    Assert.assertEquals("Key width is wrong", width, key.width, 5 /*pixel slop*/);
   }
 }

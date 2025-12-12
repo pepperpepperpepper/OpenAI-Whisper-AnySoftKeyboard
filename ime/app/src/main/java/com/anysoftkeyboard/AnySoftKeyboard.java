@@ -1463,6 +1463,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   @Override
   public void onSharedPreferenceChange(String key) {
     if (ExternalDictionaryFactory.isOverrideDictionaryPrefKey(key)) {
+      invalidateDictionariesForCurrentKeyboard();
       setDictionariesForCurrentKeyboard();
     } else {
       super.onSharedPreferenceChange(key);

@@ -85,6 +85,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   boolean mAutoComplete;
 
   private boolean mJustAutoAddedWord = false;
+  private boolean mDictionariesForCurrentKeyboardLoaded = false;
 
   @VisibleForTesting
   final CancelSuggestionsAction mCancelSuggestionsAction =
@@ -127,6 +128,9 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
       boolean trySplitting) {
     final boolean showChanged = mShowSuggestions != showSuggestions;
     mShowSuggestions = showSuggestions;
+    if (showChanged && mShowSuggestions) {
+      mDictionariesForCurrentKeyboardLoaded = false;
+    }
     mAutoComplete = autoComplete;
     mSuggest.setCorrectionMode(
         mShowSuggestions, commonalityMaxLengthDiff, commonalityMaxDistance, trySplitting);
@@ -155,6 +159,8 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     }
 
     suggestionSettingsController.attach(this, mSuggest);
+    // apply current prefs synchronously so tests have suggestions before async streams emit
+    suggestionSettingsController.applySnapshot(this, mSuggest);
   }
 
   @Override
@@ -171,6 +177,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     mKeyboardHandler.removeMessages(KeyboardUIStateHandler.MSG_CLOSE_DICTIONARIES);
 
     abortCorrectionAndResetPredictionState(false);
+    mDictionariesForCurrentKeyboardLoaded = false;
   }
 
   @Override
@@ -178,6 +185,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     super.onStartInputView(attribute, restarting);
 
     mPredictionOn = false;
+    mDictionariesForCurrentKeyboardLoaded = false;
     completionHandler.reset();
     mInputFieldSupportsAutoPick = false;
 
@@ -195,6 +203,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     suggestionStripController.attachToStrip(getInputViewContainer());
     getInputViewContainer().setActionsStripVisibility(isPredictionOn());
     clearSuggestions();
+    setDictionariesForCurrentKeyboard();
   }
 
   @Override
@@ -449,7 +458,13 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
       // this should be done ONLY if the key is a letter, and not a inner
       // character (like ').
       if (isSuggestionAffectingCharacter(primaryCode)) {
-        postUpdateSuggestions();
+        if (!isPredictionOn()) {
+          // Even when predictions are disabled (e.g., power‑saving), keep the strip in sync so
+          // tests and UI see an explicit "no suggestions" update.
+          clearSuggestions();
+        } else {
+          postUpdateSuggestions();
+        }
       } else {
         // just replace the typed word in the candidates view
         mCandidateView.replaceTypedWord(mWord.getTypedWord());
@@ -713,9 +728,11 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   }
 
   protected void setDictionariesForCurrentKeyboard() {
+    if (mDictionariesForCurrentKeyboardLoaded) return;
+
     mSuggest.resetNextWordSentence();
 
-    if (mPredictionOn) {
+    if (mPredictionOn || shouldLoadDictionariesForGestureTyping()) {
       // It null at the creation of the application.
       final AnyKeyboard currentAlphabetKeyboard = getCurrentAlphabetKeyboard();
       if (currentAlphabetKeyboard != null && isInAlphabetKeyboardMode()) {
@@ -728,6 +745,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
 
         mSuggest.setupSuggestionsForKeyboard(
             buildersForKeyboard, getDictionaryLoadedListener(currentAlphabetKeyboard));
+        mDictionariesForCurrentKeyboardLoaded = true;
       }
     }
   }
@@ -736,6 +754,11 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   protected DictionaryBackgroundLoader.Listener getDictionaryLoadedListener(
       @NonNull AnyKeyboard currentAlphabetKeyboard) {
     return NO_OP_DICTIONARY_LOADER_LISTENER;
+  }
+
+  /** Allows subclasses (e.g., gesture typing) to force dictionary loading even when predictions are off. */
+  protected boolean shouldLoadDictionariesForGestureTyping() {
+    return false;
   }
 
   @Override
@@ -777,6 +800,11 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
       }
       mPredictionOn = false;
     }
+  }
+
+  /** Allows subclasses to force a reload of keyboard dictionaries. */
+  protected void invalidateDictionariesForCurrentKeyboard() {
+    mDictionariesForCurrentKeyboardLoaded = false;
   }
 
   protected boolean canRestartWordSuggestion() {
@@ -873,7 +901,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   }
 
   protected boolean isPredictionOn() {
-    return mPredictionOn;
+    return mPredictionOn && mShowSuggestions;
   }
 
   protected boolean isCurrentlyPredicting() {
@@ -954,6 +982,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   @Override
   public void onAlphabetKeyboardSet(@NonNull AnyKeyboard keyboard) {
     super.onAlphabetKeyboardSet(keyboard);
+    mDictionariesForCurrentKeyboardLoaded = false;
 
     final Locale locale = keyboard.getLocale();
     mFrenchSpacePunctuationBehavior =

@@ -4,11 +4,11 @@ Generated from `wc -l` over *.java and *.kt. Focus on files ≥500 LOC.
 
 | LOC | File |
 | ---:| --- |
-| 1383 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
 | 1540 | ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java |
-| 1471 | ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/Dictionary.java |
-| 1117 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
+| 1389 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
 | 1296 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/AnyKeyboard.java |
+| 1292 | ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/BaseCharactersTable.java* |
+| 1175 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
 | 1047 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/KeyboardSwitcher.java |
 | 1037 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/Keyboard.java |
 |  849 | ime/app/src/main/java/com/anysoftkeyboard/dictionaries/SuggestionsProvider.java |
@@ -32,6 +32,8 @@ Tests ≥500 LOC (for awareness): AnySoftKeyboard* tests, SuggestionProviderTest
 6) Settings UI: `MainFragment.java`, `NextWordSettingsFragment.java` (view vs. data helpers).
 
 Keep behavior identical; add light tests per extraction. Preserve ASK compatibility surfaces while refactoring.
+
+*BaseCharactersTable is data-only (BASE_CHARS) lifted out of Dictionary to shrink the logic file.*
 
 Recent extractions:
 - InputConnectionRouter (AnySoftKeyboard*).

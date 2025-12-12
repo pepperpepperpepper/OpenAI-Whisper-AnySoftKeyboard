@@ -24,14 +24,16 @@ public class AnySoftKeyboardPowerSavingTest extends AnySoftKeyboardBaseTest {
   @Test
   public void testDoesNotAskForSuggestionsIfInLowBattery() {
     PowerSavingTest.sendBatteryState(true);
+    mAnySoftKeyboardUnderTest.resetMockCandidateView();
     mAnySoftKeyboardUnderTest.simulateTextTyping("h");
-    verifySuggestions(true);
+    verifyNoSuggestionsInteractions();
     mAnySoftKeyboardUnderTest.simulateTextTyping("e");
-    verifySuggestions(true);
+    verifyNoSuggestionsInteractions();
     mAnySoftKeyboardUnderTest.simulateTextTyping("l");
-    verifySuggestions(true);
+    verifyNoSuggestionsInteractions();
     mAnySoftKeyboardUnderTest.simulateTextTyping(" ");
 
+    mAnySoftKeyboardUnderTest.resetMockCandidateView();
     PowerSavingTest.sendBatteryState(false);
     mAnySoftKeyboardUnderTest.simulateTextTyping("h");
     verifySuggestions(true, "h", "he");
@@ -70,22 +72,24 @@ public class AnySoftKeyboardPowerSavingTest extends AnySoftKeyboardBaseTest {
     SharedPrefsHelper.setPrefsValue(R.string.settings_key_power_save_mode, "always");
     PowerSavingTest.sendBatteryState(false);
 
+    mAnySoftKeyboardUnderTest.resetMockCandidateView();
     verifyNoSuggestionsInteractions();
     mAnySoftKeyboardUnderTest.simulateTextTyping("h");
-    verifySuggestions(true);
+    verifyNoSuggestionsInteractions();
     mAnySoftKeyboardUnderTest.simulateTextTyping("e");
-    verifySuggestions(true);
+    verifyNoSuggestionsInteractions();
     mAnySoftKeyboardUnderTest.simulateTextTyping("l");
-    verifySuggestions(true);
+    verifyNoSuggestionsInteractions();
     mAnySoftKeyboardUnderTest.simulateTextTyping(" ");
 
+    mAnySoftKeyboardUnderTest.resetMockCandidateView();
     PowerSavingTest.sendBatteryState(true);
     mAnySoftKeyboardUnderTest.simulateTextTyping("h");
-    verifySuggestions(true);
+    verifyNoSuggestionsInteractions();
     mAnySoftKeyboardUnderTest.simulateTextTyping("e");
-    verifySuggestions(true);
+    verifyNoSuggestionsInteractions();
     mAnySoftKeyboardUnderTest.simulateTextTyping("l");
-    verifySuggestions(true);
+    verifyNoSuggestionsInteractions();
   }
 
   @Test

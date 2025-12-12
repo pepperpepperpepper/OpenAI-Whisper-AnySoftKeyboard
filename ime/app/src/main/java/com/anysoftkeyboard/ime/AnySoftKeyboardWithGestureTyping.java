@@ -285,6 +285,11 @@ public abstract class AnySoftKeyboardWithGestureTyping extends AnySoftKeyboardWi
     }
   }
 
+  @Override
+  protected boolean shouldLoadDictionariesForGestureTyping() {
+    return mGestureTypingEnabled;
+  }
+
   private void onDictionariesLoaded(
       AnyKeyboard keyboard, List<char[][]> newWords, List<int[]> wordFrequencies) {
     if (mGestureTypingEnabled && mCurrentGestureDetector != null) {

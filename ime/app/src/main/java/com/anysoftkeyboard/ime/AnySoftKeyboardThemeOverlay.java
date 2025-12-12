@@ -36,9 +36,18 @@ public abstract class AnySoftKeyboardThemeOverlay extends AnySoftKeyboardKeyboar
   private boolean mApplyRemoteAppColors;
   @NonNull private OverlayData mCurrentOverlayData = INVALID_OVERLAY_DATA;
 
+  private boolean isApplyRemoteAppColorsEnabled() {
+    return prefs()
+        .getBoolean(
+            R.string.settings_key_apply_remote_app_colors,
+            R.bool.settings_default_apply_remote_app_colors)
+        .get();
+  }
+
   @Override
   public void onCreate() {
     super.onCreate();
+    mApplyRemoteAppColors = isApplyRemoteAppColorsEnabled();
     mOverlyDataCreator = createOverlayDataCreator();
 
     addDisposable(
@@ -87,6 +96,8 @@ public abstract class AnySoftKeyboardThemeOverlay extends AnySoftKeyboardKeyboar
 
       @Override
       public OverlayData createOverlayData(ComponentName remoteApp) {
+        // read latest pref on every call to respect immediate test toggles
+        mApplyRemoteAppColors = isApplyRemoteAppColorsEnabled();
         if (mApplyRemoteAppColors) {
           if (CompatUtils.objectEquals(remoteApp.getPackageName(), mLastOverlayPackage)) {
             return mCurrentOverlayData;
@@ -109,6 +120,9 @@ public abstract class AnySoftKeyboardThemeOverlay extends AnySoftKeyboardKeyboar
   }
 
   protected void applyThemeOverlay(EditorInfo info) {
+    // ensure we respect the most recent pref even if the observable hasn't emitted yet
+    mApplyRemoteAppColors = isApplyRemoteAppColorsEnabled();
+
     final Intent launchIntentForPackage =
         info.packageName == null
             ? null
