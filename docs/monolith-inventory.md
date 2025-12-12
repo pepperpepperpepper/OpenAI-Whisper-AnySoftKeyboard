@@ -7,7 +7,7 @@ Generated from `wc -l` over *.java and *.kt. Focus on files ≥500 LOC.
 | 1383 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
 | 1778 | ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java |
 | 1471 | ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/Dictionary.java |
-| 1112 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
+| 1117 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
 | 1296 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/AnyKeyboard.java |
 | 1047 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/KeyboardSwitcher.java |
 | 1037 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/Keyboard.java |
@@ -74,11 +74,6 @@ Recent extractions:
 - KeyboardSwitchHandler handles keyboard-cycle/split/utility switching logic.
 - NavigationKeyHandler handles DPAD/home/end/page navigation keys (including Fn combos).
 - SuggestionSettingsController centralizes suggestion prefs + correction tuning.
-- SuggestionsUpdater owns prediction strip updates/highlighting outside AnySoftKeyboardSuggestions.
-- SuggestionCommitter encapsulates committing a picked suggestion into the input connection.
-- SuggestionPicker owns manual pick flow (space insertion, add-to-dictionary, next-word fetch).
-- SuggestionPickerHostAdapter keeps picker host wiring out of the main class.
-- AddToDictionaryDecider centralizes the hint decision logic for picked words.
 - ThemeAttributeLoader owns theme/icon attribute parsing for AnyKeyboardViewBase.
 - SpecialKeyAppearanceUpdater sets enter/mode icons & labels outside AnyKeyboardViewBase.
 - PreviewPopupPresenter owns preview popup show/hide logic.

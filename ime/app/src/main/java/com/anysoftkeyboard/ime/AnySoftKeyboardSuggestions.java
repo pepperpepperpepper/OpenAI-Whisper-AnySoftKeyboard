@@ -34,6 +34,7 @@ import com.menny.android.anysoftkeyboard.BuildConfig;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -97,40 +98,6 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   private final SeparatorOutputHandler separatorOutputHandler = new SeparatorOutputHandler();
   private final SuggestionSettingsController suggestionSettingsController =
       new SuggestionSettingsController();
-  private final SuggestionsUpdater suggestionsUpdater =
-      new SuggestionsUpdater(mCancelSuggestionsAction);
-  private final SuggestionCommitter suggestionCommitter = new SuggestionCommitter();
-  private final SuggestionPicker suggestionPicker = new SuggestionPicker();
-  private final SuggestionPickerHostAdapter suggestionPickerHost =
-      new SuggestionPickerHostAdapter(this);
-  private final AddToDictionaryDecider addToDictionaryDecider = new AddToDictionaryDecider();
-  private final SuggestionCommitter.Host suggestionCommitterHost =
-      new SuggestionCommitter.Host() {
-        @Override
-        public InputConnection currentInputConnection() {
-          return mInputConnectionRouter.current();
-        }
-
-        @Override
-        public boolean isSelectionUpdateDelayed() {
-          return AnySoftKeyboardSuggestions.this.isSelectionUpdateDelayed();
-        }
-
-        @Override
-        public void markExpectingSelectionUpdate() {
-          AnySoftKeyboardSuggestions.this.markExpectingSelectionUpdate();
-        }
-
-        @Override
-        public int getCursorPosition() {
-          return AnySoftKeyboardSuggestions.this.getCursorPosition();
-        }
-
-        @Override
-        public void clearSuggestions() {
-          AnySoftKeyboardSuggestions.this.clearSuggestions();
-        }
-      };
 
   @Nullable
   protected Keyboard.Key getLastUsedKey() {
@@ -166,7 +133,6 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     super.onCreate();
 
     mSuggest = createSuggest();
-    suggestionsUpdater.setSuggest(mSuggest);
 
     if (BuildConfig.TESTING_BUILD) {
       try {
@@ -213,9 +179,6 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     mAutoSpace = inputConfig.autoSpace;
 
     mPredictionOn = mPredictionOn && mShowSuggestions;
-
-    suggestionsUpdater.configure(
-        this::isPredictionOn, () -> mShowSuggestions, this::isAutoCorrect, () -> mWord);
 
     mCancelSuggestionsAction.setCancelIconVisible(false);
     suggestionStripController.attachToStrip(getInputViewContainer());
@@ -352,7 +315,6 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     mCandidateView = getInputViewContainer().getCandidateView();
     mCandidateView.setService(this);
     mCancelSuggestionsAction.setOwningCandidateView(mCandidateView);
-    suggestionsUpdater.setCandidateView(mCandidateView);
     return view;
   }
 
@@ -599,7 +561,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     }
   }
 
-  WordComposer prepareWordComposerForNextWord() {
+  private WordComposer prepareWordComposerForNextWord() {
     if (mWord.isEmpty()) return mWord;
 
     final WordComposer typedWord = mWord;
@@ -835,12 +797,15 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
 
   protected void clearSuggestions() {
     mKeyboardHandler.removeAllSuggestionMessages();
-    suggestionsUpdater.clearSuggestions();
+    setSuggestions(Collections.emptyList(), -1);
   }
 
   protected void setSuggestions(
       @NonNull List<? extends CharSequence> suggestions, int highlightedSuggestionIndex) {
-    suggestionsUpdater.setSuggestions(suggestions, highlightedSuggestionIndex);
+    mCancelSuggestionsAction.setCancelIconVisible(!suggestions.isEmpty());
+    if (mCandidateView != null) {
+      mCandidateView.setSuggestions(suggestions, highlightedSuggestionIndex);
+    }
   }
 
   @NonNull
@@ -861,47 +826,6 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   @NonNull
   protected Suggest createSuggest() {
     return new SuggestImpl(this);
-  }
-
-  @Override
-  protected InputConnection currentInputConnection() {
-    return mInputConnectionRouter.current();
-  }
-
-  boolean tryCommitCompletionFromPicker(int index, InputConnection ic, CandidateView cv) {
-    return completionHandler.tryCommitCompletion(index, ic, cv);
-  }
-
-  void sendSpaceChar() {
-    sendKeyChar((char) KeyCodes.SPACE);
-  }
-
-  boolean isShowSuggestionsFlag() {
-    return mShowSuggestions;
-  }
-
-  CandidateView getCandidateView() {
-    return mCandidateView;
-  }
-
-  boolean isNextWordAllUpperCase() {
-    return mWord.isAllUpperCase();
-  }
-
-  boolean isJustAutoAddedWord() {
-    return mJustAutoAddedWord;
-  }
-
-  void setJustAutoAddedWord(boolean value) {
-    mJustAutoAddedWord = value;
-  }
-
-  boolean isValidWordLower(String lowerCaseWord) {
-    return mSuggest.isValidWord(lowerCaseWord);
-  }
-
-  AddToDictionaryDecider getAddToDictionaryDecider() {
-    return addToDictionaryDecider;
   }
 
   protected abstract boolean isAlphabet(int code);
@@ -944,7 +868,24 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
 
   public void performUpdateSuggestions() {
     mKeyboardHandler.removeMessages(KeyboardUIStateHandler.MSG_UPDATE_SUGGESTIONS);
-    suggestionsUpdater.performUpdateSuggestions();
+
+    if (!isPredictionOn() || !mShowSuggestions) {
+      clearSuggestions();
+      return;
+    }
+
+    final List<CharSequence> suggestionsList = mSuggest.getSuggestions(mWord);
+    int highlightedSuggestionIndex = isAutoCorrect() ? mSuggest.getLastValidSuggestionIndex() : -1;
+
+    // Don't auto-correct words with multiple capital letter
+    if (highlightedSuggestionIndex == 1 && mWord.isMostlyCaps()) highlightedSuggestionIndex = -1;
+
+    setSuggestions(suggestionsList, highlightedSuggestionIndex);
+    if (highlightedSuggestionIndex >= 0) {
+      mWord.setPreferredWord(suggestionsList.get(highlightedSuggestionIndex));
+    } else {
+      mWord.setPreferredWord(null);
+    }
   }
 
   public void pickSuggestionManually(int index, CharSequence suggestion) {
@@ -955,7 +896,55 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   public void pickSuggestionManually(
       int index, CharSequence suggestion, boolean withAutoSpaceEnabled) {
     mWordRevertLength = 0; // no reverts
-    suggestionPicker.pickSuggestionManually(index, suggestion, withAutoSpaceEnabled, suggestionPickerHost);
+    final InputConnection ic = mInputConnectionRouter.current();
+    if (ic != null) {
+      ic.beginBatchEdit();
+    }
+
+    final WordComposer typedWord = prepareWordComposerForNextWord();
+
+    try {
+      if (completionHandler.tryCommitCompletion(index, ic, mCandidateView)) {
+        return;
+      }
+      commitWordToInput(
+          suggestion,
+          suggestion /*user physically picked a word from the suggestions strip. this is not a fix*/);
+
+      // Follow it with a space
+      if (withAutoSpaceEnabled && (index == 0 || !typedWord.isAtTagsSearchState())) {
+        sendKeyChar((char) KeyCodes.SPACE);
+        setSpaceTimeStamp(true);
+      }
+      // Add the word to the auto dictionary if it's not a known word
+      mJustAutoAddedWord = false;
+
+      if (!typedWord.isAtTagsSearchState()) {
+        if (index == 0) {
+          checkAddToDictionaryWithAutoDictionary(
+              typedWord.getTypedWord(), SuggestImpl.AdditionType.Picked);
+        }
+
+        final boolean showingAddToDictionaryHint =
+            !mJustAutoAddedWord
+                && index == 0
+                && mShowSuggestions
+                && !mSuggest.isValidWord(suggestion) // this is for the case that the word was
+                // auto-added upon picking
+                && !mSuggest.isValidWord(
+                    suggestion.toString().toLowerCase(getCurrentAlphabetKeyboard().getLocale()));
+
+        if (showingAddToDictionaryHint) {
+          if (mCandidateView != null) mCandidateView.showAddToDictionaryHint(suggestion);
+        } else {
+          setSuggestions(mSuggest.getNextSuggestions(suggestion, mWord.isAllUpperCase()), -1);
+        }
+      }
+    } finally {
+      if (ic != null) {
+        ic.endBatchEdit();
+      }
+    }
   }
 
   /**
@@ -967,7 +956,22 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   @CallSuper
   protected void commitWordToInput(
       @NonNull CharSequence wordToCommit, @NonNull CharSequence typedWord) {
-    suggestionCommitter.commitWordToInput(suggestionCommitterHost, wordToCommit, typedWord);
+    InputConnection ic = mInputConnectionRouter.current();
+    if (ic != null) {
+      final boolean delayedUpdates = isSelectionUpdateDelayed();
+      markExpectingSelectionUpdate();
+      // we DO NOT want to use commitCorrection if we do not know
+      // the exact position in the text-box.
+      if (TextUtils.equals(wordToCommit, typedWord) || delayedUpdates) {
+        ic.commitText(wordToCommit, 1);
+      } else {
+        AnyApplication.getDeviceSpecific()
+            .commitCorrectionToInputConnection(
+                ic, getCursorPosition() - typedWord.length(), typedWord, wordToCommit);
+      }
+    }
+
+    clearSuggestions();
   }
 
   private boolean isCursorTouchingWord() {
@@ -1071,7 +1075,8 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
         });
   }
 
-  void checkAddToDictionaryWithAutoDictionary(CharSequence newWord, Suggest.AdditionType type) {
+  private void checkAddToDictionaryWithAutoDictionary(
+      CharSequence newWord, Suggest.AdditionType type) {
     mJustAutoAddedWord = false;
 
     // unfortunately, has to do it on the main-thread (because we checking mJustAutoAddedWord)
