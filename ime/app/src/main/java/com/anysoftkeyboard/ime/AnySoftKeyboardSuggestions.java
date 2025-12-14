@@ -89,6 +89,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   private final WordRestartHelper wordRestartHelper = new WordRestartHelper();
   private final SeparatorOutputHandler separatorOutputHandler = new SeparatorOutputHandler();
   private final CursorTouchChecker cursorTouchChecker = new CursorTouchChecker();
+  private final WordRestartGate wordRestartGate = new WordRestartGate();
   private final SuggestionCommitter suggestionCommitter =
       new SuggestionCommitter(new SuggestionCommitterHost(this));
   private final SuggestionPicker suggestionPicker =
@@ -721,24 +722,8 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
 
   protected boolean canRestartWordSuggestion() {
     final InputViewBinder inputView = getInputView();
-    if (!isPredictionOn()
-        || !predictionState.allowSuggestionsRestart
-        || inputView == null
-        || !inputView.isShown()) {
-      // why?
-      // mPredicting - if I'm predicting a word, I can not restart it..
-      // right? I'm inside that word!
-      // isPredictionOn() - this is obvious.
-      // mAllowSuggestionsRestart - config settings
-      // mCurrentlyAllowSuggestionRestart - workaround for
-      // onInputStart(restarting == true)
-      // mInputView == null - obvious, no?
-      Logger.d(
-          TAG,
-          "performRestartWordSuggestion: no need to restart: isPredictionOn=%s,"
-              + " mAllowSuggestionsRestart=%s",
-          isPredictionOn(),
-          predictionState.allowSuggestionsRestart);
+    if (!wordRestartGate.canRestartWordSuggestion(
+        isPredictionOn(), predictionState.allowSuggestionsRestart, inputView)) {
       return false;
     } else if (!isCursorTouchingWord()) {
       Logger.d(TAG, "User moved cursor to no-man land. Bye bye.");
