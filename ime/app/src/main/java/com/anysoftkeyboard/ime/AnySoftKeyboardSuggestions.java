@@ -240,87 +240,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
         newSelEnd,
         candidatesStart,
         candidatesEnd,
-        new SelectionUpdateProcessor.Host() {
-          @Override
-          public boolean isPredictionOn() {
-            return AnySoftKeyboardSuggestions.this.isPredictionOn();
-          }
-
-          @Override
-          public boolean isCurrentlyPredicting() {
-            return AnySoftKeyboardSuggestions.this.isCurrentlyPredicting();
-          }
-
-          @Override
-          public InputConnection currentInputConnection() {
-            return mInputConnectionRouter.current();
-          }
-
-          @Override
-          public void abortCorrectionAndResetPredictionState(boolean force) {
-            AnySoftKeyboardSuggestions.this.abortCorrectionAndResetPredictionState(force);
-          }
-
-          @Override
-          public void postRestartWordSuggestion() {
-            AnySoftKeyboardSuggestions.this.postRestartWordSuggestion();
-          }
-
-          @Override
-          public boolean shouldRevertOnDelete() {
-            return AnySoftKeyboardSuggestions.this.shouldRevertOnDelete();
-          }
-
-          @Override
-          public void setWordRevertLength(int length) {
-            mWordRevertLength = length;
-          }
-
-          @Override
-          public int getWordRevertLength() {
-            return mWordRevertLength;
-          }
-
-          @Override
-          public void resetLastSpaceTimeStamp() {
-            spaceTimeTracker.clear();
-          }
-
-          @Override
-          public long getExpectingSelectionUpdateBy() {
-            return mExpectingSelectionUpdateBy;
-          }
-
-          @Override
-          public void clearExpectingSelectionUpdate() {
-            mExpectingSelectionUpdateBy = NEVER_TIME_STAMP;
-          }
-
-          @Override
-          public void setExpectingSelectionUpdateBy(long value) {
-            mExpectingSelectionUpdateBy = value;
-          }
-
-          @Override
-          public int getCandidateStartPositionDangerous() {
-            return oldCandidateStart;
-          }
-
-          @Override
-          public int getCandidateEndPositionDangerous() {
-            return oldCandidateEnd;
-          }
-
-          @Override
-          public WordComposer getCurrentWord() {
-            return mWord;
-          }
-
-          @Override
-          public String logTag() {
-            return TAG;
-          }
-        });
+        new SelectionUpdateHost(this, oldCandidateStart, oldCandidateEnd));
   }
 
   @Override
@@ -370,7 +290,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     }
   }
 
-  private void postRestartWordSuggestion() {
+  protected void postRestartWordSuggestion() {
     mKeyboardHandler.removeMessages(KeyboardUIStateHandler.MSG_UPDATE_SUGGESTIONS);
     mKeyboardHandler.removeMessages(KeyboardUIStateHandler.MSG_RESTART_NEW_WORD_SUGGESTIONS);
     mKeyboardHandler.sendEmptyMessageDelayed(
@@ -393,6 +313,31 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
 
   protected boolean shouldRevertOnDelete() {
     return mWordRevertLength > 0;
+  }
+
+  void clearSpaceTimeTracker() {
+    spaceTimeTracker.clear();
+  }
+
+  long getExpectingSelectionUpdateBy() {
+    return mExpectingSelectionUpdateBy;
+  }
+
+  void clearExpectingSelectionUpdate() {
+    mExpectingSelectionUpdateBy = NEVER_TIME_STAMP;
+  }
+
+  void setExpectingSelectionUpdateBy(long value) {
+    mExpectingSelectionUpdateBy = value;
+  }
+
+  @Override
+  protected InputConnection currentInputConnection() {
+    return mInputConnectionRouter.current();
+  }
+
+  WordComposer getCurrentWord() {
+    return mWord;
   }
 
   protected void handleCharacter(

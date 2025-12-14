@@ -71,6 +71,7 @@ Recent extractions:
   trimming `AnySoftKeyboardSuggestions`.
 - PredictionState now holds the suggestion/prediction flags; `SuggestionPickerHost`/service route
   auto-complete checks through it.
+- SelectionUpdateHost extracted from AnySoftKeyboardSuggestions to slim onUpdateSelection host logic.
 - StatusIconController owns status-icon visibility outside the service.
 - FullscreenModeDecider isolates fullscreen decision logic.
 - MultiTapEditCoordinator wraps multi-tap batch edit lifecycle.
