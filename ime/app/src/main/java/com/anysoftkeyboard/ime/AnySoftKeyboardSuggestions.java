@@ -143,6 +143,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
             }
           });
   private final TypingSimulator typingSimulator = new TypingSimulator();
+  private final PredictionGate predictionGate = new PredictionGate();
 
   @Nullable
   protected Keyboard.Key getLastUsedKey() {
@@ -233,7 +234,9 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     predictionState.inputFieldSupportsAutoPick = inputConfig.inputFieldSupportsAutoPick;
     predictionState.autoSpace = inputConfig.autoSpace;
 
-    predictionState.predictionOn = predictionState.predictionOn && predictionState.showSuggestions;
+    predictionState.predictionOn =
+        predictionGate.shouldRunPrediction(
+            predictionState.predictionOn, predictionState.showSuggestions);
 
     mCancelSuggestionsAction.setCancelIconVisible(false);
     suggestionStripController.attachToStrip(getInputViewContainer());
