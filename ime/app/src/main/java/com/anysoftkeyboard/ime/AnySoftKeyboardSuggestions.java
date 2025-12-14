@@ -430,22 +430,9 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     mWord.add(primaryCode, nearByKeyCodes);
     if (isPredictionOn()) {
       if (ic != null) {
-        int newCursorPosition;
-        if (mWord.cursorPosition() != mWord.charCount()) {
-          /* Cursor is not at the end of the word. I'll need to reposition.
-          The code for tracking the current position is split among several files and difficult to debug.
-          This has been proven to work in every case: */
-          if (multiTapIndex > 0) {
-            final int previousKeyCode = key.getMultiTapCode(multiTapIndex - 1);
-            newCursorPosition =
-                Character.charCount(primaryCode) - Character.charCount(previousKeyCode);
-          } else {
-            newCursorPosition = Character.charCount(primaryCode);
-          }
-          newCursorPosition += getCursorPosition();
+        int newCursorPosition = computeCursorPositionAfterChar(primaryCode, key, multiTapIndex);
+        if (newCursorPosition > 0) {
           ic.beginBatchEdit();
-        } else {
-          newCursorPosition = -1;
         }
 
         markExpectingSelectionUpdate();
@@ -582,6 +569,27 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     } else {
       return false;
     }
+  }
+
+  private int computeCursorPositionAfterChar(
+      int primaryCode, Keyboard.Key key, int multiTapIndex) {
+    if (mWord.cursorPosition() == mWord.charCount()) {
+      return -1;
+    }
+
+    /* Cursor is not at the end of the word. I'll need to reposition.
+    The code for tracking the current position is split among several files and difficult to debug.
+    This has been proven to work in every case: */
+    int newCursorPosition;
+    if (multiTapIndex > 0) {
+      final int previousKeyCode = key.getMultiTapCode(multiTapIndex - 1);
+      newCursorPosition =
+          Character.charCount(primaryCode) - Character.charCount(previousKeyCode);
+    } else {
+      newCursorPosition = Character.charCount(primaryCode);
+    }
+    newCursorPosition += getCursorPosition();
+    return newCursorPosition;
   }
 
   public void performRestartWordSuggestion(final InputConnection ic) {
