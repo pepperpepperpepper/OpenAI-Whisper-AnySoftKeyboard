@@ -74,6 +74,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   private boolean mLastCharacterWasShifted = false;
   private boolean mFrenchSpacePunctuationBehavior;
   private final PredictionState predictionState = new PredictionState();
+  private final DictionaryLoadGate dictionaryLoadGate = new DictionaryLoadGate();
 
   private boolean mJustAutoAddedWord = false;
   private boolean mDictionariesForCurrentKeyboardLoaded = false;
@@ -645,7 +646,8 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
 
     mSuggest.resetNextWordSentence();
 
-    if (predictionState.predictionOn || shouldLoadDictionariesForGestureTyping()) {
+    if (dictionaryLoadGate.shouldLoad(
+        predictionState.predictionOn, shouldLoadDictionariesForGestureTyping())) {
       // It null at the creation of the application.
       final AnyKeyboard currentAlphabetKeyboard = getCurrentAlphabetKeyboard();
       if (currentAlphabetKeyboard != null && isInAlphabetKeyboardMode()) {
