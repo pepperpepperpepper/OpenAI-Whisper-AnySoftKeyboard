@@ -6,6 +6,7 @@ import com.anysoftkeyboard.addons.AddOn;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.List;
 
+@SuppressWarnings("this-escape")
 public class PopupListKeyboard extends AnyPopupKeyboard {
   private final int mAdditionalWidth;
 

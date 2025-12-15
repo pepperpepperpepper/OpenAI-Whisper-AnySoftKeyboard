@@ -18,6 +18,7 @@ import com.menny.android.anysoftkeyboard.AnyApplication;
 import java.lang.ref.WeakReference;
 
 /** Will render the keyboard view but will not provide ANY interactivity. */
+@SuppressWarnings("this-escape")
 public class DemoAnyKeyboardView extends AnyKeyboardView {
   private final TypingSimulator mTypingSimulator;
   @Nullable private OnViewBitmapReadyListener mOnViewBitmapReadyListener = null;

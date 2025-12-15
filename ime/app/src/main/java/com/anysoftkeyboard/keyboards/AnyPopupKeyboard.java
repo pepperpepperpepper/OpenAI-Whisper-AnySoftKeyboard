@@ -29,6 +29,7 @@ import com.anysoftkeyboard.utils.EmojiUtils;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.List;
 
+@SuppressWarnings("this-escape")
 public class AnyPopupKeyboard extends AnyKeyboard {
 
   private static final char[] EMPTY_CHAR_ARRAY = new char[0];

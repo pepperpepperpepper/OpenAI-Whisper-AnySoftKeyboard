@@ -106,7 +106,7 @@ public abstract class AnySoftKeyboardPopText extends AnySoftKeyboardPowerSaving 
   }
 
   @Override
-  protected void commitWordToInput(
+  public void commitWordToInput(
       @NonNull CharSequence wordToCommit, @NonNull CharSequence typedWord) {
     super.commitWordToInput(wordToCommit, typedWord);
     final boolean toPopText =

@@ -45,6 +45,7 @@ import java.util.Set;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+@SuppressWarnings("this-escape")
 public class ExternalAnyKeyboard extends AnyKeyboard implements HardKeyboardTranslator {
 
   private static final String TAG = "ASKExtendedAnyKbd";

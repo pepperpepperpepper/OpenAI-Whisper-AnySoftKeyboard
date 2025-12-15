@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
+@SuppressWarnings("this-escape")
 public class CandidateTapProxyView extends View implements View.OnClickListener {
   private final int index;
 
@@ -27,4 +28,3 @@ public class CandidateTapProxyView extends View implements View.OnClickListener 
     CandidateViewTestRegistry.pickByIndex(index);
   }
 }
-

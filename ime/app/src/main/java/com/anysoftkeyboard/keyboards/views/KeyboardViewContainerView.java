@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Random;
 import net.evendanan.pixel.MainChild;
 
+@SuppressWarnings("this-escape")
 public class KeyboardViewContainerView extends ViewGroup implements ThemeableChild {
 
   private static final int PROVIDER_TAG_ID = R.id.keyboard_container_provider_tag_id;

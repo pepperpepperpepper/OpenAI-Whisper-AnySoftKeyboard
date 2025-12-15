@@ -83,6 +83,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@SuppressWarnings("this-escape")
 public class AnyKeyboardViewBase extends View implements InputViewBinder, PointerTracker.UIProxy {
   // Miscellaneous constants
   public static final int NOT_A_KEY = -1;
@@ -108,9 +109,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   protected final PointerTracker.SharedPointerTrackersData mSharedPointerTrackersData =
       new PointerTracker.SharedPointerTrackersData();
   private final PointerTrackerRegistry mPointerTrackerRegistry;
-  protected final TouchDispatcher mTouchDispatcher = new TouchDispatcher(this, TWO_FINGERS_LINGER_TIME);
+  protected final TouchDispatcher mTouchDispatcher;
   private final PointerActionDispatcher pointerActionDispatcher;
-  private final SwipeDistanceCalculator swipeDistanceCalculator;
   @NonNull private final KeyDetector mKeyDetector;
 
   private final InvalidateTracker invalidateTracker = new InvalidateTracker();
@@ -120,6 +120,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   private final TextWidthCache textWidthCache = new TextWidthCache();
   private final ProximityCalculator proximityCalculator = new ProximityCalculator();
   private final SwipeConfiguration swipeConfiguration = new SwipeConfiguration();
+  private final DrawDecisions drawDecisions = new DrawDecisions();
   private final HintLayoutCalculator hintLayoutCalculator = new HintLayoutCalculator();
   private final KeyIconResolver keyIconResolver;
   private final LabelPaintConfigurator labelPaintConfigurator = new LabelPaintConfigurator(textWidthCache);
@@ -185,6 +186,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   private final KeyLabelRenderer keyLabelRenderer = new KeyLabelRenderer();
   private final KeyIconDrawer keyIconDrawer = new KeyIconDrawer();
   private final KeyTextColorResolver keyTextColorResolver = new KeyTextColorResolver();
+  private final KeyDrawHelper keyDrawHelper;
+  private final ThemeValueApplier themeValueApplier;
 
   public AnyKeyboardViewBase(Context context, AttributeSet attrs) {
         this(context, attrs, R.style.PlainLightNewSoftKeyboard);
@@ -197,19 +200,42 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     mDisplayDensity = getResources().getDisplayMetrics().density;
     mDefaultAddOn = new DefaultAddOn(context, context);
 
+    mTouchDispatcher = new TouchDispatcher(this, TWO_FINGERS_LINGER_TIME);
     mKeyPressTimingHandler = new KeyPressTimingHandler(this);
     keyIconResolver = new KeyIconResolver(mThemeOverlayCombiner);
     previewThemeConfigurator = new PreviewThemeConfigurator(mPreviewPopupTheme);
     previewPopupPresenter = new PreviewPopupPresenter(this, keyIconResolver, keyPreviewManager, previewThemeConfigurator);
     pointerActionDispatcher = new PointerActionDispatcher(mTouchDispatcher);
-    swipeDistanceCalculator = new SwipeDistanceCalculator(swipeConfiguration);
     actionIconStateSetter = new ActionIconStateSetter(mDrawableStatesProvider);
     specialKeyLabelProvider = new SpecialKeyLabelProvider(context);
+    themeValueApplier =
+        new ThemeValueApplier(
+            mThemeOverlayCombiner,
+            mKeyboardDimens,
+            previewThemeConfigurator,
+            mPreviewPopupTheme,
+            () -> mKeysHeightFactor,
+            value -> mOriginalVerticalCorrection = value,
+            value -> mBackgroundDimAmount = value,
+            value -> mKeyTextSize = value,
+            value -> mLabelTextSize = value,
+            value -> mKeyboardNameTextSize = value,
+            value -> mKeyTextStyle = value,
+            value -> mHintTextSize = value,
+            value -> mThemeHintLabelVAlign = value,
+            value -> mThemeHintLabelAlign = value,
+            value -> mShadowColor = value,
+            value -> mShadowRadius = value,
+            value -> mShadowOffsetX = value,
+            value -> mShadowOffsetY = value,
+            value -> mTextCaseType = value);
 
     mPaint = new Paint();
     mPaint.setAntiAlias(true);
     mPaint.setTextAlign(Align.CENTER);
     mPaint.setAlpha(255);
+
+    keyDrawHelper = new KeyDrawHelper(this, mPaint);
 
     mKeyBackgroundPadding = new Rect(0, 0, 0, 0);
 
@@ -439,225 +465,69 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       final int[] padding,
       final int localAttrId,
       final int remoteTypedArrayIndex) {
-    switch (localAttrId) {
-      case android.R.attr.background -> {
-        Drawable keyboardBackground = remoteTypedArray.getDrawable(remoteTypedArrayIndex);
-        if (keyboardBackground == null) return false;
-        mThemeOverlayCombiner.setThemeKeyboardBackground(keyboardBackground);
-        setBackground(mThemeOverlayCombiner.getThemeResources().getKeyboardBackground());
-      }
-      case android.R.attr.paddingLeft -> {
-        padding[0] = remoteTypedArray.getDimensionPixelSize(remoteTypedArrayIndex, -1);
-        if (padding[0] == -1) return false;
-      }
-      case android.R.attr.paddingTop -> {
-        padding[1] = remoteTypedArray.getDimensionPixelSize(remoteTypedArrayIndex, -1);
-        if (padding[1] == -1) return false;
-      }
-      case android.R.attr.paddingRight -> {
-        padding[2] = remoteTypedArray.getDimensionPixelSize(remoteTypedArrayIndex, -1);
-        if (padding[2] == -1) return false;
-      }
-      case android.R.attr.paddingBottom -> {
-        padding[3] = remoteTypedArray.getDimensionPixelSize(remoteTypedArrayIndex, -1);
-        if (padding[3] == -1) return false;
-        mKeyboardDimens.setPaddingBottom(padding[3]);
-      }
-      case R.attr.keyBackground -> {
-        Drawable keyBackground = remoteTypedArray.getDrawable(remoteTypedArrayIndex);
-        if (keyBackground == null) {
-          return false;
-        } else {
-          mThemeOverlayCombiner.setThemeKeyBackground(keyBackground);
-        }
-      }
-      case R.attr.verticalCorrection -> {
-        mOriginalVerticalCorrection =
-            remoteTypedArray.getDimensionPixelOffset(remoteTypedArrayIndex, -1);
-        if (mOriginalVerticalCorrection == -1) return false;
-      }
-      case R.attr.keyTextSize -> {
-        mKeyTextSize = remoteTypedArray.getDimensionPixelSize(remoteTypedArrayIndex, -1);
-        if (mKeyTextSize == -1) return false;
-        mKeyTextSize = mKeyTextSize * mKeysHeightFactor;
-        Logger.d(TAG, "AnySoftKeyboardTheme_keyTextSize " + mKeyTextSize);
-      }
-      case R.attr.keyTextColor -> {
-        ColorStateList keyTextColor = remoteTypedArray.getColorStateList(remoteTypedArrayIndex);
-        if (keyTextColor == null) {
-          keyTextColor =
-              new ColorStateList(
-                  new int[][] {{0}},
-                  new int[] {remoteTypedArray.getColor(remoteTypedArrayIndex, 0xFF000000)});
-        }
-        mThemeOverlayCombiner.setThemeTextColor(keyTextColor);
-      }
-      case R.attr.labelTextSize -> {
-        mLabelTextSize = remoteTypedArray.getDimensionPixelSize(remoteTypedArrayIndex, -1);
-        if (mLabelTextSize == -1) return false;
-        mLabelTextSize *= mKeysHeightFactor;
-      }
-      case R.attr.keyboardNameTextSize -> {
-        mKeyboardNameTextSize = remoteTypedArray.getDimensionPixelSize(remoteTypedArrayIndex, -1);
-        if (mKeyboardNameTextSize == -1) return false;
-        mKeyboardNameTextSize *= mKeysHeightFactor;
-      }
-      case R.attr.keyboardNameTextColor ->
-          mThemeOverlayCombiner.setThemeNameTextColor(
-              remoteTypedArray.getColor(remoteTypedArrayIndex, Color.WHITE));
-      case R.attr.shadowColor -> mShadowColor = remoteTypedArray.getColor(remoteTypedArrayIndex, 0);
-      case R.attr.shadowRadius ->
-          mShadowRadius = remoteTypedArray.getDimensionPixelOffset(remoteTypedArrayIndex, 0);
-      case R.attr.shadowOffsetX ->
-          mShadowOffsetX = remoteTypedArray.getDimensionPixelOffset(remoteTypedArrayIndex, 0);
-      case R.attr.shadowOffsetY ->
-          mShadowOffsetY = remoteTypedArray.getDimensionPixelOffset(remoteTypedArrayIndex, 0);
-      case R.attr.backgroundDimAmount -> {
-        mBackgroundDimAmount = remoteTypedArray.getFloat(remoteTypedArrayIndex, -1f);
-        if (mBackgroundDimAmount == -1f) return false;
-      }
-      case R.attr.keyPreviewBackground -> {
-        Drawable keyPreviewBackground = remoteTypedArray.getDrawable(remoteTypedArrayIndex);
-        if (!previewThemeConfigurator.setPreviewBackground(keyPreviewBackground)) return false;
-      }
-      case R.attr.keyPreviewTextColor ->
-          previewThemeConfigurator.setTextColor(
-              remoteTypedArray.getColor(remoteTypedArrayIndex, 0xFFF));
-      case R.attr.keyPreviewTextSize -> {
-        int keyPreviewTextSize = remoteTypedArray.getDimensionPixelSize(remoteTypedArrayIndex, -1);
-        if (!previewThemeConfigurator.setTextSize(keyPreviewTextSize, mKeysHeightFactor)) {
-          return false;
-        }
-      }
-      case R.attr.keyPreviewLabelTextSize -> {
-        int keyPreviewLabelTextSize =
-            remoteTypedArray.getDimensionPixelSize(remoteTypedArrayIndex, -1);
-        if (!previewThemeConfigurator.setLabelTextSize(
-            keyPreviewLabelTextSize, mKeysHeightFactor)) {
-          return false;
-        }
-      }
-      case R.attr.keyPreviewOffset ->
-          previewThemeConfigurator.setVerticalOffset(
-              remoteTypedArray.getDimensionPixelOffset(remoteTypedArrayIndex, 0));
-      case R.attr.previewAnimationType -> {
-        int previewAnimationType = remoteTypedArray.getInteger(remoteTypedArrayIndex, -1);
-        if (!previewThemeConfigurator.setAnimationType(previewAnimationType)) return false;
-      }
-      case R.attr.keyTextStyle -> {
-        int textStyle = remoteTypedArray.getInt(remoteTypedArrayIndex, 0);
-        switch (textStyle) {
-          case 0 -> mKeyTextStyle = Typeface.DEFAULT;
-          case 1 -> mKeyTextStyle = Typeface.DEFAULT_BOLD;
-          case 2 -> mKeyTextStyle = Typeface.defaultFromStyle(Typeface.ITALIC);
-          default -> mKeyTextStyle = Typeface.defaultFromStyle(textStyle);
-        }
-        mPreviewPopupTheme.setKeyStyle(mKeyTextStyle);
-      }
-      case R.attr.keyHorizontalGap -> {
-        float themeHorizontalKeyGap =
-            remoteTypedArray.getDimensionPixelOffset(remoteTypedArrayIndex, -1);
-        if (themeHorizontalKeyGap == -1) return false;
-        mKeyboardDimens.setHorizontalKeyGap(themeHorizontalKeyGap);
-      }
-      case R.attr.keyVerticalGap -> {
-        float themeVerticalRowGap =
-            remoteTypedArray.getDimensionPixelOffset(remoteTypedArrayIndex, -1);
-        if (themeVerticalRowGap == -1) return false;
-        mKeyboardDimens.setVerticalRowGap(themeVerticalRowGap);
-      }
-      case R.attr.keyNormalHeight -> {
-        int themeNormalKeyHeight =
-            remoteTypedArray.getDimensionPixelOffset(remoteTypedArrayIndex, -1);
-        if (themeNormalKeyHeight == -1) return false;
-        mKeyboardDimens.setNormalKeyHeight(themeNormalKeyHeight);
-      }
-      case R.attr.keyLargeHeight -> {
-        int themeLargeKeyHeight =
-            remoteTypedArray.getDimensionPixelOffset(remoteTypedArrayIndex, -1);
-        if (themeLargeKeyHeight == -1) return false;
-        mKeyboardDimens.setLargeKeyHeight(themeLargeKeyHeight);
-      }
-      case R.attr.keySmallHeight -> {
-        int themeSmallKeyHeight =
-            remoteTypedArray.getDimensionPixelOffset(remoteTypedArrayIndex, -1);
-        if (themeSmallKeyHeight == -1) return false;
-        mKeyboardDimens.setSmallKeyHeight(themeSmallKeyHeight);
-      }
-      case R.attr.hintTextSize -> {
-        mHintTextSize = remoteTypedArray.getDimensionPixelSize(remoteTypedArrayIndex, -1);
-        if (mHintTextSize == -1) return false;
-        mHintTextSize *= mKeysHeightFactor;
-      }
-      case R.attr.hintTextColor ->
-          mThemeOverlayCombiner.setThemeHintTextColor(
-              remoteTypedArray.getColor(remoteTypedArrayIndex, 0xFF000000));
-      case R.attr.hintLabelVAlign ->
-          mThemeHintLabelVAlign = remoteTypedArray.getInt(remoteTypedArrayIndex, Gravity.BOTTOM);
-      case R.attr.hintLabelAlign ->
-          mThemeHintLabelAlign = remoteTypedArray.getInt(remoteTypedArrayIndex, Gravity.RIGHT);
-      case R.attr.keyTextCaseStyle ->
-          mTextCaseType = remoteTypedArray.getInt(remoteTypedArrayIndex, 0);
-    }
-    return true;
+    return themeValueApplier.apply(
+        remoteTypedArray, padding, localAttrId, remoteTypedArrayIndex);
   }
 
-  private boolean setKeyIconValueFromTheme(
+  boolean setKeyIconValueFromTheme(
       KeyboardTheme theme,
       TypedArray remoteTypeArray,
       final int localAttrId,
       final int remoteTypedArrayIndex) {
-    final int keyCode =
-        switch (localAttrId) {
-          case R.attr.iconKeyShift -> KeyCodes.SHIFT;
-          case R.attr.iconKeyControl -> KeyCodes.CTRL;
-          case R.attr.iconKeyAction -> KeyCodes.ENTER;
-          case R.attr.iconKeyBackspace -> KeyCodes.DELETE;
-          case R.attr.iconKeyCancel -> KeyCodes.CANCEL;
-          case R.attr.iconKeyGlobe -> KeyCodes.MODE_ALPHABET;
-          case R.attr.iconKeySpace -> KeyCodes.SPACE;
-          case R.attr.iconKeyTab -> KeyCodes.TAB;
-          case R.attr.iconKeyArrowDown -> KeyCodes.ARROW_DOWN;
-          case R.attr.iconKeyArrowLeft -> KeyCodes.ARROW_LEFT;
-          case R.attr.iconKeyArrowRight -> KeyCodes.ARROW_RIGHT;
-          case R.attr.iconKeyArrowUp -> KeyCodes.ARROW_UP;
-          case R.attr.iconKeyInputMoveHome -> KeyCodes.MOVE_HOME;
-          case R.attr.iconKeyInputMoveEnd -> KeyCodes.MOVE_END;
-          case R.attr.iconKeyMic -> KeyCodes.VOICE_INPUT;
-          case R.attr.iconKeySettings -> KeyCodes.SETTINGS;
-          case R.attr.iconKeyCondenseNormal -> KeyCodes.MERGE_LAYOUT;
-          case R.attr.iconKeyCondenseSplit -> KeyCodes.SPLIT_LAYOUT;
-          case R.attr.iconKeyCondenseCompactToRight -> KeyCodes.COMPACT_LAYOUT_TO_RIGHT;
-          case R.attr.iconKeyCondenseCompactToLeft -> KeyCodes.COMPACT_LAYOUT_TO_LEFT;
-          case R.attr.iconKeyClipboardCopy -> KeyCodes.CLIPBOARD_COPY;
-          case R.attr.iconKeyClipboardCut -> KeyCodes.CLIPBOARD_CUT;
-          case R.attr.iconKeyClipboardPaste -> KeyCodes.CLIPBOARD_PASTE;
-          case R.attr.iconKeyClipboardSelect -> KeyCodes.CLIPBOARD_SELECT_ALL;
-          case R.attr.iconKeyClipboardFineSelect -> KeyCodes.CLIPBOARD_SELECT;
-          case R.attr.iconKeyQuickTextPopup -> KeyCodes.QUICK_TEXT_POPUP;
-          case R.attr.iconKeyQuickText -> KeyCodes.QUICK_TEXT;
-          case R.attr.iconKeyUndo -> KeyCodes.UNDO;
-          case R.attr.iconKeyRedo -> KeyCodes.REDO;
-          case R.attr.iconKeyForwardDelete -> KeyCodes.FORWARD_DELETE;
-          case R.attr.iconKeyImageInsert -> KeyCodes.IMAGE_MEDIA_POPUP;
-          case R.attr.iconKeyClearQuickTextHistory -> KeyCodes.CLEAR_QUICK_TEXT_HISTORY;
-          default -> 0;
-        };
-    if (keyCode == 0) {
-      if (BuildConfig.DEBUG) {
-        throw new IllegalArgumentException(
-            "No valid keycode for attr " + remoteTypeArray.getResourceId(remoteTypedArrayIndex, 0));
-      }
-      Logger.w(
-          TAG,
-          "No valid keycode for attr %d",
-          remoteTypeArray.getResourceId(remoteTypedArrayIndex, 0));
-      return false;
-    } else {
-      keyIconResolver.putIconBuilder(
-          keyCode, DrawableBuilder.build(theme, remoteTypeArray, remoteTypedArrayIndex));
-      return true;
-    }
+    return themeValueApplier.applyKeyIconValue(
+        theme, remoteTypeArray, localAttrId, remoteTypedArrayIndex, keyIconResolver);
+  }
+
+  void setDrawableStatesProvider(KeyDrawableStateProvider provider) {
+    mDrawableStatesProvider = provider;
+  }
+
+  KeyDrawableStateProvider getDrawableStatesProvider() {
+    return mDrawableStatesProvider;
+  }
+
+  void setActionIconStateSetter(ActionIconStateSetter setter) {
+    actionIconStateSetter = setter;
+  }
+
+  void setKeyboardMaxWidth(int availableWidth) {
+    mKeyboardDimens.setKeyboardMaxWidth(availableWidth);
+  }
+
+  DrawDecisions getDrawDecisions() {
+    return drawDecisions;
+  }
+
+  KeyIconDrawer keyIconDrawer() {
+    return keyIconDrawer;
+  }
+
+  KeyIconResolver keyIconResolver() {
+    return keyIconResolver;
+  }
+
+  Rect keyBackgroundPadding() {
+    return mKeyBackgroundPadding;
+  }
+
+  KeyboardNameRenderer keyboardNameRenderer() {
+    return keyboardNameRenderer;
+  }
+
+  CharSequence getKeyboardName() {
+    return mKeyboardName;
+  }
+
+  KeyLabelRenderer keyLabelRenderer() {
+    return keyLabelRenderer;
+  }
+
+  LabelPaintConfigurator labelPaintConfigurator() {
+    return labelPaintConfigurator;
+  }
+
+  KeyHintRenderer keyHintRenderer() {
+    return keyHintRenderer;
   }
 
   protected int getKeyboardStyleResId(KeyboardTheme theme) {
@@ -716,7 +586,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   private void calculateSwipeDistances() {
-    swipeDistanceCalculator.recomputeForKeyboard(getKeyboard());
+    swipeConfiguration.recomputeForKeyboard(getKeyboard());
   }
 
   /**
@@ -850,6 +720,60 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     }
   }
 
+  private DrawInputs buildDrawInputs(Canvas canvas, Rect dirtyRect) {
+    final ThemeResourcesHolder themeResourcesHolder = mThemeOverlayCombiner.getThemeResources();
+    final ColorStateList keyTextColor = themeResourcesHolder.getKeyTextColor();
+
+    final DrawDecisions.ModifierStates modifierStates = drawDecisions.modifierStates(mKeyboard);
+    int modifierActiveTextColor =
+        drawDecisions.resolveModifierActiveTextColor(keyTextColor, mDrawableStatesProvider);
+
+    final int hintAlign =
+        hintLayoutCalculator.resolveHintAlign(mCustomHintGravity, mThemeHintLabelAlign);
+    final int hintVAlign =
+        hintLayoutCalculator.resolveHintVAlign(mCustomHintGravity, mThemeHintLabelVAlign);
+
+    final Drawable keyBackground = themeResourcesHolder.getKeyBackground();
+    final int kbdPaddingLeft = getPaddingLeft();
+    final int kbdPaddingTop = getPaddingTop();
+    final Keyboard.Key[] keys = mKeys;
+    final Keyboard.Key invalidKey = invalidateTracker.invalidatedKey();
+
+    final boolean drawSingleKey =
+        dirtyRegionDecider.shouldDrawSingleKey(
+            canvas, invalidKey, mClipRegion, kbdPaddingLeft, kbdPaddingTop);
+
+    return new DrawInputs(
+        mShowKeyboardNameOnKeyboard && (mKeyboardNameTextSize > 1f),
+        (mHintTextSize > 1) && mShowHintsOnKeyboard,
+        mKeyboard != null && mKeyboard.isShifted(),
+        mKeyboard != null ? mKeyboard.getLocale() : java.util.Locale.getDefault(),
+        themeResourcesHolder,
+        keyTextColor,
+        modifierStates,
+        modifierActiveTextColor,
+        hintAlign,
+        hintVAlign,
+        keyBackground,
+        keys,
+        invalidKey,
+        drawSingleKey,
+        kbdPaddingLeft,
+        kbdPaddingTop,
+        mKeyboardNameTextSize,
+        mHintTextSize,
+        mHintTextSizeMultiplier,
+        mAlwaysUseDrawText,
+        mShadowRadius,
+        mShadowOffsetX,
+        mShadowOffsetY,
+        mShadowColor,
+        mTextCaseForceOverrideType,
+        mTextCaseType,
+        mKeyDetector,
+        mKeyTextSize);
+  }
+
   /**
    * Compute the average distance between adjacent keys (horizontally and vertically) and square it
    * to get the proximity threshold. We use a square here and in computing the touch distance from a
@@ -865,152 +789,17 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     }
 
     final Rect dirtyRect = invalidateTracker.dirtyRect();
-    canvas.getClipBounds(dirtyRect);
-
-    if (mKeyboard == null) {
+    if (mKeyboard == null || mKeys == null || mKeys.length == 0) {
       return;
     }
 
-    final Paint paint = mPaint;
-    final boolean drawKeyboardNameText =
-        mShowKeyboardNameOnKeyboard && (mKeyboardNameTextSize > 1f);
-
-    final boolean drawHintText = (mHintTextSize > 1) && mShowHintsOnKeyboard;
-
-    final boolean keyboardShifted = mKeyboard != null && mKeyboard.isShifted();
-    final java.util.Locale keyboardLocale =
-        mKeyboard != null ? mKeyboard.getLocale() : java.util.Locale.getDefault();
-
-    final ThemeResourcesHolder themeResourcesHolder = mThemeOverlayCombiner.getThemeResources();
-    final ColorStateList keyTextColor = themeResourcesHolder.getKeyTextColor();
-
-    final AnyKeyboard activeKeyboard =
-        mKeyboard instanceof AnyKeyboard ? (AnyKeyboard) mKeyboard : null;
-    final boolean functionModeActive =
-        activeKeyboard != null && activeKeyboard.isFunctionActive();
-    final boolean controlModeActive =
-        activeKeyboard != null && activeKeyboard.isControlActive();
-    final boolean altModeActive = activeKeyboard != null && activeKeyboard.isAltActive();
-    int modifierActiveTextColor =
-        keyTextColor.getColorForState(
-            mDrawableStatesProvider.KEY_STATE_FUNCTIONAL_ON, keyTextColor.getDefaultColor());
-    if (modifierActiveTextColor == 0) {
-      modifierActiveTextColor = keyTextColor.getDefaultColor();
+    if (!ClipAndDirtyRegionPrep.prepare(
+        canvas, dirtyRect, mClipRegion, mKeys, getPaddingLeft(), getPaddingTop())) {
+      return;
     }
 
-    // allow preferences to override theme settings for hint text position
-    final int hintAlign = hintLayoutCalculator.resolveHintAlign(mCustomHintGravity, mThemeHintLabelAlign);
-    final int hintVAlign =
-        hintLayoutCalculator.resolveHintVAlign(mCustomHintGravity, mThemeHintLabelVAlign);
-
-    final Drawable keyBackground = themeResourcesHolder.getKeyBackground();
-    final Rect clipRegion = mClipRegion;
-    final int kbdPaddingLeft = getPaddingLeft();
-    final int kbdPaddingTop = getPaddingTop();
-    final Keyboard.Key[] keys = mKeys;
-    final Keyboard.Key invalidKey = invalidateTracker.invalidatedKey();
-
-    final boolean drawSingleKey =
-        dirtyRegionDecider.shouldDrawSingleKey(
-            canvas, invalidKey, clipRegion, kbdPaddingLeft, kbdPaddingTop);
-
-    for (Keyboard.Key keyBase : keys) {
-      final AnyKey key = (AnyKey) keyBase;
-      final boolean keyIsSpace = isSpaceKey(key);
-
-      if (drawSingleKey && (invalidKey != key)) {
-        continue;
-      }
-      if (!dirtyRect.intersects(
-          key.x + kbdPaddingLeft,
-          key.y + kbdPaddingTop,
-          Keyboard.Key.getEndX(key) + kbdPaddingLeft,
-          Keyboard.Key.getEndY(key) + kbdPaddingTop)) {
-        continue;
-      }
-      int[] drawableState = key.getCurrentDrawableState(mDrawableStatesProvider);
-
-      int resolvedTextColor =
-          keyTextColorResolver.resolveTextColor(
-              key,
-              themeResourcesHolder,
-              keyTextColor,
-              keyIsSpace,
-              functionModeActive,
-              controlModeActive,
-              altModeActive,
-              modifierActiveTextColor,
-              mDrawableStatesProvider);
-
-      paint.setColor(resolvedTextColor);
-      keyBackground.setState(drawableState);
-
-      // Switch the character to uppercase if shift is pressed
-      CharSequence label =
-          key.label == null
-              ? null
-              : KeyLabelAdjuster.adjustLabelToShiftState(
-                  mKeyboard, mKeyDetector, mTextCaseForceOverrideType, mTextCaseType, key);
-      label = KeyLabelAdjuster.adjustLabelForFunctionState(mKeyboard, key, label);
-
-      final Rect bounds = keyBackground.getBounds();
-      if ((key.width != bounds.right) || (key.height != bounds.bottom)) {
-        keyBackground.setBounds(0, 0, key.width, key.height);
-      }
-      canvas.translate(key.x + kbdPaddingLeft, key.y + kbdPaddingTop);
-      keyBackground.draw(canvas);
-
-      label =
-          keyIconDrawer.drawIconIfNeeded(
-              canvas, key, keyIconResolver, label, mKeyBackgroundPadding, this);
-
-      label =
-          keyboardNameRenderer.applyKeyboardNameIfNeeded(
-              label, keyIsSpace, drawKeyboardNameText, mKeyboardName);
-
-      if (label != null) {
-        keyLabelRenderer.drawLabel(
-            canvas,
-            paint,
-            label,
-            key,
-            mKeyBackgroundPadding,
-            keyIsSpace,
-            mKeyboardNameTextSize,
-            keyboardNameRenderer,
-            mAlwaysUseDrawText,
-            this::setPaintToKeyText,
-            this::setPaintForLabelText,
-            (p, l, width) -> labelPaintConfigurator.adjustTextSizeForLabel(p, l, width, mKeyTextSize),
-            mShadowRadius,
-            mShadowOffsetX,
-            mShadowOffsetY,
-            mShadowColor);
-      }
-
-      if (drawHintText
-          && (mHintTextSizeMultiplier > 0)
-          && ((key.popupCharacters != null && key.popupCharacters.length() > 0)
-              || (key.popupResId != 0)
-              || (key.longPressCode != 0))) {
-        Align oldAlign = paint.getTextAlign();
-        keyHintRenderer.drawHint(
-            canvas,
-            paint,
-            key,
-            themeResourcesHolder,
-            mKeyBackgroundPadding,
-            hintAlign,
-            hintVAlign,
-            mHintTextSize,
-            mHintTextSizeMultiplier,
-            keyboardShifted,
-            keyboardLocale);
-        paint.setTextAlign(oldAlign);
-      }
-
-      canvas.translate(-key.x - kbdPaddingLeft, -key.y - kbdPaddingTop);
-    }
+    final DrawInputs drawInputs = buildDrawInputs(canvas, dirtyRect);
+    keyDrawHelper.drawKeys(canvas, dirtyRect, drawInputs);
     invalidateTracker.clearAfterDraw();
   }
 
@@ -1341,16 +1130,16 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   /* package */ void setSwipeXDistanceThreshold(int threshold) {
-    swipeDistanceCalculator.setSwipeXDistanceThreshold(threshold);
+    swipeConfiguration.setSwipeXDistanceThreshold(threshold);
     calculateSwipeDistances();
   }
 
   /* package */ void setSwipeVelocityThreshold(int threshold) {
-    swipeDistanceCalculator.setSwipeVelocityThreshold(threshold);
+    swipeConfiguration.setSwipeVelocityThreshold(threshold);
   }
 
   /* package */ void setSwipeYDistanceThreshold(int threshold) {
-    swipeDistanceCalculator.setSwipeYDistanceThreshold(threshold);
+    swipeConfiguration.setSwipeYDistanceThreshold(threshold);
   }
 
   /* package */ void setAlwaysUseDrawText(boolean alwaysUseDrawText) {
@@ -1372,18 +1161,18 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   /* package */ int getSwipeVelocityThreshold() {
-    return swipeDistanceCalculator.getSwipeVelocityThreshold();
+    return swipeConfiguration.getSwipeVelocityThreshold();
   }
 
   /* package */ int getSwipeXDistanceThreshold() {
-    return swipeDistanceCalculator.getSwipeXDistanceThreshold();
+    return swipeConfiguration.getSwipeXDistanceThreshold();
   }
 
   /* package */ int getSwipeSpaceXDistanceThreshold() {
-    return swipeDistanceCalculator.getSwipeSpaceXDistanceThreshold();
+    return swipeConfiguration.getSwipeSpaceXDistanceThreshold();
   }
 
   /* package */ int getSwipeYDistanceThreshold() {
-    return swipeDistanceCalculator.getSwipeYDistanceThreshold();
+    return swipeConfiguration.getSwipeYDistanceThreshold();
   }
 }

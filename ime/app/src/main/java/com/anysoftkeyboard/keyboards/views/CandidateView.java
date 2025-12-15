@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings("this-escape")
 public class CandidateView extends View implements ThemeableChild {
 
   private static final String TAG = "ASKCandidateView";

@@ -45,6 +45,7 @@ import com.menny.android.anysoftkeyboard.R;
  * Supports popup keyboard when {@link com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey} says it has
  * that, and user long-press that key.
  */
+@SuppressWarnings("this-escape")
 public class AnyKeyboardViewWithMiniKeyboard extends SizeSensitiveAnyKeyboardView {
 
   public interface OnPopupShownListener {

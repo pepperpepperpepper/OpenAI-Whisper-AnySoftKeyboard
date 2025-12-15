@@ -62,9 +62,11 @@ import com.anysoftkeyboard.ime.OptionsMenuLauncher;
 import com.anysoftkeyboard.ime.PackageBroadcastRegistrar;
 import com.anysoftkeyboard.ime.SettingsLauncher;
 import com.anysoftkeyboard.ime.StatusIconController;
+import com.anysoftkeyboard.ime.StatusIconHelper;
 import com.anysoftkeyboard.ime.VoiceInputController;
 import com.anysoftkeyboard.ime.VoiceKeyUiUpdater;
 import com.anysoftkeyboard.ime.VoiceStatusRenderer;
+import com.anysoftkeyboard.ime.VoiceUiHelper;
 import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.CondenseType;
 import com.anysoftkeyboard.keyboards.Keyboard;
@@ -110,9 +112,11 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   private NavigationKeyHandler navigationKeyHandler;
   private InputMethodManager mInputMethodManager;
   private StatusIconController statusIconController;
+  private StatusIconHelper statusIconHelper;
   private VoiceRecognitionTrigger mVoiceRecognitionTrigger;
   private VoiceInputController voiceInputController;
   private VoiceStatusRenderer voiceStatusRenderer = new VoiceStatusRenderer();
+  private VoiceUiHelper voiceUiHelper;
   private final VoiceKeyUiUpdater voiceKeyUiUpdater = new VoiceKeyUiUpdater();
   private final FullscreenModeDecider fullscreenModeDecider = new FullscreenModeDecider();
   private View mFullScreenExtractView;
@@ -255,6 +259,12 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
 
     mInputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
     statusIconController = new StatusIconController(mInputMethodManager);
+    statusIconHelper =
+        new StatusIconHelper(
+            statusIconController,
+            () -> mShowKeyboardIconInStatusBar,
+            this::getImeToken,
+            this::getCurrentAlphabetKeyboard);
     packageBroadcastRegistrar = new PackageBroadcastRegistrar(this, this::onCriticalPackageChanged);
     packageBroadcastRegistrar.register();
 
@@ -269,6 +279,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
                 GenericOnError.onError("settings_key_keyboard_icon_in_status_bar")));
 
     mVoiceRecognitionTrigger = new VoiceRecognitionTrigger(this);
+    voiceUiHelper = new VoiceUiHelper(voiceStatusRenderer, mVoiceRecognitionTrigger);
     voiceInputController =
         new VoiceInputController(
             mVoiceRecognitionTrigger,
@@ -331,7 +342,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   @Override
   public void onStartInput(EditorInfo attribute, boolean restarting) {
     super.onStartInput(attribute, restarting);
-    setKeyboardStatusIcon();
+    statusIconHelper.onStartInput();
   }
 
   @Override
@@ -380,8 +391,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   public void onFinishInput() {
     super.onFinishInput();
 
-    final IBinder imeToken = getImeToken();
-    statusIconController.hideIfNeeded(mShowKeyboardIconInStatusBar, imeToken);
+    statusIconHelper.onFinishInput();
   }
 
   @Override
@@ -402,12 +412,6 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
         getCurrentOrientation(),
         mUseFullScreenInputInPortrait,
         mUseFullScreenInputInLandscape);
-  }
-
-  private void setKeyboardStatusIcon() {
-    AnyKeyboard alphabetKeyboard = getCurrentAlphabetKeyboard();
-    final IBinder imeToken = getImeToken();
-    statusIconController.showIfNeeded(mShowKeyboardIconInStatusBar, imeToken, alphabetKeyboard);
   }
 
   /** Helper to determine if a given character code is alphabetic. */
@@ -441,9 +445,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
   }
 
   private void updateVoiceKeyState() {
-    AnyKeyboard currentKeyboard = getCurrentAlphabetKeyboard();
-    voiceStatusRenderer.updateVoiceKeyState(
-        currentKeyboard, mVoiceRecognitionTrigger.isRecording(), asViewOrNull(getInputView()));
+    voiceUiHelper.updateVoiceKeyState(getCurrentAlphabetKeyboard(), getInputView());
   }
 
   /**
@@ -451,24 +453,14 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
    * This provides clear visual feedback when voice recording is active.
    */
   private void updateSpaceBarRecordingStatus(boolean isRecording) {
-    if (isRecording) {
-      updateVoiceInputStatus(VoiceInputState.RECORDING);
-    } else if (voiceStatusRenderer.getCurrentState() != VoiceInputState.WAITING) {
-      updateVoiceInputStatus(VoiceInputState.IDLE);
-    }
+    voiceUiHelper.updateSpaceBarRecordingStatus(
+        isRecording, getCurrentAlphabetKeyboard(), getInputView());
   }
   
   private void updateVoiceInputStatus(VoiceInputState newState) {
-    voiceStatusRenderer.updateVoiceInputStatus(
-        getCurrentAlphabetKeyboard(), asViewOrNull(getInputView()), newState);
+    voiceUiHelper.updateVoiceInputStatus(newState, getCurrentAlphabetKeyboard(), getInputView());
   }
   
-  /** Utility to cast InputViewBinder to View when possible. */
-  @Nullable
-  private View asViewOrNull(@Nullable InputViewBinder binder) {
-    return binder instanceof View ? (View) binder : null;
-  }
-
   private void onFunctionKey(final int primaryCode, final Keyboard.Key key, final boolean fromUI) {
     if (BuildConfig.DEBUG) Logger.d(TAG, "onFunctionKey %d", primaryCode);
 
@@ -837,31 +829,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
 
     switch (primaryCode) {
       case KeyCodes.ENTER:
-        if (mShiftKeyState.isPressed() && ic != null) {
-          // power-users feature ahead: Shift+Enter
-          // getting away from firing the default editor action, by forcing newline
-          abortCorrectionAndResetPredictionState(false);
-          ic.commitText("\n", 1);
-          break;
-        }
-        final EditorInfo editorInfo = getCurrentInputEditorInfo();
-        final int imeOptionsActionId = IMEUtil.getImeOptionsActionIdFromEditorInfo(editorInfo);
-        if (ic != null && IMEUtil.IME_ACTION_CUSTOM_LABEL == imeOptionsActionId) {
-          // Either we have an actionLabel and we should performEditorAction with
-          // actionId regardless of its value.
-          ic.performEditorAction(editorInfo.actionId);
-        } else if (ic != null && EditorInfo.IME_ACTION_NONE != imeOptionsActionId) {
-          // We didn't have an actionLabel, but we had another action to execute.
-          // EditorInfo.IME_ACTION_NONE explicitly means no action. In contrast,
-          // EditorInfo.IME_ACTION_UNSPECIFIED is the default value for an action, so it
-          // means there should be an action and the app didn't bother to set a specific
-          // code for it - presumably it only handles one. It does not have to be treated
-          // in any specific way: anything that is not IME_ACTION_NONE should be sent to
-          // performEditorAction.
-          ic.performEditorAction(imeOptionsActionId);
-        } else {
-          handleSeparator(primaryCode);
-        }
+        handleEnterKey(ic);
         break;
       case KeyCodes.TAB:
         sendTab();
@@ -887,6 +855,35 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
           handleCharacter(primaryCode, key, multiTapIndex, nearByKeyCodes);
         }
         break;
+    }
+  }
+
+  private void handleEnterKey(@Nullable InputConnection ic) {
+    if (mShiftKeyState.isPressed() && ic != null) {
+      // power-users feature ahead: Shift+Enter
+      // getting away from firing the default editor action, by forcing newline
+      abortCorrectionAndResetPredictionState(false);
+      ic.commitText("\n", 1);
+      return;
+    }
+
+    final EditorInfo editorInfo = getCurrentInputEditorInfo();
+    final int imeOptionsActionId = IMEUtil.getImeOptionsActionIdFromEditorInfo(editorInfo);
+    if (ic != null && IMEUtil.IME_ACTION_CUSTOM_LABEL == imeOptionsActionId) {
+      // Either we have an actionLabel and we should performEditorAction with actionId regardless
+      // of its value.
+      ic.performEditorAction(editorInfo.actionId);
+    } else if (ic != null && EditorInfo.IME_ACTION_NONE != imeOptionsActionId) {
+      // We didn't have an actionLabel, but we had another action to execute.
+      // EditorInfo.IME_ACTION_NONE explicitly means no action. In contrast,
+      // EditorInfo.IME_ACTION_UNSPECIFIED is the default value for an action, so it
+      // means there should be an action and the app didn't bother to set a specific
+      // code for it - presumably it only handles one. It does not have to be treated
+      // in any specific way: anything that is not IME_ACTION_NONE should be sent to
+      // performEditorAction.
+      ic.performEditorAction(imeOptionsActionId);
+    } else {
+      handleSeparator(KeyCodes.ENTER);
     }
   }
 
@@ -1248,7 +1245,7 @@ public abstract class AnySoftKeyboard extends AnySoftKeyboardColorizeNavBar {
     // changing dictionary
     setDictionariesForCurrentKeyboard();
     // Notifying if needed
-    setKeyboardStatusIcon();
+    statusIconHelper.onStartInput();
     clearSuggestions();
     updateShiftStateNow();
     handleControl();

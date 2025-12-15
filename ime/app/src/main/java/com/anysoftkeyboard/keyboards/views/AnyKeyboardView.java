@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.evendanan.pixel.MainChild;
 
+@SuppressWarnings("this-escape")
 public class AnyKeyboardView extends AnyKeyboardViewWithExtraDraw
     implements InputViewBinder, ActionsStripSupportedChild, MainChild {
 
@@ -348,7 +349,7 @@ public class AnyKeyboardView extends AnyKeyboardViewWithExtraDraw
   }
 
   @Override
-  protected void onCancelEvent(PointerTracker tracker) {
+  public void onCancelEvent(PointerTracker tracker) {
     super.onCancelEvent(tracker);
     mIsFirstDownEventInsideSpaceBar = false;
   }

@@ -88,9 +88,9 @@ public final class KeyboardSwitchHandler {
         host.nextKeyboard(null, KeyboardSwitcher.NextKeyboardType.OtherMode);
         return true;
       case com.anysoftkeyboard.api.KeyCodes.UTILITY_KEYBOARD:
-        final var inputView = host.getInputView();
-        if (inputView instanceof AnyKeyboardView) {
-          ((AnyKeyboardView) inputView).openUtilityKeyboard();
+        final AnyKeyboardView inputView = host.getInputView();
+        if (inputView != null) {
+          inputView.openUtilityKeyboard();
         }
         return true;
       case com.anysoftkeyboard.api.KeyCodes.CUSTOM_KEYBOARD_SWITCH:

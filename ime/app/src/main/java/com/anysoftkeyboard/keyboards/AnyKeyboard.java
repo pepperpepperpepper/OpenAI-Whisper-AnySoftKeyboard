@@ -511,13 +511,13 @@ public abstract class AnyKeyboard extends Keyboard {
           mControlKey = key;
           break;
         case KeyCodes.ALT_MODIFIER:
-          mAltKey = (AnyKey) key;
+          mAltKey = key;
           break;
         case KeyCodes.SHIFT:
           mShiftKey = key; // I want to reference used by than super.
           break;
         case KeyCodes.FUNCTION:
-          mFunctionKey = (AnyKey) key;
+          mFunctionKey = key;
           break;
         case KeyCodes.VOICE_INPUT:
           android.util.Log.d("VoiceKeyDebug", "AnyKeyboard.createKeyFromXml - Creating VoiceKey for VOICE_INPUT!");
@@ -531,8 +531,8 @@ public abstract class AnyKeyboard extends Keyboard {
           break;
       }
 
-      if (primaryCode == KeyCodes.DELETE && key instanceof AnyKey) {
-        AnyKey anyKey = (AnyKey) key;
+      if (primaryCode == KeyCodes.DELETE) {
+        AnyKey anyKey = key;
         if (anyKey.longPressCode == 0) {
           anyKey.longPressCode = KeyCodes.DELETE_WORD;
         }
@@ -546,13 +546,11 @@ public abstract class AnyKeyboard extends Keyboard {
       }
       switch (primaryCode) {
         case KeyCodes.QUICK_TEXT:
-          if (key instanceof AnyKey) {
-            AnyKey anyKey = (AnyKey) key;
-            if (anyKey.longPressCode == 0
-                && anyKey.popupResId == 0
-                && TextUtils.isEmpty(anyKey.popupCharacters)) {
-              anyKey.longPressCode = KeyCodes.QUICK_TEXT_POPUP;
-            }
+          AnyKey anyKey = key;
+          if (anyKey.longPressCode == 0
+              && anyKey.popupResId == 0
+              && TextUtils.isEmpty(anyKey.popupCharacters)) {
+            anyKey.longPressCode = KeyCodes.QUICK_TEXT_POPUP;
           }
           break;
         case KeyCodes.DOMAIN:

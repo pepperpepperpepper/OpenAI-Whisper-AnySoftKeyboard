@@ -36,6 +36,7 @@ import java.util.Locale;
  * This class loads a dictionary and provides a list of suggestions for a given sequence of
  * characters. This includes corrections and completions.
  */
+@SuppressWarnings("this-escape")
 public class SuggestImpl implements Suggest {
   private static final String TAG = "ASKSuggest";
   private static final int POSSIBLE_FIX_THRESHOLD_FREQUENCY = Integer.MAX_VALUE / 2;

@@ -24,6 +24,7 @@ import com.anysoftkeyboard.addons.AddOnImpl;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings("this-escape")
 public class QuickTextKey extends AddOnImpl {
 
   private int mPopupKeyboardResId;

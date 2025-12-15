@@ -4,11 +4,11 @@ Generated from `wc -l` over *.java and *.kt. Focus on files ≥500 LOC.
 
 | LOC | File |
 | ---:| --- |
-| 1540 | ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java |
-| 1389 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
+| 1538 | ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java |
 | 1296 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/AnyKeyboard.java |
 | 1292 | ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/BaseCharactersTable.java* |
-| 1175 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
+| 1174 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
+|  975 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
 | 1047 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/KeyboardSwitcher.java |
 | 1037 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/Keyboard.java |
 |  849 | ime/app/src/main/java/com/anysoftkeyboard/dictionaries/SuggestionsProvider.java |
@@ -61,6 +61,14 @@ Recent extractions:
 - KeyIconDrawer draws centered icons and guesses labels when no icon is available.
 - KeyTextColorResolver computes per-key text color with modifier state handling.
 - Render helper list captured in docs/render-helpers.md for future slices.
+- VoiceUiHelper centralizes voice key/status UI updates out of AnySoftKeyboard.
+- StatusIconHelper wraps show/hide of the status icon away from AnySoftKeyboard.
+- KeyDrawHelper renders the per-key draw loop outside AnyKeyboardViewBase; renderKeyboard helper wraps pre-draw setup.
+- ClipDecider wraps clip-region bookkeeping for single-key vs full redraw decisions.
+- DrawInvalidationHelper wraps dirty-rect/invalidate tracking; RenderSetup bundles per-frame draw inputs.
+- SpecialKeysApplier encapsulates special key icon/label application.
+- KeyPreviewControllerBinder isolates preview controller wiring.
+- KeyboardNameVisibilityDecider determines when to draw keyboard name and hints.
 - CancelSuggestionsAction extracted from AnySoftKeyboardSuggestions to isolate strip action logic.
 - CompletionHandler extracted from AnySoftKeyboardSuggestions to encapsulate editor-provided completions.
 - SentenceSeparators helper extracted to manage per-keyboard separator sets.
@@ -95,9 +103,18 @@ Recent extractions:
 - AddToDictionaryHintController encapsulates post-pick hint/next-suggestions flow.
 - SpaceSwapDecider owns swap-character decision logic (French punctuation rules + legacy paren).
 - TypingSimulator simulates key-by-key typing for injected text.
+- WordRestartCoordinator orchestrates restart-after-cursor-move using WordRestartHelper.
+- SeparatorHandler owns separator/space/punctuation flow and next-word suggestion follow-up.
+- PredictionStateUpdater centralizes prediction/power gating and suggestion settings application.
+- CharacterInputHandler owns character key handling, composing updates, and prediction-aware output.
+- TextInputDispatcher owns onText/onTyping text injection, keeping suggestion host lean.
+- AddToDictionaryHintHost/UserDictionaryHost wrap hint + user-dictionary callbacks outside the host.
+- CompletionHostAdapter wraps completion display callbacks.
 - ThemeAttributeLoader owns theme/icon attribute parsing for AnyKeyboardViewBase.
 - SpecialKeyAppearanceUpdater sets enter/mode icons & labels outside AnyKeyboardViewBase.
 - PreviewPopupPresenter owns preview popup show/hide logic.
+- KeyboardThemeHost now bridges theme loading callbacks out of AnyKeyboardViewBase.
+- KeyDrawHelper renders per-key draw loop outside AnyKeyboardViewBase.
 - NextWordUsageStatsLoader pulls next-word usage stats UI out of NextWordSettingsFragment.
 - NextWordPreferenceSummaries builds summaries/failure messages for NextWordSettingsFragment.
 - NextWordDataCleaner encapsulates next-word clear-data flow.

@@ -46,33 +46,29 @@ public final class VoiceInputController {
           host.updateSpaceBarRecordingStatus(isRecording);
         });
 
-    if (trigger instanceof com.google.android.voiceime.VoiceRecognitionTrigger) {
-      var googleTrigger = (com.google.android.voiceime.VoiceRecognitionTrigger) trigger;
-      googleTrigger.setTranscriptionStateCallback(
-          isTranscribing ->
-              host.updateVoiceInputStatus(
-                  isTranscribing ? VoiceInputState.WAITING : VoiceInputState.IDLE));
+    trigger.setTranscriptionStateCallback(
+        isTranscribing ->
+            host.updateVoiceInputStatus(
+                isTranscribing ? VoiceInputState.WAITING : VoiceInputState.IDLE));
 
-      googleTrigger.setTranscriptionErrorCallback(
-          error -> {
-            host.updateVoiceInputStatus(VoiceInputState.ERROR);
-            // Surface the error to the user; keep it lightweight.
-            new Handler(Looper.getMainLooper())
-                .post(
-                    () ->
-                        Toast.makeText(
-                                host.getContext(), "OpenAI Error: " + error, Toast.LENGTH_LONG)
-                            .show());
-          });
+    trigger.setTranscriptionErrorCallback(
+        error -> {
+          host.updateVoiceInputStatus(VoiceInputState.ERROR);
+          // Surface the error to the user; keep it lightweight.
+          new Handler(Looper.getMainLooper())
+              .post(
+                  () ->
+                      Toast.makeText(
+                              host.getContext(), "OpenAI Error: " + error, Toast.LENGTH_LONG)
+                          .show());
+        });
 
-      googleTrigger.setRecordingEndedCallback(
-          () -> host.updateVoiceInputStatus(VoiceInputState.WAITING));
+    trigger.setRecordingEndedCallback(
+        () -> host.updateVoiceInputStatus(VoiceInputState.WAITING));
 
-      googleTrigger.setTextWrittenCallback(
-          text -> {
-            // No-op by design; host may extend later.
-          });
-    }
+    trigger.setTextWrittenCallback(
+        text -> {
+          // No-op by design; host may extend later.
+        });
   }
 }
-

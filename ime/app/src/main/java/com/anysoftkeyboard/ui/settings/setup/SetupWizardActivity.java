@@ -38,6 +38,7 @@ import io.reactivex.disposables.Disposables;
 import java.lang.ref.WeakReference;
 import net.evendanan.pixel.EdgeEffectHacker;
 
+@SuppressWarnings("this-escape")
 public class SetupWizardActivity extends AppCompatActivity {
 
   private static final int KEY_MESSAGE_SCROLL_TO_PAGE = 444;

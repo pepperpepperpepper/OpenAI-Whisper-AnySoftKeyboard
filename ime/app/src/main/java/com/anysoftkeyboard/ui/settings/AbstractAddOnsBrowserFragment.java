@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Set;
 import net.evendanan.pixel.UiUtils;
 
+@SuppressWarnings("this-escape")
 public abstract class AbstractAddOnsBrowserFragment<E extends AddOn> extends Fragment {
 
   private final Set<String> mEnabledAddOnsIds = new HashSet<>();

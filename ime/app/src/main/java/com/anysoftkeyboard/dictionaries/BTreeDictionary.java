@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.menny.android.anysoftkeyboard.R;
 
+@SuppressWarnings("this-escape")
 public abstract class BTreeDictionary extends EditableDictionary {
 
   public interface WordReadListener {

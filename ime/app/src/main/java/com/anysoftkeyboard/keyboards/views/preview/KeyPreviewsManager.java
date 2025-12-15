@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 
+@SuppressWarnings("this-escape")
 public class KeyPreviewsManager implements KeyPreviewsController {
 
   private static final String TAG = "ASKKeyPreviewsManager";
