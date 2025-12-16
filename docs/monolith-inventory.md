@@ -151,3 +151,4 @@ Recent extractions:
 - AddOnLinkNavigator handles add-on link routing/navigation outside MainFragment (wired).
 - BackupRestoreLauncher handles backup/restore chooser + execution outside MainFragment (wired).
 - WordRevertHandler encapsulates revert-last-word logic from AnySoftKeyboardSuggestions.
+- FrenchSpacePunctuationDecider computes FR space/punctuation behavior.

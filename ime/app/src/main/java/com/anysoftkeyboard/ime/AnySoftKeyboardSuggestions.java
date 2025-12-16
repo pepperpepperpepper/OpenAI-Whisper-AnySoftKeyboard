@@ -875,9 +875,8 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     super.onAlphabetKeyboardSet(keyboard);
     mDictionariesForCurrentKeyboardLoaded = false;
 
-    final Locale locale = keyboard.getLocale();
     mFrenchSpacePunctuationBehavior =
-        mSwapPunctuationAndSpace && locale.toString().toLowerCase(Locale.US).startsWith("fr");
+        FrenchSpacePunctuationDecider.shouldEnable(mSwapPunctuationAndSpace, keyboard.getLocale());
   }
 
   public void revertLastWord() {
