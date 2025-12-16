@@ -108,7 +108,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
 
   private final InvalidateHelper invalidateHelper = new InvalidateHelper();
 
-  private final Rect mKeyBackgroundPadding;
+  private final KeyBackgroundPadding keyBackgroundPadding = new KeyBackgroundPadding();
   private final Rect mClipRegion = new Rect(0, 0, 0, 0);
   private final TextWidthCache textWidthCache = new TextWidthCache();
   private final ProximityCalculator proximityCalculator = new ProximityCalculator();
@@ -228,8 +228,6 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     mPaint.setAlpha(255);
 
     keyDrawHelper = new KeyDrawHelper(this, mPaint);
-
-    mKeyBackgroundPadding = new Rect(0, 0, 0, 0);
 
     final Resources res = getResources();
 
@@ -430,7 +428,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   Rect keyBackgroundPadding() {
-    return mKeyBackgroundPadding;
+    return keyBackgroundPadding.rect();
   }
 
   KeyboardNameRenderer keyboardNameRenderer() {
