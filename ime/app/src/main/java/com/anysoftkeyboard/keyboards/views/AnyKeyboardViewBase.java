@@ -149,10 +149,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   float mHintTextSizeMultiplier;
   private int mThemeHintLabelAlign;
   private int mThemeHintLabelVAlign;
-  private int mShadowColor;
-  private int mShadowRadius;
-  private int mShadowOffsetX;
-  private int mShadowOffsetY;
+  private final KeyShadowStyle keyShadowStyle = new KeyShadowStyle();
   // Main keyboard
   private AnyKeyboard mKeyboard;
   private CharSequence mKeyboardName;
@@ -394,10 +391,10 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
         value -> mHintTextSize = value,
         value -> mThemeHintLabelVAlign = value,
         value -> mThemeHintLabelAlign = value,
-        value -> mShadowColor = value,
-        value -> mShadowRadius = value,
-        value -> mShadowOffsetX = value,
-        value -> mShadowOffsetY = value,
+        keyShadowStyle::setColor,
+        keyShadowStyle::setRadius,
+        keyShadowStyle::setOffsetX,
+        keyShadowStyle::setOffsetY,
         value -> mTextCaseType = value);
   }
 
@@ -671,10 +668,10 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
             mHintTextSize,
             mHintTextSizeMultiplier,
             mAlwaysUseDrawText,
-            mShadowRadius,
-            mShadowOffsetX,
-            mShadowOffsetY,
-            mShadowColor,
+            keyShadowStyle.radius(),
+            keyShadowStyle.offsetX(),
+            keyShadowStyle.offsetY(),
+            keyShadowStyle.color(),
             mTextCaseForceOverrideType,
             mTextCaseType,
             mKeyDetector,
