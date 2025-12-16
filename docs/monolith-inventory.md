@@ -8,7 +8,7 @@ Generated from `wc -l` over *.java and *.kt. Focus on files ≥500 LOC.
 | 1296 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/AnyKeyboard.java |
 | 1292 | ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/BaseCharactersTable.java* |
 |  970 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
-|  975 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
+|  980 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
 | 1047 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/KeyboardSwitcher.java |
 | 1037 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/Keyboard.java |
 |  849 | ime/app/src/main/java/com/anysoftkeyboard/dictionaries/SuggestionsProvider.java |
@@ -154,3 +154,4 @@ Recent extractions:
 - BackupRestoreLauncher handles backup/restore chooser + execution outside MainFragment (wired).
 - WordRevertHandler encapsulates revert-last-word logic from AnySoftKeyboardSuggestions.
 - FrenchSpacePunctuationDecider computes FR space/punctuation behavior.
+- DictionaryLoadState tracks per-keyboard dictionary load state.

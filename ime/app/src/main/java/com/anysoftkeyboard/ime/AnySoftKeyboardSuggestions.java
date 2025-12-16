@@ -78,8 +78,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   private final PredictionState predictionState = new PredictionState();
   private final DictionaryLoadGate dictionaryLoadGate = new DictionaryLoadGate();
   private final DictionaryLoaderHelper dictionaryLoaderHelper = new DictionaryLoaderHelper();
-
-  private boolean mDictionariesForCurrentKeyboardLoaded = false;
+  private final DictionaryLoadState dictionaryLoadState = new DictionaryLoadState();
 
   @VisibleForTesting
   final CancelSuggestionsAction mCancelSuggestionsAction =
@@ -285,7 +284,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
         commonalityMaxLengthDiff,
         commonalityMaxDistance,
         trySplitting,
-        () -> mDictionariesForCurrentKeyboardLoaded = false,
+        dictionaryLoadState::reset,
         this::setDictionariesForCurrentKeyboard,
         this::closeDictionaries);
   }
@@ -324,7 +323,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     mKeyboardHandler.removeMessages(KeyboardUIStateHandler.MSG_CLOSE_DICTIONARIES);
 
     abortCorrectionAndResetPredictionState(false);
-    mDictionariesForCurrentKeyboardLoaded = false;
+    dictionaryLoadState.reset();
   }
 
   @Override
@@ -332,7 +331,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     super.onStartInputView(attribute, restarting);
 
     predictionState.predictionOn = false;
-    mDictionariesForCurrentKeyboardLoaded = false;
+    dictionaryLoadState.reset();
     completionHandler.reset();
     predictionState.inputFieldSupportsAutoPick = false;
 
@@ -358,6 +357,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
     mKeyboardHandler.sendEmptyMessageDelayed(
         KeyboardUIStateHandler.MSG_CLOSE_DICTIONARIES, CLOSE_DICTIONARIES_DELAY);
     selectionExpectationTracker.clear();
+    dictionaryLoadState.reset();
   }
 
   @Override
@@ -604,11 +604,11 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   }
 
   protected void setDictionariesForCurrentKeyboard() {
-    if (mDictionariesForCurrentKeyboardLoaded) return;
+    if (dictionaryLoadState.isLoaded()) return;
 
     mSuggest.resetNextWordSentence();
 
-    mDictionariesForCurrentKeyboardLoaded =
+    final boolean loaded =
         dictionaryLoaderHelper.setDictionariesForCurrentKeyboard(
             this,
             predictionState,
@@ -619,6 +619,11 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
             sentenceSeparators,
             mSuggest,
             this::getDictionaryLoadedListener);
+    if (loaded) {
+      dictionaryLoadState.markLoaded();
+    } else {
+      dictionaryLoadState.reset();
+    }
   }
 
   @NonNull
@@ -675,7 +680,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
 
   /** Allows subclasses to force a reload of keyboard dictionaries. */
   protected void invalidateDictionariesForCurrentKeyboard() {
-    mDictionariesForCurrentKeyboardLoaded = false;
+    dictionaryLoadState.reset();
   }
 
   @Override
@@ -873,7 +878,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   @Override
   public void onAlphabetKeyboardSet(@NonNull AnyKeyboard keyboard) {
     super.onAlphabetKeyboardSet(keyboard);
-    mDictionariesForCurrentKeyboardLoaded = false;
+    dictionaryLoadState.reset();
 
     mFrenchSpacePunctuationBehavior =
         FrenchSpacePunctuationDecider.shouldEnable(mSwapPunctuationAndSpace, keyboard.getLocale());
