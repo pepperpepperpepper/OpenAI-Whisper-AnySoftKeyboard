@@ -21,6 +21,7 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import com.anysoftkeyboard.keyboards.views.extradraw.ExtraDraw;
 import com.anysoftkeyboard.prefs.AnimationsLevel;
+import com.anysoftkeyboard.rx.GenericOnError;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -32,11 +33,13 @@ public abstract class AnyKeyboardViewWithExtraDraw extends AnyKeyboardViewWithMi
 
   protected AnyKeyboardViewWithExtraDraw(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
-    mDisposables.add(mAnimationLevelSubject.subscribe(value -> mCurrentAnimationLevel = value));
+    mDisposables.add(
+        animationLevelController.subscribeWithLogging(
+            TAG, value -> mCurrentAnimationLevel = value));
   }
 
   public void addExtraDraw(ExtraDraw extraDraw) {
-    if (!mAlwaysUseDrawText) {
+    if (!alwaysUseDrawText()) {
       return; // not doing it with StaticLayout
     }
 

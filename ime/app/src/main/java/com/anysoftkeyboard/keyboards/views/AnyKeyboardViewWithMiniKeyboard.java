@@ -39,6 +39,7 @@ import com.anysoftkeyboard.keyboards.Keyboard;
 import com.anysoftkeyboard.overlay.OverlayData;
 import com.anysoftkeyboard.prefs.AnimationsLevel;
 import com.anysoftkeyboard.theme.KeyboardTheme;
+import com.anysoftkeyboard.rx.GenericOnError;
 import com.menny.android.anysoftkeyboard.R;
 
 /**
@@ -75,7 +76,8 @@ public class AnyKeyboardViewWithMiniKeyboard extends SizeSensitiveAnyKeyboardVie
     CompatUtils.setPopupUnattachedToDecor(mMiniKeyboardPopup);
     mMiniKeyboardPopup.setBackgroundDrawable(null);
     mDisposables.add(
-        mAnimationLevelSubject.subscribe(
+        animationLevelController.subscribeWithLogging(
+            "mAnimationLevelSubject",
             value ->
                 mMiniKeyboardPopup.setAnimationStyle(
                     value == AnimationsLevel.None ? 0 : R.style.MiniKeyboardAnimation)));

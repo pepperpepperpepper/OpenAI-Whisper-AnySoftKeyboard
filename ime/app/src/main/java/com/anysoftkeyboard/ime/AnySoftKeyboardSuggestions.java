@@ -69,11 +69,10 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   Suggest mSuggest;
   CandidateView mCandidateView;
   private final SpaceTimeTracker spaceTimeTracker = new SpaceTimeTracker();
-  @Nullable private Keyboard.Key mLastKey;
-  private int mLastPrimaryKey = Integer.MIN_VALUE;
+  private final LastKeyTracker lastKeyTracker = new LastKeyTracker();
   private final SelectionExpectationTracker selectionExpectationTracker =
       new SelectionExpectationTracker(NEVER_TIME_STAMP);
-  private boolean mLastCharacterWasShifted = false;
+  private final ShiftStateTracker shiftStateTracker = new ShiftStateTracker();
   private boolean mFrenchSpacePunctuationBehavior;
   private final PredictionState predictionState = new PredictionState();
   private final DictionaryLoadGate dictionaryLoadGate = new DictionaryLoadGate();
@@ -198,7 +197,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
 
         @Override
         public void setLastCharacterWasShifted(boolean shifted) {
-          mLastCharacterWasShifted = shifted;
+          shiftStateTracker.setLastCharacterWasShifted(shifted);
         }
       };
   private final TextInputDispatcher.Host textInputHost =
@@ -263,7 +262,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
 
   @Nullable
   protected Keyboard.Key getLastUsedKey() {
-    return mLastKey;
+    return lastKeyTracker.lastKey();
   }
 
   void setAllowSuggestionsRestart(boolean allow) {
@@ -412,8 +411,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   @CallSuper
   public void onKey(
       int primaryCode, Keyboard.Key key, int multiTapIndex, int[] nearByKeyCodes, boolean fromUI) {
-    mLastKey = key;
-    mLastPrimaryKey = primaryCode;
+    lastKeyTracker.record(key, primaryCode);
     super.onKey(primaryCode, key, multiTapIndex, nearByKeyCodes, fromUI);
     if (primaryCode != KeyCodes.DELETE) {
       autoCorrectState.wordRevertLength = 0;
@@ -422,14 +420,14 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   }
 
   protected void resetLastPressedKey() {
-    mLastKey = null;
+    lastKeyTracker.reset();
   }
 
   @Override
   public void onRelease(int primaryCode) {
     // not allowing undo on-text in clipboard paste operations.
     if (primaryCode == KeyCodes.CLIPBOARD_PASTE) autoCorrectState.wordRevertLength = 0;
-    if (mLastPrimaryKey == primaryCode && KeyCodes.isOutputKeyCode(primaryCode)) {
+    if (lastKeyTracker.shouldMarkSpaceTime(primaryCode)) {
       setSpaceTimeStamp(primaryCode == KeyCodes.SPACE);
     }
     if (!isCurrentlyPredicting()
@@ -452,7 +450,7 @@ public abstract class AnySoftKeyboardSuggestions extends AnySoftKeyboardKeyboard
   public void onMultiTapStarted() {
     final InputViewBinder inputView = getInputView();
     if (inputView != null) {
-      inputView.setShifted(mLastCharacterWasShifted);
+      inputView.setShifted(shiftStateTracker.lastCharacterWasShifted());
     }
   }
 

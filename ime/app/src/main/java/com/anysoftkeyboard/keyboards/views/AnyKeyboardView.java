@@ -117,8 +117,8 @@ public class AnyKeyboardView extends AnyKeyboardViewWithExtraDraw
     mInAnimation = null;
 
     mDisposables.add(
-        mAnimationLevelSubject.subscribe(
-            value -> mAnimationLevel = value, GenericOnError.onError("mAnimationLevelSubject")));
+        animationLevelController.subscribeWithLogging(
+            "mAnimationLevelSubject", value -> mAnimationLevel = value));
     mDisposables.add(
         AnyApplication.prefs(context)
             .getBoolean(

@@ -26,7 +26,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Rect;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.SystemClock;
@@ -74,7 +73,6 @@ import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.BuildConfig;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
 import java.util.List;
 import java.util.Map;
@@ -139,15 +137,6 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   protected CharSequence mNextSymbolsKeyboardName;
   int mKeyboardActionType = EditorInfo.IME_ACTION_UNSPECIFIED;
   private KeyDrawableStateProvider mDrawableStatesProvider;
-  // XML attribute
-  private float mKeyTextSize;
-  private Typeface mKeyTextStyle = Typeface.DEFAULT;
-  private float mLabelTextSize;
-  private float mKeyboardNameTextSize;
-  private float mHintTextSize;
-  float mHintTextSizeMultiplier;
-  private int mThemeHintLabelAlign;
-  private int mThemeHintLabelVAlign;
   private final KeyShadowStyle keyShadowStyle = new KeyShadowStyle();
   // Main keyboard
   private AnyKeyboard mKeyboard;
@@ -157,17 +146,10 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   private Keyboard.Key[] mKeys;
   private final KeyPreviewManagerFacade keyPreviewManager = new KeyPreviewManagerFacade();
 
-  private int mTextCaseForceOverrideType;
-  private int mTextCaseType;
-
-  protected boolean mAlwaysUseDrawText;
-
   private final KeyboardNameHintController keyboardNameHintController =
       new KeyboardNameHintController();
   private final float mDisplayDensity;
-  protected final Subject<AnimationsLevel> mAnimationLevelSubject =
-      BehaviorSubject.createDefault(AnimationsLevel.Some);
-  private float mKeysHeightFactor = 1f;
+  final AnimationLevelController animationLevelController = new AnimationLevelController();
   @NonNull protected OverlayData mThemeOverlay = new OverlayDataImpl();
   // overrideable theme resources
   private final ThemeOverlayCombiner mThemeOverlayCombiner = new ThemeOverlayCombiner();
@@ -190,6 +172,9 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
       new ThemeAttributeLoaderRunner();
   private final ImeActionTypeResolver imeActionTypeResolver = new ImeActionTypeResolver();
   private final NextKeyboardNameResolver nextKeyboardNameResolver = new NextKeyboardNameResolver();
+  private final KeyTextStyleState keyTextStyleState = new KeyTextStyleState();
+  private final KeyDisplayState keyDisplayState = new KeyDisplayState();
+  private final KeyboardNameHintState keyboardNameHintState = new KeyboardNameHintState();
 
   public AnyKeyboardViewBase(Context context, AttributeSet attrs) {
         this(context, attrs, R.style.PlainLightNewSoftKeyboard);
@@ -321,7 +306,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     invalidateAllKeys();
 
     themeAttributeLoaderRunner.applyThemeAttributes(this, mThemeOverlayCombiner, theme);
-    mPaint.setTextSize(mKeyTextSize);
+    mPaint.setTextSize(keyTextStyleState.keyTextSize());
   }
 
   @Override
@@ -378,21 +363,21 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
         mKeyboardDimens,
         previewThemeConfigurator,
         mPreviewPopupTheme,
-        () -> mKeysHeightFactor,
+        keyDisplayState::keysHeightFactor,
         viewStyleState::setOriginalVerticalCorrection,
         viewStyleState::setBackgroundDimAmount,
-        value -> mKeyTextSize = value,
-        value -> mLabelTextSize = value,
-        value -> mKeyboardNameTextSize = value,
-        value -> mKeyTextStyle = value,
-        value -> mHintTextSize = value,
-        value -> mThemeHintLabelVAlign = value,
-        value -> mThemeHintLabelAlign = value,
+        keyTextStyleState::setKeyTextSize,
+        keyTextStyleState::setLabelTextSize,
+        keyTextStyleState::setKeyboardNameTextSize,
+        keyTextStyleState::setKeyTextStyle,
+        keyTextStyleState::setHintTextSize,
+        keyTextStyleState::setThemeHintLabelVAlign,
+        keyTextStyleState::setThemeHintLabelAlign,
         keyShadowStyle::setColor,
         keyShadowStyle::setRadius,
         keyShadowStyle::setOffsetX,
         keyShadowStyle::setOffsetY,
-        value -> mTextCaseType = value);
+        keyTextStyleState::setTextCaseType);
   }
 
   void onKeyDrawableProviderReady(
@@ -603,7 +588,11 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   @VisibleForTesting
   CharSequence adjustLabelToShiftState(AnyKey key) {
     return KeyLabelAdjuster.adjustLabelToShiftState(
-        mKeyboard, mKeyDetector, mTextCaseForceOverrideType, mTextCaseType, key);
+        mKeyboard,
+        mKeyDetector,
+        keyTextStyleState.textCaseForceOverrideType(),
+        keyTextStyleState.textCaseType(),
+        key);
   }
 
   @VisibleForTesting
@@ -661,31 +650,32 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
             clipRegionHolder.rect(),
             getPaddingLeft(),
             getPaddingTop(),
-            mKeyboardNameTextSize,
-            mHintTextSize,
-            mHintTextSizeMultiplier,
-            mAlwaysUseDrawText,
+            keyTextStyleState.keyboardNameTextSize(),
+            keyTextStyleState.hintTextSize(),
+            keyTextStyleState.hintTextSizeMultiplier(),
+            keyDisplayState.alwaysUseDrawText(),
             keyShadowStyle.radius(),
             keyShadowStyle.offsetX(),
             keyShadowStyle.offsetY(),
             keyShadowStyle.color(),
-            mTextCaseForceOverrideType,
-            mTextCaseType,
+            keyTextStyleState.textCaseForceOverrideType(),
+            keyTextStyleState.textCaseType(),
             mKeyDetector,
-            mKeyTextSize,
-            mThemeHintLabelAlign,
-            mThemeHintLabelVAlign,
+            keyTextStyleState.keyTextSize(),
+            keyTextStyleState.themeHintLabelAlign(),
+            keyTextStyleState.themeHintLabelVAlign(),
             mDrawableStatesProvider);
     keyDrawHelper.drawKeys(canvas, dirtyRect, drawInputs);
     invalidateHelper.clearAfterDraw();
   }
 
   protected void setPaintForLabelText(Paint paint) {
-    labelPaintConfigurator.setPaintForLabelText(paint, mLabelTextSize);
+    labelPaintConfigurator.setPaintForLabelText(paint, keyTextStyleState.labelTextSize());
   }
 
   public void setPaintToKeyText(final Paint paint) {
-    labelPaintConfigurator.setPaintToKeyText(paint, mKeyTextSize, mKeyTextStyle);
+    labelPaintConfigurator.setPaintToKeyText(
+        paint, keyTextStyleState.keyTextSize(), keyTextStyleState.keyTextStyle());
   }
 
   @Override
@@ -772,11 +762,11 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   public float getLabelTextSize() {
-    return mLabelTextSize;
+    return keyTextStyleState.labelTextSize();
   }
 
   public float getKeyTextSize() {
-    return mKeyTextSize;
+    return keyTextStyleState.keyTextSize();
   }
 
   public ThemeResourcesHolder getCurrentResourcesHolder() {
@@ -898,11 +888,13 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   public void setWatermark(@NonNull List<Drawable> watermark) {}
 
   void applyThemeCaseOverride(final String overrideValue) {
-    mTextCaseForceOverrideType = ThemeOverrideApplier.caseOverride(overrideValue);
+    keyTextStyleState.setTextCaseForceOverrideType(
+        ThemeOverrideApplier.caseOverride(overrideValue));
   }
 
   void applyHintTextSizeFactor(final String overrideValue) {
-    mHintTextSizeMultiplier = ThemeOverrideApplier.hintSizeMultiplier(overrideValue);
+    keyTextStyleState.setHintTextSizeMultiplier(
+        ThemeOverrideApplier.hintSizeMultiplier(overrideValue));
   }
 
   public void setKeyPreviewController(@NonNull KeyPreviewsController controller) {
@@ -910,15 +902,20 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   /* package */ void setShowKeyboardNameOnKeyboard(boolean show) {
-    keyboardNameHintController.setShowKeyboardNameOnKeyboard(show);
+    keyboardNameHintState.setShowKeyboardNameOnKeyboard(show);
+    keyboardNameHintController.setShowKeyboardNameOnKeyboard(
+        keyboardNameHintState.showKeyboardNameOnKeyboard());
   }
 
   /* package */ void setShowHintsOnKeyboard(boolean show) {
-    keyboardNameHintController.setShowHintsOnKeyboard(show);
+    keyboardNameHintState.setShowHintsOnKeyboard(show);
+    keyboardNameHintController.setShowHintsOnKeyboard(
+        keyboardNameHintState.showHintsOnKeyboard());
   }
 
   /* package */ void setCustomHintGravity(int gravity) {
-    keyboardNameHintController.setCustomHintGravity(gravity);
+    keyboardNameHintState.setCustomHintGravity(gravity);
+    keyboardNameHintController.setCustomHintGravity(keyboardNameHintState.customHintGravity());
   }
 
   /* package */ void setSwipeXDistanceThreshold(int threshold) {
@@ -934,17 +931,25 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   }
 
   /* package */ void setAlwaysUseDrawText(boolean alwaysUseDrawText) {
-    mAlwaysUseDrawText = alwaysUseDrawText;
+    keyDisplayState.setAlwaysUseDrawText(alwaysUseDrawText);
+  }
+
+  protected boolean alwaysUseDrawText() {
+    return keyDisplayState.alwaysUseDrawText();
   }
 
   /* package */ void setKeysHeightFactor(float factor) {
-    mKeysHeightFactor = factor;
+    keyDisplayState.setKeysHeightFactor(factor);
     textWidthCache.clear();
     invalidateAllKeys();
   }
 
   /* package */ void setAnimationLevel(AnimationsLevel level) {
-    mAnimationLevelSubject.onNext(level);
+    animationLevelController.setLevel(level);
+  }
+
+  protected Subject<AnimationsLevel> animationLevelSubject() {
+    return animationLevelController.subject();
   }
 
   /* package */ float getDisplayDensity() {

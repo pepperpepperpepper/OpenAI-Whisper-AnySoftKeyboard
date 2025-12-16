@@ -7,8 +7,8 @@ Generated from `wc -l` over *.java and *.kt. Focus on files ≥500 LOC.
 | 1538 | ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java |
 | 1296 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/AnyKeyboard.java |
 | 1292 | ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/BaseCharactersTable.java* |
-|  977 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
-|  980 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
+|  982 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java |
+|  978 | ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java |
 | 1047 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/KeyboardSwitcher.java |
 | 1037 | ime/app/src/main/java/com/anysoftkeyboard/keyboards/Keyboard.java |
 |  849 | ime/app/src/main/java/com/anysoftkeyboard/dictionaries/SuggestionsProvider.java |
@@ -76,6 +76,11 @@ Recent extractions:
 - SpecialKeyManager owns special-key icon/label resolution and apply flow.
 - KeyPreviewInteractor wraps preview show/hide/dismiss wiring to shrink the view.
 - KeyShadowStyle holds shadow color/radius/offset to reduce field clutter.
+- KeyTextStyleState holds key/label/name/hint text sizes, styles, and hint alignments.
+- KeyDisplayState holds draw-text toggle and keys height factor.
+- AnimationLevelController owns the animation level subject.
+- ShiftStateTracker owns last-shift flag used for multi-tap handling.
+- KeyboardNameHintState holds show-name/show-hints toggles and hint gravity.
 - KeyBackgroundPadding holds padding Rect to keep the view slimmer.
 - ClipRegionHolder keeps the draw clip Rect out of the view class.
 - ViewStyleState holds dim/vertical-correction floats outside the view fields.
@@ -92,6 +97,8 @@ Recent extractions:
   trimming `AnySoftKeyboardSuggestions`.
 - PredictionState now holds the suggestion/prediction flags; `SuggestionPickerHost`/service route
   auto-complete checks through it.
+- LastKeyTracker owns last-key/code tracking for suggestion flows.
+- ShiftStateTracker owns last-shift flag used for multi-tap handling.
 - SelectionUpdateHost extracted from AnySoftKeyboardSuggestions to slim onUpdateSelection host logic.
 - StatusIconController owns status-icon visibility outside the service.
 - FullscreenModeDecider isolates fullscreen decision logic.
@@ -134,7 +141,7 @@ Recent extractions:
 - KeyboardSetterHostImpl carries the host wiring out of AnyKeyboardViewBase.
 - ThemeOverrideApplier interprets theme case/hint overrides outside AnyKeyboardViewBase.
 - SwipeThresholdApplier owns swipe threshold updates and recomputation triggers.
-- KeyboardNameHintController now owns show-name/show-hints/gravity flags outside AnyKeyboardViewBase.
+- KeyboardNameHintController + KeyboardNameHintState now own show-name/show-hints/gravity flags outside AnyKeyboardViewBase.
 - KeyPreviewControllerBinder wires preview controllers without bloating AnyKeyboardViewBase.
 - PointerTrackerAccessor centralizes tracker lookup/wiring.
 - InputResetter encapsulates preview/touch cleanup for reset/detach paths.
