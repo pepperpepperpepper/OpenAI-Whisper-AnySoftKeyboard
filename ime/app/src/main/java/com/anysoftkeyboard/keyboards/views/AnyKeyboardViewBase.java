@@ -85,10 +85,6 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   // Miscellaneous constants
   public static final int NOT_A_KEY = -1;
   static final String TAG = "ASKKbdViewBase";
-  static final int[] ACTION_KEY_TYPES =
-      new int[] {R.attr.action_done, R.attr.action_search, R.attr.action_go};
-  private static final int[] KEY_TYPES =
-      new int[] {R.attr.key_type_function, R.attr.key_type_action};
   private static final long TWO_FINGERS_LINGER_TIME = 30;
   protected final DefaultAddOn mDefaultAddOn;
 

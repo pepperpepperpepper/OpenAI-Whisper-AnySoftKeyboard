@@ -70,7 +70,7 @@ class ThemeHost implements ThemeAttributeLoader.Host {
   @NonNull
   @Override
   public int[] getActionKeyTypes() {
-    return AnyKeyboardViewBase.ACTION_KEY_TYPES;
+    return KeyTypeAttributes.ACTION_KEY_TYPES;
   }
 
   @Override
