@@ -265,7 +265,8 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
             proximityCalculator,
             swipeConfiguration);
     swipeThresholdApplier =
-        new SwipeThresholdApplier(swipeConfiguration, this::calculateSwipeDistances);
+        new SwipeThresholdApplier(
+            swipeConfiguration, () -> swipeConfiguration.recomputeForKeyboard(getKeyboard()));
     inputResetter = new InputResetter(keyPreviewManager, mKeyPressTimingHandler, mTouchDispatcher);
 
     mNextAlphabetKeyboardName = getResources().getString(R.string.change_lang_regular);
@@ -503,10 +504,6 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     mKeyboard = keyboard;
     mKeyboardName = keyboardName;
     mKeys = keys;
-  }
-
-  private void calculateSwipeDistances() {
-    swipeConfiguration.recomputeForKeyboard(getKeyboard());
   }
 
   /**
