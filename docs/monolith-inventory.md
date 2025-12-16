@@ -77,6 +77,7 @@ Recent extractions:
 - KeyPreviewInteractor wraps preview show/hide/dismiss wiring to shrink the view.
 - KeyShadowStyle holds shadow color/radius/offset to reduce field clutter.
 - KeyBackgroundPadding holds padding Rect to keep the view slimmer.
+- ClipRegionHolder keeps the draw clip Rect out of the view class.
 - SpecialKeysApplier encapsulates special key icon/label application.
 - KeyPreviewControllerBinder isolates preview controller wiring.
 - KeyboardNameVisibilityDecider determines when to draw keyboard name and hints.

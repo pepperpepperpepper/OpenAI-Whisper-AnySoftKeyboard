@@ -109,7 +109,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
   private final InvalidateHelper invalidateHelper = new InvalidateHelper();
 
   private final KeyBackgroundPadding keyBackgroundPadding = new KeyBackgroundPadding();
-  private final Rect mClipRegion = new Rect(0, 0, 0, 0);
+  private final ClipRegionHolder clipRegionHolder = new ClipRegionHolder();
   private final TextWidthCache textWidthCache = new TextWidthCache();
   private final ProximityCalculator proximityCalculator = new ProximityCalculator();
   private final SwipeConfiguration swipeConfiguration = new SwipeConfiguration();
@@ -648,7 +648,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
     }
 
     if (!ClipAndDirtyRegionPrep.prepare(
-        canvas, dirtyRect, mClipRegion, mKeys, getPaddingLeft(), getPaddingTop())) {
+        canvas, dirtyRect, clipRegionHolder.rect(), mKeys, getPaddingLeft(), getPaddingTop())) {
       return;
     }
 
@@ -659,7 +659,7 @@ public class AnyKeyboardViewBase extends View implements InputViewBinder, Pointe
             mKeyboard,
             mKeys,
             invalidateHelper.invalidatedKey(),
-            mClipRegion,
+            clipRegionHolder.rect(),
             getPaddingLeft(),
             getPaddingTop(),
             mKeyboardNameTextSize,
