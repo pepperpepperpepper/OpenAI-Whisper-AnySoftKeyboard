@@ -41,7 +41,13 @@ We updated remaining user-facing places that still said “AnySoftKeyboard/ASK�
 - About screen and sharing strings:
   - `ime/app/src/main/res/layout/about_newsoftkeyboard.xml`
   - `ime/app/src/main/res/values/strings.xml` / `strings_dont_translate.xml`
-  - Localized `app_share_*` strings (removed old store links and `com.menny.android.anysoftkeyboard` references)
+- Localized `app_share_*` strings (removed old store links and `com.menny.android.anysoftkeyboard` references)
+
+We also renamed several internal/packaging assets that still carried ASK-named filenames (these do *not* affect add-on compatibility):
+
+- ProGuard config: `ime/app/proguard-anysoftkeyboard.txt` → `ime/app/proguard-newsoftkeyboard.txt` (and updated Gradle references)
+- Theme wallpaper resources: `@drawable/ask_wallpaper` → `@drawable/nsk_wallpaper` (same bitmap; new name)
+- Store assets/screenshots renamed to use “NewSoftKeyboard” in the filename
 
 ### 4) Add-on discovery compatibility expanded (F‑Droid reality check)
 
