@@ -184,7 +184,7 @@ public abstract class AnySoftKeyboardBase extends InputMethodService
             TAG,
             () -> {
               mInputViewContainer = createInputViewContainer();
-              mInputViewContainer.setBackgroundResource(R.drawable.ask_wallpaper);
+              mInputViewContainer.setBackgroundResource(R.drawable.nsk_wallpaper);
             });
 
     mInputView = mInputViewContainer.getStandardKeyboardView();

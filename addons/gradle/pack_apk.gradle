@@ -58,7 +58,7 @@ android {
             def ime_path = "${rootDir}/ime/app"
             proguardFiles "${ime_path}/proguard-android-optimize.txt",
                     "${ime_path}/proguard-rules.txt",
-                    "${ime_path}/proguard-anysoftkeyboard.txt",
+                    "${ime_path}/proguard-newsoftkeyboard.txt",
                     "${ime_path}/proguard-dont-obs.txt"
         }
     }
