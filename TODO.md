@@ -14,9 +14,9 @@ This file is the single source of truth for:
 
 - Repo: `/mnt/finished/AnySoftKeyboard`
 - Branch: `main`
-- HEAD: `217bc0821`
+- HEAD: `949343eb1`
 - Working tree: **clean**
-- Latest push: `origin/main` at `217bc0821`
+- Latest push: `origin/main` at `949343eb1`
 
 Guardrail for future commits (per user):
 - **Do not commit/push** until ALL are true:
@@ -131,7 +131,7 @@ Done (2025-12-18):
 - `GRADLE_USER_HOME=/mnt/finished/.gradle ./gradlew :ime:app:testNskDebugUnitTest -x lint` ✅
 - `GRADLE_USER_HOME=/mnt/finished/.gradle ./gradlew :ime:app:assembleNskDebug :ime:app:assembleNskDebugAndroidTest -x lint` ✅
 - Genymotion smoke matrix ✅ (see “Genymotion smoke” section above)
-- Commit + push ✅ (`217bc0821`)
+- Commit + push ✅ (`217bc0821`, `949343eb1`)
 
 Next actions:
 - Keep peeling the next monolith slice (per `docs/monolith-inventory.md`), then repeat the same unit+device gate before committing.
