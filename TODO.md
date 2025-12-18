@@ -14,12 +14,11 @@ This file is the single source of truth for:
 
 - Repo: `/mnt/finished/AnySoftKeyboard`
 - Branch: `main`
-- HEAD: `328992690`
-- Working tree: **very dirty**
-  - many tracked edits + many untracked helper extractions
-  - lots of new extracted helpers are currently **untracked** and must be `git add`’d before any commit
+- HEAD: `217bc0821`
+- Working tree: **clean**
+- Latest push: `origin/main` at `217bc0821`
 
-Hard guardrail (per user):
+Guardrail for future commits (per user):
 - **Do not commit/push** until ALL are true:
   1) `:ime:app:testNskDebugUnitTest` is green ✅
   2) A meaningful Genymotion smoke run is green ✅
@@ -127,10 +126,12 @@ Passing smoke matrix (verified with output parsing, not adb exit code):
 
 ## Next actions (before any commit/push)
 
-1) Decide what is actually part of the intended refactor slice vs. accidental drift.
-   - Working tree contains many untracked extracted helpers that compile and are now exercised by tests.
-2) `git add` the required new files (many are currently `??`), and sanity-check that nothing important is left untracked.
-3) Run formatters (per repo rules) right before commit:
-   - `./gradlew spotlessApply`
-   - (optional) `bazel run //:format`
-4) Only then: commit + push (when requested by user).
+Done (2025-12-18):
+- `GRADLE_USER_HOME=/mnt/finished/.gradle ./gradlew spotlessApply` ✅
+- `GRADLE_USER_HOME=/mnt/finished/.gradle ./gradlew :ime:app:testNskDebugUnitTest -x lint` ✅
+- `GRADLE_USER_HOME=/mnt/finished/.gradle ./gradlew :ime:app:assembleNskDebug :ime:app:assembleNskDebugAndroidTest -x lint` ✅
+- Genymotion smoke matrix ✅ (see “Genymotion smoke” section above)
+- Commit + push ✅ (`217bc0821`)
+
+Next actions:
+- Keep peeling the next monolith slice (per `docs/monolith-inventory.md`), then repeat the same unit+device gate before committing.
