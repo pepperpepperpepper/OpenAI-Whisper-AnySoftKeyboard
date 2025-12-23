@@ -60,6 +60,7 @@ import io.reactivex.subjects.Subject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import wtf.uhoh.newsoftkeyboard.NskLauncherSettingsActivity;
 
 public class AnyApplication extends MultiDexApplication {
 
@@ -205,13 +206,25 @@ public class AnyApplication extends MultiDexApplication {
             .subscribe(
                 showApp -> {
                   PackageManager pm = getPackageManager();
-                  pm.setComponentEnabledSetting(
-                      new ComponentName(getApplicationContext(), LauncherSettingsActivity.class),
+                  int desiredState =
                       showApp
                           ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-                          : PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                      PackageManager.DONT_KILL_APP);
-                }));
+                          : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+
+                  // NSK flavor replaces the legacy launcher/settings activity with a branded
+                  // component name. AskCompat retains the legacy activity. Avoid crashes by
+                  // targeting whichever one is declared in the merged manifest.
+                  ComponentName nskLauncherComponent =
+                      new ComponentName(getApplicationContext(), NskLauncherSettingsActivity.class);
+                  ComponentName legacyLauncherComponent =
+                      new ComponentName(getApplicationContext(), LauncherSettingsActivity.class);
+                  if (!trySetComponentEnabledState(pm, nskLauncherComponent, desiredState)) {
+                    trySetComponentEnabledState(pm, legacyLauncherComponent, desiredState);
+                  }
+                },
+                error ->
+                    Logger.w(
+                        TAG, "Failed updating launcher settings activity enabled state.", error)));
     mCompositeDisposable.add(
         NightMode.observeNightModeState(
                 this,
@@ -229,6 +242,18 @@ public class AnyApplication extends MultiDexApplication {
 
     mPublicNotices = new ArrayList<>(EasterEggs.create());
     mPublicNotices.addAll(Notices.create(this));
+  }
+
+  private static boolean trySetComponentEnabledState(
+      PackageManager packageManager, ComponentName componentName, int desiredState) {
+    try {
+      packageManager.setComponentEnabledSetting(
+          componentName, desiredState, PackageManager.DONT_KILL_APP);
+      return true;
+    } catch (IllegalArgumentException e) {
+      Logger.w(TAG, "Component not found: " + componentName.flattenToShortString(), e);
+      return false;
+    }
   }
 
   private void onSharedPreferencesReady(@NonNull SharedPreferences sp) {

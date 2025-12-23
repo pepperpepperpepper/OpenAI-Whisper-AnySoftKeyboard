@@ -9,6 +9,7 @@ import com.anysoftkeyboard.test.SharedPrefsHelper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import wtf.uhoh.newsoftkeyboard.NskLauncherSettingsActivity;
 
 @RunWith(AnySoftKeyboardRobolectricTestRunner.class)
 public class AnyApplicationTest {
@@ -16,8 +17,18 @@ public class AnyApplicationTest {
   @Test
   public void testSettingsAppIcon() {
     final PackageManager packageManager = getApplicationContext().getPackageManager();
-    final ComponentName componentName =
+    final ComponentName legacyComponentName =
         new ComponentName(getApplicationContext(), LauncherSettingsActivity.class);
+    final ComponentName nskComponentName =
+        new ComponentName(getApplicationContext(), NskLauncherSettingsActivity.class);
+
+    ComponentName componentName;
+    try {
+      packageManager.getActivityInfo(nskComponentName, 0);
+      componentName = nskComponentName;
+    } catch (PackageManager.NameNotFoundException e) {
+      componentName = legacyComponentName;
+    }
 
     Assert.assertEquals(
         PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
