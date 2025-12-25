@@ -1,7 +1,7 @@
 package com.anysoftkeyboard.ime;
 
 import com.anysoftkeyboard.dictionaries.Suggest;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.views.CandidateView;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -12,13 +12,13 @@ final class AddToDictionaryHintHost implements AddToDictionaryHintController.Hos
 
   private final Supplier<CandidateView> candidateViewSupplier;
   private final Supplier<Suggest> suggestSupplier;
-  private final Supplier<AnyKeyboard> keyboardSupplier;
+  private final Supplier<KeyboardDefinition> keyboardSupplier;
   private final BiConsumer<List<CharSequence>, Integer> setSuggestions;
 
   AddToDictionaryHintHost(
       Supplier<CandidateView> candidateViewSupplier,
       Supplier<Suggest> suggestSupplier,
-      Supplier<AnyKeyboard> keyboardSupplier,
+      Supplier<KeyboardDefinition> keyboardSupplier,
       BiConsumer<List<CharSequence>, Integer> setSuggestions) {
     this.candidateViewSupplier = candidateViewSupplier;
     this.suggestSupplier = suggestSupplier;
@@ -37,7 +37,7 @@ final class AddToDictionaryHintHost implements AddToDictionaryHintController.Hos
   }
 
   @Override
-  public AnyKeyboard currentAlphabetKeyboard() {
+  public KeyboardDefinition currentAlphabetKeyboard() {
     return keyboardSupplier.get();
   }
 

@@ -16,14 +16,14 @@
 
 package com.anysoftkeyboard.keyboards.views;
 
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 
-/** Default KeyboardSetter.Host implementation that proxies to AnyKeyboardViewBase. */
+/** Default KeyboardSetter.Host implementation that proxies to KeyboardViewBase. */
 class KeyboardSetterHostImpl implements KeyboardSetter.Host {
-  private final AnyKeyboardViewBase host;
+  private final KeyboardViewBase host;
 
-  KeyboardSetterHostImpl(AnyKeyboardViewBase host) {
+  KeyboardSetterHostImpl(KeyboardViewBase host) {
     this.host = host;
   }
 
@@ -64,7 +64,7 @@ class KeyboardSetterHostImpl implements KeyboardSetter.Host {
 
   @Override
   public void setKeyboardFields(
-      AnyKeyboard keyboard, CharSequence keyboardName, Keyboard.Key[] keys) {
+      KeyboardDefinition keyboard, CharSequence keyboardName, Keyboard.Key[] keys) {
     host.setKeyboardFields(keyboard, keyboardName, keys);
   }
 

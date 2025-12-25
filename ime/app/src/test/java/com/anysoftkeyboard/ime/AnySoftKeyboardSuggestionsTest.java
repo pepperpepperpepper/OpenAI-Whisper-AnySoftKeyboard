@@ -16,7 +16,7 @@ import com.anysoftkeyboard.keyboards.views.KeyboardViewContainerView;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
 import com.anysoftkeyboard.theme.KeyboardThemeFactory;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -178,7 +178,7 @@ public class AnySoftKeyboardSuggestionsTest extends AnySoftKeyboardBaseTest {
     TestRxSchedulers.drainAllTasks();
     TestRxSchedulers.foregroundAdvanceBy(10000);
     final KeyboardViewContainerView.StripActionProvider provider =
-        ((AnySoftKeyboardSuggestions) mAnySoftKeyboardUnderTest).mCancelSuggestionsAction;
+        ((ImeSuggestionsController) mAnySoftKeyboardUnderTest).mCancelSuggestionsAction;
     View rootActionView =
         provider
             .inflateActionView(mAnySoftKeyboardUnderTest.getInputViewContainer())
@@ -226,7 +226,7 @@ public class AnySoftKeyboardSuggestionsTest extends AnySoftKeyboardBaseTest {
   @Test
   public void testStripTheming() {
     final KeyboardThemeFactory keyboardThemeFactory =
-        AnyApplication.getKeyboardThemeFactory(getApplicationContext());
+        NskApplicationBase.getKeyboardThemeFactory(getApplicationContext());
     simulateFinishInputFlow();
     mAnySoftKeyboardUnderTest.resetMockCandidateView();
 
@@ -325,15 +325,15 @@ public class AnySoftKeyboardSuggestionsTest extends AnySoftKeyboardBaseTest {
     mAnySoftKeyboardUnderTest.simulateTextTyping("hel");
     Assert.assertTrue(mAnySoftKeyboardUnderTest.isCurrentlyPredicting());
     Assert.assertFalse(
-        ((AnySoftKeyboardSuggestions) mAnySoftKeyboardUnderTest)
+        ((ImeSuggestionsController) mAnySoftKeyboardUnderTest)
             .mKeyboardHandler.hasMessages(MSG_RESTART_NEW_WORD_SUGGESTIONS));
     mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.DELETE, false);
     Assert.assertFalse(
-        ((AnySoftKeyboardSuggestions) mAnySoftKeyboardUnderTest)
+        ((ImeSuggestionsController) mAnySoftKeyboardUnderTest)
             .mKeyboardHandler.hasMessages(MSG_RESTART_NEW_WORD_SUGGESTIONS));
     SystemClock.sleep(5);
     Assert.assertFalse(
-        ((AnySoftKeyboardSuggestions) mAnySoftKeyboardUnderTest)
+        ((ImeSuggestionsController) mAnySoftKeyboardUnderTest)
             .mKeyboardHandler.hasMessages(MSG_RESTART_NEW_WORD_SUGGESTIONS));
   }
 
@@ -383,8 +383,7 @@ public class AnySoftKeyboardSuggestionsTest extends AnySoftKeyboardBaseTest {
     for (int deleteKeyPress = 6; deleteKeyPress > 0; deleteKeyPress--) {
       // really quickly
       mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.DELETE, false);
-      TestRxSchedulers.foregroundAdvanceBy(
-          50 /*that's the key-repeat delay in AnyKeyboardViewBase*/);
+      TestRxSchedulers.foregroundAdvanceBy(50 /*that's the key-repeat delay in KeyboardViewBase*/);
     }
     TestRxSchedulers.drainAllTasksUntilEnd(); // lots of events in the queue...
     TestRxSchedulers.foregroundAdvanceBy(100);

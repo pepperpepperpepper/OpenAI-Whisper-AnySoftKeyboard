@@ -14,8 +14,8 @@ import com.anysoftkeyboard.dictionaries.Dictionary;
 import com.anysoftkeyboard.dictionaries.DictionaryBackgroundLoader;
 import com.anysoftkeyboard.dictionaries.GetWordsCallback;
 import com.anysoftkeyboard.gesturetyping.GestureTypingDetector;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.anysoftkeyboard.keyboards.views.KeyboardViewContainerView;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
@@ -178,9 +178,7 @@ public class AnySoftKeyboardGestureTypingTest extends AnySoftKeyboardBaseTest {
   public void testCanOutputFromBothDictionaries() {
     mAnySoftKeyboardUnderTest
         .mGestureTypingDetectors
-        .get(
-            AnySoftKeyboardWithGestureTyping.getKeyForDetector(
-                mAnySoftKeyboardUnderTest.getCurrentKeyboard()))
+        .get(ImeWithGestureTyping.getKeyForDetector(mAnySoftKeyboardUnderTest.getCurrentKeyboard()))
         .setWords(
             Arrays.asList(
                 new char[][] {
@@ -337,11 +335,11 @@ public class AnySoftKeyboardGestureTypingTest extends AnySoftKeyboardBaseTest {
     mAnySoftKeyboardUnderTest.onGestureTypingInputStart(
         Keyboard.Key.getCenterX(startKey),
         Keyboard.Key.getCenterY(startKey),
-        (AnyKeyboard.AnyKey) startKey,
+        (KeyboardKey) startKey,
         time);
     TestRxSchedulers.drainAllTasks();
     // travelling from P to O, but very quickly!
-    final long lastTime = time + AnySoftKeyboardWithGestureTyping.MINIMUM_GESTURE_TIME_MS - 1;
+    final long lastTime = time + ImeWithGestureTyping.MINIMUM_GESTURE_TIME_MS - 1;
 
     final Keyboard.Key followingKey =
         mAnySoftKeyboardUnderTest.findKeyWithPrimaryKeyCode(pathKeys.charAt(1));
@@ -355,7 +353,7 @@ public class AnySoftKeyboardGestureTypingTest extends AnySoftKeyboardBaseTest {
         Keyboard.Key.getCenterY(followingKey) - Keyboard.Key.getCenterY(startKey);
     int callsToMake = (int) Math.ceil(((xDistance + yDistance) / 2f) / ((xStep + yStep) / 2f));
 
-    final long timeStep = AnySoftKeyboardWithGestureTyping.MINIMUM_GESTURE_TIME_MS / callsToMake;
+    final long timeStep = ImeWithGestureTyping.MINIMUM_GESTURE_TIME_MS / callsToMake;
 
     float currentX = Keyboard.Key.getCenterX(startKey);
     float currentY = Keyboard.Key.getCenterY(startKey);
@@ -396,11 +394,11 @@ public class AnySoftKeyboardGestureTypingTest extends AnySoftKeyboardBaseTest {
     mAnySoftKeyboardUnderTest.onGestureTypingInputStart(
         Keyboard.Key.getCenterX(startKey),
         Keyboard.Key.getCenterY(startKey),
-        (AnyKeyboard.AnyKey) startKey,
+        (KeyboardKey) startKey,
         time);
     TestRxSchedulers.drainAllTasks();
     // travelling from P to O, but slow enough to trigger a gesture!
-    final long lastTime = time + AnySoftKeyboardWithGestureTyping.MINIMUM_GESTURE_TIME_MS + 1;
+    final long lastTime = time + ImeWithGestureTyping.MINIMUM_GESTURE_TIME_MS + 1;
 
     final Keyboard.Key followingKey =
         mAnySoftKeyboardUnderTest.findKeyWithPrimaryKeyCode(pathKeys.charAt(1));
@@ -413,7 +411,7 @@ public class AnySoftKeyboardGestureTypingTest extends AnySoftKeyboardBaseTest {
     final float xStep = -startKey.width / 4.0f;
     int callsToMake = 3;
 
-    final long timeStep = AnySoftKeyboardWithGestureTyping.MINIMUM_GESTURE_TIME_MS / callsToMake;
+    final long timeStep = ImeWithGestureTyping.MINIMUM_GESTURE_TIME_MS / callsToMake;
 
     float currentX = Keyboard.Key.getCenterX(startKey);
     final float currentY = Keyboard.Key.getCenterY(startKey);
@@ -629,8 +627,7 @@ public class AnySoftKeyboardGestureTypingTest extends AnySoftKeyboardBaseTest {
 
   private GestureTypingDetector getCurrentGestureTypingDetectorFromMap() {
     return mAnySoftKeyboardUnderTest.mGestureTypingDetectors.get(
-        AnySoftKeyboardWithGestureTyping.getKeyForDetector(
-            mAnySoftKeyboardUnderTest.getCurrentKeyboard()));
+        ImeWithGestureTyping.getKeyForDetector(mAnySoftKeyboardUnderTest.getCurrentKeyboard()));
   }
 
   @Test
@@ -712,7 +709,7 @@ public class AnySoftKeyboardGestureTypingTest extends AnySoftKeyboardBaseTest {
     mAnySoftKeyboardUnderTest.onGestureTypingInputStart(
         Keyboard.Key.getCenterX(startKey),
         Keyboard.Key.getCenterY(startKey),
-        (AnyKeyboard.AnyKey) startKey,
+        (KeyboardKey) startKey,
         time);
     TestRxSchedulers.drainAllTasks();
     for (int keyIndex = 1; keyIndex < pathKeys.length(); keyIndex++) {

@@ -24,8 +24,8 @@ import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.addons.AddOnsFactory;
 import com.anysoftkeyboard.addons.SingleAddOnsFactory;
 import com.anysoftkeyboard.prefs.DirectBootAwareSharedPreferences;
-import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.BuildConfig;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 import io.reactivex.annotations.CheckReturnValue;
@@ -123,7 +123,7 @@ public class KeyboardThemeFactory extends SingleAddOnsFactory<KeyboardTheme> {
   @NonNull
   @CheckReturnValue
   public static Observable<KeyboardTheme> observeCurrentTheme(@NonNull Context context) {
-    final KeyboardThemeFactory factory = AnyApplication.getKeyboardThemeFactory(context);
+    final KeyboardThemeFactory factory = NskApplicationBase.getKeyboardThemeFactory(context);
     return Observable.<String>create(
             emitter -> {
               final SharedPreferences sp = DirectBootAwareSharedPreferences.create(context);

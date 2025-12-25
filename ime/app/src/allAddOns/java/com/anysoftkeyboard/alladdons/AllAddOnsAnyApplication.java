@@ -18,11 +18,11 @@ package com.anysoftkeyboard.alladdons;
 
 import android.graphics.drawable.Drawable;
 import androidx.core.content.ContextCompat;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.List;
 
-public class AllAddOnsAnyApplication extends AnyApplication {
+public class AllAddOnsAnyApplication extends NskApplicationBase {
 
   @Override
   public List<Drawable> getInitialWatermarksList() {

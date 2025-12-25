@@ -23,6 +23,7 @@ public class InputMethodManagerShadow extends org.robolectric.shadows.ShadowInpu
   private int mLastStatusIconId;
   private IBinder mLastStatusIconImeToken;
 
+  @SuppressWarnings("this-escape")
   public InputMethodManagerShadow() {
     // adding three IMEs, ASK, Google, and AOSP (disabled)
     final List<InputMethodInfo> inputMethodInfos = new ArrayList<>();

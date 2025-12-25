@@ -6,9 +6,10 @@ import android.util.Log;
 import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardViewBase;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewBase;
 import com.anysoftkeyboard.saywhat.OnVisible;
 import com.anysoftkeyboard.saywhat.PublicNotice;
 import com.anysoftkeyboard.saywhat.PublicNotices;
@@ -45,7 +46,7 @@ public final class ImeStateTracker {
     return NOTICE.getLastEditorInfo();
   }
 
-  public static void onKeyboardVisible(AnyKeyboard keyboard, EditorInfo editorInfo) {
+  public static void onKeyboardVisible(KeyboardDefinition keyboard, EditorInfo editorInfo) {
     NOTICE.recordVisible(keyboard, editorInfo);
   }
 
@@ -53,7 +54,7 @@ public final class ImeStateTracker {
     NOTICE.recordHidden();
   }
 
-  public static void reportKeyboardView(@Nullable AnyKeyboardViewBase keyboardView) {
+  public static void reportKeyboardView(@Nullable KeyboardViewBase keyboardView) {
     NOTICE.setKeyboardView(keyboardView);
   }
 
@@ -100,8 +101,8 @@ public final class ImeStateTracker {
     @Nullable private volatile String mLastKeyboardId;
     @Nullable private volatile String mLastKeyboardName;
     @Nullable private volatile EditorInfo mLastEditorInfo;
-    @Nullable private volatile AnyKeyboard mLastKeyboard;
-    @Nullable private volatile AnyKeyboardViewBase mLastKeyboardView;
+    @Nullable private volatile KeyboardDefinition mLastKeyboard;
+    @Nullable private volatile KeyboardViewBase mLastKeyboardView;
 
     @NonNull
     @Override
@@ -110,16 +111,16 @@ public final class ImeStateTracker {
     }
 
     @Override
-    public void onVisible(PublicNotices ime, AnyKeyboard keyboard, EditorInfo editorInfo) {
+    public void onVisible(PublicNotices ime, KeyboardDefinition keyboard, EditorInfo editorInfo) {
       recordVisible(keyboard, editorInfo);
     }
 
     @Override
-    public void onHidden(PublicNotices ime, AnyKeyboard keyboard) {
+    public void onHidden(PublicNotices ime, KeyboardDefinition keyboard) {
       recordHidden();
     }
 
-    void recordVisible(AnyKeyboard keyboard, EditorInfo editorInfo) {
+    void recordVisible(KeyboardDefinition keyboard, EditorInfo editorInfo) {
       if (keyboard != null && keyboard.getKeyboardAddOn() != null) {
         mLastKeyboardId = keyboard.getKeyboardAddOn().getId();
         mLastKeyboardName = keyboard.getKeyboardAddOn().getName();
@@ -189,7 +190,7 @@ public final class ImeStateTracker {
       return mLastEditorInfo;
     }
 
-    void setKeyboardView(@Nullable AnyKeyboardViewBase keyboardView) {
+    void setKeyboardView(@Nullable KeyboardViewBase keyboardView) {
       mLastKeyboardView = keyboardView;
       Log.d(
           TAG,
@@ -199,8 +200,8 @@ public final class ImeStateTracker {
 
     @Nullable
     PointF computeKeyCenterByPopup(@NonNull String popupCharacters) {
-      AnyKeyboard keyboard = mLastKeyboard;
-      AnyKeyboardViewBase keyboardView = mLastKeyboardView;
+      KeyboardDefinition keyboard = mLastKeyboard;
+      KeyboardViewBase keyboardView = mLastKeyboardView;
       if (keyboard == null || keyboardView == null) {
         Log.d(
             TAG,
@@ -216,7 +217,7 @@ public final class ImeStateTracker {
         String popupString =
             key.popupCharacters == null ? null : String.valueOf(key.popupCharacters);
         String extraKeyData =
-            key instanceof AnyKeyboard.AnyKey ? ((AnyKeyboard.AnyKey) key).getExtraKeyData() : null;
+            key instanceof KeyboardKey ? ((KeyboardKey) key).getExtraKeyData() : null;
         if (popupCharacters.equals(popupString) || popupCharacters.equals(extraKeyData)) {
           int[] location = new int[2];
           keyboardView.getLocationOnScreen(location);
@@ -231,8 +232,8 @@ public final class ImeStateTracker {
 
     @Nullable
     PointF computeKeyCenterByPrimaryCode(int primaryCode) {
-      AnyKeyboard keyboard = mLastKeyboard;
-      AnyKeyboardViewBase keyboardView = mLastKeyboardView;
+      KeyboardDefinition keyboard = mLastKeyboard;
+      KeyboardViewBase keyboardView = mLastKeyboardView;
       if (keyboard == null || keyboardView == null) {
         Log.d(
             TAG,
@@ -276,22 +277,22 @@ public final class ImeStateTracker {
     }
 
     boolean isShiftActive() {
-      AnyKeyboard keyboard = mLastKeyboard;
+      KeyboardDefinition keyboard = mLastKeyboard;
       return keyboard != null && keyboard.isShifted();
     }
 
     boolean isControlActive() {
-      AnyKeyboard keyboard = mLastKeyboard;
+      KeyboardDefinition keyboard = mLastKeyboard;
       return keyboard != null && keyboard.isControl();
     }
 
     boolean isAltActive() {
-      AnyKeyboard keyboard = mLastKeyboard;
+      KeyboardDefinition keyboard = mLastKeyboard;
       return keyboard != null && keyboard.isAltActive();
     }
 
     boolean isFunctionActive() {
-      AnyKeyboard keyboard = mLastKeyboard;
+      KeyboardDefinition keyboard = mLastKeyboard;
       return keyboard != null && keyboard.isFunctionActive();
     }
   }

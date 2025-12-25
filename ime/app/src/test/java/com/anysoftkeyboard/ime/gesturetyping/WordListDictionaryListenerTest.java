@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.dictionaries.Dictionary;
 import com.anysoftkeyboard.dictionaries.GetWordsCallback;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class WordListDictionaryListenerTest {
   public void testWaitsTillAllDictionariesLoadedBeforeGetWords() throws Exception {
     WordListDictionaryListener.Callback consumer =
         Mockito.mock(WordListDictionaryListener.Callback.class);
-    AnyKeyboard keyboard = Mockito.mock(AnyKeyboard.class);
+    KeyboardDefinition keyboard = Mockito.mock(KeyboardDefinition.class);
 
     WordListDictionaryListener underTest = new WordListDictionaryListener(keyboard, consumer);
     final Dictionary dictionary1 = Mockito.mock(Dictionary.class);
@@ -66,7 +66,7 @@ public class WordListDictionaryListenerTest {
   public void testFailsWhenWordsAndFrequenciesDoNotHaveTheSameLength() {
     WordListDictionaryListener.Callback consumer =
         Mockito.mock(WordListDictionaryListener.Callback.class);
-    AnyKeyboard keyboard = Mockito.mock(AnyKeyboard.class);
+    KeyboardDefinition keyboard = Mockito.mock(KeyboardDefinition.class);
 
     WordListDictionaryListener underTest = new WordListDictionaryListener(keyboard, consumer);
     final Dictionary dictionary1 = Mockito.mock(Dictionary.class);
@@ -94,7 +94,7 @@ public class WordListDictionaryListenerTest {
   public void testReportsZeroWordsOnException() throws Exception {
     WordListDictionaryListener.Callback consumer =
         Mockito.mock(WordListDictionaryListener.Callback.class);
-    AnyKeyboard keyboard = Mockito.mock(AnyKeyboard.class);
+    KeyboardDefinition keyboard = Mockito.mock(KeyboardDefinition.class);
 
     WordListDictionaryListener underTest = new WordListDictionaryListener(keyboard, consumer);
     final Dictionary dictionary1 = Mockito.mock(Dictionary.class);

@@ -1,12 +1,13 @@
 package com.anysoftkeyboard.keyboards.views;
 
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 
 /** Applies modifier state to a keyboard and invalidates when changes occur. */
 final class KeyboardModifierStateApplier {
 
-  boolean setShifted(@Nullable AnyKeyboard keyboard, boolean shifted, Runnable invalidateAllKeys) {
+  boolean setShifted(
+      @Nullable KeyboardDefinition keyboard, boolean shifted, Runnable invalidateAllKeys) {
     if (keyboard != null && keyboard.setShifted(shifted)) {
       invalidateAllKeys.run();
       return true;
@@ -15,7 +16,7 @@ final class KeyboardModifierStateApplier {
   }
 
   boolean setShiftLocked(
-      @Nullable AnyKeyboard keyboard, boolean shiftLocked, Runnable invalidateAllKeys) {
+      @Nullable KeyboardDefinition keyboard, boolean shiftLocked, Runnable invalidateAllKeys) {
     if (keyboard != null && keyboard.setShiftLocked(shiftLocked)) {
       invalidateAllKeys.run();
       return true;
@@ -23,11 +24,12 @@ final class KeyboardModifierStateApplier {
     return false;
   }
 
-  boolean isShifted(@Nullable AnyKeyboard keyboard) {
+  boolean isShifted(@Nullable KeyboardDefinition keyboard) {
     return keyboard != null && keyboard.isShifted();
   }
 
-  boolean setControl(@Nullable AnyKeyboard keyboard, boolean control, Runnable invalidateAllKeys) {
+  boolean setControl(
+      @Nullable KeyboardDefinition keyboard, boolean control, Runnable invalidateAllKeys) {
     if (keyboard != null && keyboard.setControl(control)) {
       invalidateAllKeys.run();
       return true;
@@ -36,7 +38,10 @@ final class KeyboardModifierStateApplier {
   }
 
   boolean setAlt(
-      @Nullable AnyKeyboard keyboard, boolean active, boolean locked, Runnable invalidateAllKeys) {
+      @Nullable KeyboardDefinition keyboard,
+      boolean active,
+      boolean locked,
+      Runnable invalidateAllKeys) {
     if (keyboard != null && keyboard.setAlt(active, locked)) {
       invalidateAllKeys.run();
       return true;
@@ -45,7 +50,10 @@ final class KeyboardModifierStateApplier {
   }
 
   boolean setFunction(
-      @Nullable AnyKeyboard keyboard, boolean active, boolean locked, Runnable invalidateAllKeys) {
+      @Nullable KeyboardDefinition keyboard,
+      boolean active,
+      boolean locked,
+      Runnable invalidateAllKeys) {
     if (keyboard != null && keyboard.setFunction(active, locked)) {
       invalidateAllKeys.run();
       return true;
@@ -54,7 +62,10 @@ final class KeyboardModifierStateApplier {
   }
 
   boolean setVoice(
-      @Nullable AnyKeyboard keyboard, boolean active, boolean locked, Runnable invalidateAllKeys) {
+      @Nullable KeyboardDefinition keyboard,
+      boolean active,
+      boolean locked,
+      Runnable invalidateAllKeys) {
     if (keyboard != null && keyboard.setVoice(active, locked)) {
       invalidateAllKeys.run();
       return true;

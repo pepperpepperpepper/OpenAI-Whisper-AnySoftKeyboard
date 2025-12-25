@@ -11,7 +11,10 @@ import com.anysoftkeyboard.quicktextkeys.TagsExtractor;
 import com.anysoftkeyboard.quicktextkeys.ui.EmojiSearchOverlay;
 import com.menny.android.anysoftkeyboard.R;
 
-/** Encapsulates all Emoji Search overlay interactions so {@link AnySoftKeyboard} can stay lean. */
+/**
+ * Encapsulates all Emoji Search overlay interactions so {@link com.anysoftkeyboard.ImeServiceBase}
+ * can stay lean.
+ */
 public final class EmojiSearchController {
 
   public interface Host {

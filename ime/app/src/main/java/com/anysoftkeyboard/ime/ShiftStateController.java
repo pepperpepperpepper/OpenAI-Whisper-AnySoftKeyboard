@@ -3,7 +3,7 @@ package com.anysoftkeyboard.ime;
 import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.base.utils.Logger;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.views.InputViewBinder;
 import com.anysoftkeyboard.utils.ModifierKeyState;
 import java.util.function.BooleanSupplier;
@@ -13,8 +13,8 @@ public final class ShiftStateController {
 
   @NonNull private final ModifierKeyState shiftKeyState;
   @NonNull private final BooleanSupplier autoCapEnabled;
-  @NonNull private final Supplier<AnyKeyboard> currentKeyboardSupplier;
-  @NonNull private final Supplier<AnyKeyboard> currentAlphabetKeyboardSupplier;
+  @NonNull private final Supplier<KeyboardDefinition> currentKeyboardSupplier;
+  @NonNull private final Supplier<KeyboardDefinition> currentAlphabetKeyboardSupplier;
   @NonNull private final Supplier<InputViewBinder> inputViewSupplier;
   @NonNull private final InputConnectionRouter inputConnectionRouter;
   @NonNull private final Supplier<EditorInfo> editorInfoSupplier;
@@ -25,8 +25,8 @@ public final class ShiftStateController {
   public ShiftStateController(
       @NonNull ModifierKeyState shiftKeyState,
       @NonNull BooleanSupplier autoCapEnabled,
-      @NonNull Supplier<AnyKeyboard> currentKeyboardSupplier,
-      @NonNull Supplier<AnyKeyboard> currentAlphabetKeyboardSupplier,
+      @NonNull Supplier<KeyboardDefinition> currentKeyboardSupplier,
+      @NonNull Supplier<KeyboardDefinition> currentAlphabetKeyboardSupplier,
       @NonNull Supplier<InputViewBinder> inputViewSupplier,
       @NonNull InputConnectionRouter inputConnectionRouter,
       @NonNull Supplier<EditorInfo> editorInfoSupplier,
@@ -46,7 +46,7 @@ public final class ShiftStateController {
   }
 
   public void applyShiftStateToKeyboardAndView() {
-    final AnyKeyboard currentKeyboard = currentKeyboardSupplier.get();
+    final KeyboardDefinition currentKeyboard = currentKeyboardSupplier.get();
     if (currentKeyboard != null) {
       currentKeyboard.setShifted(shiftKeyState.isActive());
       currentKeyboard.setShiftLocked(shiftKeyState.isLocked());
@@ -65,7 +65,7 @@ public final class ShiftStateController {
 
   public void updateShiftStateNow() {
     final EditorInfo editorInfo = editorInfoSupplier.get();
-    final AnyKeyboard currentAlphabetKeyboard = currentAlphabetKeyboardSupplier.get();
+    final KeyboardDefinition currentAlphabetKeyboard = currentAlphabetKeyboardSupplier.get();
     final boolean keyboardAutoCap =
         currentAlphabetKeyboard != null && currentAlphabetKeyboard.autoCap;
     final int caps;

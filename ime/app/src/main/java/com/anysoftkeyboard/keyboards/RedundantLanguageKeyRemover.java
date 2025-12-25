@@ -14,9 +14,9 @@ final class RedundantLanguageKeyRemover {
     int keysRemoved = 0;
     for (int foundIndex = 0; foundIndex < foundLanguageKeyIndices.size(); foundIndex++) {
       final int foundLanguageKeyIndex = foundLanguageKeyIndices.get(foundIndex) - keysRemoved;
-      AnyKeyboard.AnyKey languageKeyToRemove = (AnyKeyboard.AnyKey) keys.get(foundLanguageKeyIndex);
+      KeyboardKey languageKeyToRemove = (KeyboardKey) keys.get(foundLanguageKeyIndex);
       // layout requested that this key should always be shown
-      if (languageKeyToRemove.showKeyInLayout == AnyKeyboard.AnyKey.SHOW_KEY_ALWAYS) continue;
+      if (languageKeyToRemove.showKeyInLayout == KeyboardKey.SHOW_KEY_ALWAYS) continue;
 
       keysRemoved++;
 

@@ -24,14 +24,14 @@ import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.debug.ImeStateTracker;
 import com.anysoftkeyboard.debug.TestInputActivity;
 import com.anysoftkeyboard.keyboardextensions.KeyboardExtensionFactory;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
-import com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey;
 import com.anysoftkeyboard.keyboards.KeyDrawableStateProvider;
 import com.anysoftkeyboard.keyboards.Keyboard;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardViewBase;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewBase;
 import com.anysoftkeyboard.prefs.DirectBootAwareSharedPreferences;
 import com.anysoftkeyboard.prefs.RxSharedPrefs;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import com.menny.android.anysoftkeyboard.SoftKeyboard;
 import java.io.File;
@@ -87,9 +87,9 @@ public class StickyModifiersInstrumentedTest {
         .putBoolean("settings_key_allow_layouts_to_provide_generic_rows", false)
         .apply();
 
-    KeyboardExtensionFactory topFactory = AnyApplication.getTopRowFactory(appContext);
+    KeyboardExtensionFactory topFactory = NskApplicationBase.getTopRowFactory(appContext);
     topFactory.setAddOnEnabled(DEV_TOP_ROW_ID, true);
-    KeyboardExtensionFactory bottomFactory = AnyApplication.getBottomRowFactory(appContext);
+    KeyboardExtensionFactory bottomFactory = NskApplicationBase.getBottomRowFactory(appContext);
     bottomFactory.setAddOnEnabled(NO_BOTTOM_ROW_ID, true);
 
     configureMikeRozoffAsDefault(appContext);
@@ -118,13 +118,13 @@ public class StickyModifiersInstrumentedTest {
     SharedPreferences prefs = DirectBootAwareSharedPreferences.create(appContext);
     prefs.edit().putBoolean("keyboard_" + ROZOFF_MAIN_ID, true).apply();
 
-    RxSharedPrefs rxPrefs = AnyApplication.prefs(appContext);
+    RxSharedPrefs rxPrefs = NskApplicationBase.prefs(appContext);
     rxPrefs
         .getStringSet(R.string.settings_key_persistent_layout_per_package_id_mapping)
         .set(Collections.singleton(appContext.getPackageName() + " -> " + ROZOFF_MAIN_ID));
 
     com.anysoftkeyboard.keyboards.KeyboardFactory factory =
-        AnyApplication.getKeyboardFactory(appContext);
+        NskApplicationBase.getKeyboardFactory(appContext);
     if (factory.getAddOnById(ROZOFF_MAIN_ID) == null) {
       fail(
           "Mike Rozoff add-on is not installed. Install the standalone APK from "
@@ -395,22 +395,22 @@ public class StickyModifiersInstrumentedTest {
                 colorRef.set(Color.TRANSPARENT);
                 return;
               }
-              AnyKeyboardViewBase view = ime.getCurrentKeyboardViewForDebug();
+              KeyboardViewBase view = ime.getCurrentKeyboardViewForDebug();
               if (view == null) {
                 android.util.Log.w("FunctionColorTest", "Keyboard view is null");
                 colorRef.set(Color.TRANSPARENT);
                 return;
               }
-              Keyboard keyboard = view.getKeyboard();
-              if (!(keyboard instanceof AnyKeyboard anyKeyboard)) {
-                android.util.Log.w("FunctionColorTest", "Keyboard is not AnyKeyboard");
+              KeyboardDefinition keyboard = view.getKeyboard();
+              if (keyboard == null) {
+                android.util.Log.w("FunctionColorTest", "Keyboard is null");
                 colorRef.set(Color.TRANSPARENT);
                 return;
               }
-              AnyKey targetKey = findKey(anyKeyboard, primaryCode);
+              KeyboardKey targetKey = findKey(keyboard, primaryCode);
               if (targetKey == null) {
                 StringBuilder codes = new StringBuilder();
-                for (Keyboard.Key key : anyKeyboard.getKeys()) {
+                for (Keyboard.Key key : keyboard.getKeys()) {
                   if (codes.length() > 0) {
                     codes.append(',');
                   }
@@ -438,9 +438,9 @@ public class StickyModifiersInstrumentedTest {
                   "state="
                       + java.util.Arrays.toString(state)
                       + " functionActive="
-                      + anyKeyboard.isFunctionActive()
+                      + keyboard.isFunctionActive()
                       + " controlActive="
-                      + anyKeyboard.isControlActive()
+                      + keyboard.isControlActive()
                       + " keyCode="
                       + primaryCode);
               ColorStateList colors =
@@ -458,7 +458,7 @@ public class StickyModifiersInstrumentedTest {
               if (ime == null) {
                 return;
               }
-              AnyKeyboardViewBase view = ime.getCurrentKeyboardViewForDebug();
+              KeyboardViewBase view = ime.getCurrentKeyboardViewForDebug();
               if (view == null) {
                 return;
               }
@@ -474,7 +474,7 @@ public class StickyModifiersInstrumentedTest {
               if (ime == null) {
                 return;
               }
-              AnyKeyboardViewBase view = ime.getCurrentKeyboardViewForDebug();
+              KeyboardViewBase view = ime.getCurrentKeyboardViewForDebug();
               if (view == null) {
                 return;
               }
@@ -490,7 +490,7 @@ public class StickyModifiersInstrumentedTest {
               if (ime == null) {
                 return;
               }
-              AnyKeyboardViewBase view = ime.getCurrentKeyboardViewForDebug();
+              KeyboardViewBase view = ime.getCurrentKeyboardViewForDebug();
               if (view == null) {
                 return;
               }
@@ -510,9 +510,9 @@ public class StickyModifiersInstrumentedTest {
   }
 
   @Nullable
-  private AnyKey findKey(AnyKeyboard keyboard, int primaryCode) {
+  private KeyboardKey findKey(KeyboardDefinition keyboard, int primaryCode) {
     for (Keyboard.Key key : keyboard.getKeys()) {
-      if (key instanceof AnyKey anyKey && anyKey.getPrimaryCode() == primaryCode) {
+      if (key instanceof KeyboardKey anyKey && anyKey.getPrimaryCode() == primaryCode) {
         return anyKey;
       }
     }
@@ -647,7 +647,7 @@ public class StickyModifiersInstrumentedTest {
       String lastId = ImeStateTracker.getLastKeyboardId();
       if (lastId == null) {
         String factoryId =
-            AnyApplication.getKeyboardFactory(ApplicationProvider.getApplicationContext())
+            NskApplicationBase.getKeyboardFactory(ApplicationProvider.getApplicationContext())
                 .getEnabledAddOn()
                 .getId();
         if (expectedKeyboardId.equals(factoryId)) {
@@ -691,12 +691,12 @@ public class StickyModifiersInstrumentedTest {
           "StickyModifiersTest", "SoftKeyboard instance null when locating code " + primaryCode);
       return null;
     }
-    AnyKeyboardViewBase view = service.getCurrentKeyboardViewForDebug();
+    KeyboardViewBase view = service.getCurrentKeyboardViewForDebug();
     if (view == null) {
       android.util.Log.d("StickyModifiersTest", "Keyboard view null for code " + primaryCode);
       return null;
     }
-    AnyKeyboard keyboard = view.getKeyboard();
+    KeyboardDefinition keyboard = view.getKeyboard();
     if (keyboard == null) {
       android.util.Log.d("StickyModifiersTest", "Keyboard null for code " + primaryCode);
       return null;

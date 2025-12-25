@@ -19,33 +19,33 @@ public class AnySoftKeyboardExtendingTest extends AnySoftKeyboardBaseTest {
     final Set<Class<?>> allPossibleClasses =
         new HashSet<>(
             Arrays.asList(
-                com.anysoftkeyboard.ime.AnySoftKeyboardBase.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardClipboard.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardKeyboardTagsSearcher.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardMediaInsertion.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardNightMode.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardPowerSaving.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardPressEffects.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardColorizeNavBar.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardWithGestureTyping.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardSwipeListener.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardWithQuickText.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardSuggestions.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardInlineSuggestions.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardThemeOverlay.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardHardware.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardIncognito.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardDialogProvider.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardPopText.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardRxPrefs.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardKeyboardSwitchedListener.class,
-                com.anysoftkeyboard.ime.AnySoftKeyboardService.class,
+                com.anysoftkeyboard.ime.ImeBase.class,
+                com.anysoftkeyboard.ime.ImeClipboard.class,
+                com.anysoftkeyboard.ime.ImeKeyboardTagsSearcher.class,
+                com.anysoftkeyboard.ime.ImeMediaInsertion.class,
+                com.anysoftkeyboard.ime.ImeNightMode.class,
+                com.anysoftkeyboard.ime.ImePowerSaving.class,
+                com.anysoftkeyboard.ime.ImePressEffects.class,
+                com.anysoftkeyboard.ime.ImeColorizeNavBar.class,
+                com.anysoftkeyboard.ime.ImeWithGestureTyping.class,
+                com.anysoftkeyboard.ime.ImeSwipeListener.class,
+                com.anysoftkeyboard.ime.ImeWithQuickText.class,
+                com.anysoftkeyboard.ime.ImeSuggestionsController.class,
+                com.anysoftkeyboard.ime.ImeInlineSuggestions.class,
+                com.anysoftkeyboard.ime.ImeThemeOverlay.class,
+                com.anysoftkeyboard.ime.ImeHardware.class,
+                com.anysoftkeyboard.ime.ImeIncognito.class,
+                com.anysoftkeyboard.ime.ImeDialogProvider.class,
+                com.anysoftkeyboard.ime.ImePopText.class,
+                com.anysoftkeyboard.ime.ImeRxPrefs.class,
+                com.anysoftkeyboard.ime.ImeKeyboardSwitchedListener.class,
+                com.anysoftkeyboard.ime.ImeTokenService.class,
                 com.anysoftkeyboard.saywhat.PublicNotices.class,
-                com.anysoftkeyboard.AnySoftKeyboard.class));
+                com.anysoftkeyboard.ImeServiceBase.class));
 
     Class<?> superclass = SoftKeyboard.class.getSuperclass();
     Assert.assertNotNull(superclass);
-    while (!superclass.equals(AnySoftKeyboardBase.class)) {
+    while (!superclass.equals(ImeBase.class)) {
       Assert.assertTrue(
           "Class " + superclass + " is not in the allPossibleClasses set! Was it removed?",
           allPossibleClasses.remove(superclass));
@@ -60,6 +60,6 @@ public class AnySoftKeyboardExtendingTest extends AnySoftKeyboardBaseTest {
                 allPossibleClasses.stream().map(Object::toString).collect(Collectors.toList()));
 
     Assert.assertEquals(errorMessage, 1, allPossibleClasses.size());
-    Assert.assertTrue(allPossibleClasses.contains(AnySoftKeyboardBase.class));
+    Assert.assertTrue(allPossibleClasses.contains(ImeBase.class));
   }
 }

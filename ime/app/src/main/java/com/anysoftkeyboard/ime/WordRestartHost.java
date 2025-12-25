@@ -4,9 +4,9 @@ import com.anysoftkeyboard.dictionaries.WordComposer;
 
 /** Host adapter for {@link WordRestartCoordinator} to live outside the service class. */
 final class WordRestartHost implements WordRestartCoordinator.Host {
-  private final AnySoftKeyboardSuggestions host;
+  private final ImeSuggestionsController host;
 
-  WordRestartHost(AnySoftKeyboardSuggestions host) {
+  WordRestartHost(ImeSuggestionsController host) {
     this.host = host;
   }
 
@@ -42,7 +42,7 @@ final class WordRestartHost implements WordRestartCoordinator.Host {
 
   @Override
   public String logTag() {
-    return AnySoftKeyboardBase.TAG;
+    return ImeBase.TAG;
   }
 
   @Override

@@ -81,9 +81,9 @@ public class KeyboardAddOnAndBuilder extends AddOnImpl {
   }
 
   @Nullable
-  public AnyKeyboard createKeyboard(@Keyboard.KeyboardRowModeId int mode) {
+  public KeyboardDefinition createKeyboard(@Keyboard.KeyboardRowModeId int mode) {
     if (getPackageContext() == null) return null;
-    return new ExternalAnyKeyboard(
+    return new ExternalKeyboard(
         this,
         mAskContext,
         mResId,

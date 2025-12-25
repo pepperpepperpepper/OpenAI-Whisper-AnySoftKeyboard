@@ -1,6 +1,6 @@
 package com.anysoftkeyboard.gesturetyping;
 
-import static com.anysoftkeyboard.keyboards.ExternalAnyKeyboardTest.SIMPLE_KeyboardDimens;
+import static com.anysoftkeyboard.keyboards.ExternalKeyboardTest.SIMPLE_KeyboardDimens;
 import static com.anysoftkeyboard.keyboards.Keyboard.KEYBOARD_ROW_MODE_NORMAL;
 
 import android.content.Context;
@@ -8,10 +8,10 @@ import android.graphics.Point;
 import androidx.core.util.Pair;
 import androidx.test.core.app.ApplicationProvider;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.disposables.Disposable;
 import java.util.ArrayList;
@@ -67,8 +67,8 @@ public class GestureTypingDetectorTest {
   @Before
   public void setUp() {
     final Context context = ApplicationProvider.getApplicationContext();
-    final AnyKeyboard keyboard =
-        AnyApplication.getKeyboardFactory(context)
+    final KeyboardDefinition keyboard =
+        NskApplicationBase.getKeyboardFactory(context)
             .getAddOnById(context.getString(R.string.main_english_keyboard_id))
             .createKeyboard(KEYBOARD_ROW_MODE_NORMAL);
     keyboard.loadKeyboard(SIMPLE_KeyboardDimens);

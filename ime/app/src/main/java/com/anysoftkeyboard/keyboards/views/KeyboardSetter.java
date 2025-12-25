@@ -17,8 +17,8 @@
 package com.anysoftkeyboard.keyboards.views;
 
 import androidx.annotation.NonNull;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 
 class KeyboardSetter {
 
@@ -37,7 +37,8 @@ class KeyboardSetter {
 
     void invalidateAllKeys();
 
-    void setKeyboardFields(AnyKeyboard keyboard, CharSequence keyboardName, Keyboard.Key[] keys);
+    void setKeyboardFields(
+        KeyboardDefinition keyboard, CharSequence keyboardName, Keyboard.Key[] keys);
 
     int paddingLeft();
 
@@ -67,7 +68,7 @@ class KeyboardSetter {
     this.swipeConfiguration = swipeConfiguration;
   }
 
-  void setKeyboard(@NonNull AnyKeyboard keyboard, float verticalCorrection) {
+  void setKeyboard(@NonNull KeyboardDefinition keyboard, float verticalCorrection) {
     host.dismissAllKeyPreviews();
     if (host.hasThemeSet()) {
       host.ensureWillDraw();

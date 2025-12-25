@@ -3,7 +3,7 @@ package com.anysoftkeyboard;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
@@ -23,7 +23,7 @@ public class AnySoftKeyboardGesturesTest extends AnySoftKeyboardBaseTest {
 
   @Test
   public void testSwipeLeftFromBackSpace() {
-    AnyKeyboard currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     TestInputConnection inputConnection =
         (TestInputConnection) mAnySoftKeyboardUnderTest.getCurrentInputConnection();
 
@@ -42,7 +42,7 @@ public class AnySoftKeyboardGesturesTest extends AnySoftKeyboardBaseTest {
 
   @Test
   public void testSwipeRightFromBackSpace() {
-    AnyKeyboard currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     TestInputConnection inputConnection =
         (TestInputConnection) mAnySoftKeyboardUnderTest.getCurrentInputConnection();
 
@@ -61,7 +61,7 @@ public class AnySoftKeyboardGesturesTest extends AnySoftKeyboardBaseTest {
 
   @Test
   public void testSwipeLeft() {
-    AnyKeyboard currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     TestInputConnection inputConnection =
         (TestInputConnection) mAnySoftKeyboardUnderTest.getCurrentInputConnection();
 
@@ -83,7 +83,7 @@ public class AnySoftKeyboardGesturesTest extends AnySoftKeyboardBaseTest {
 
   @Test
   public void testSwipeRight() {
-    AnyKeyboard currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     TestInputConnection inputConnection =
         (TestInputConnection) mAnySoftKeyboardUnderTest.getCurrentInputConnection();
 
@@ -138,7 +138,7 @@ public class AnySoftKeyboardGesturesTest extends AnySoftKeyboardBaseTest {
 
   @Test
   public void testSwipeLeftFromSpace() {
-    AnyKeyboard currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     TestInputConnection inputConnection =
         (TestInputConnection) mAnySoftKeyboardUnderTest.getCurrentInputConnection();
 
@@ -160,7 +160,7 @@ public class AnySoftKeyboardGesturesTest extends AnySoftKeyboardBaseTest {
 
   @Test
   public void testSwipeRightFromSpace() {
-    AnyKeyboard currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     TestInputConnection inputConnection =
         (TestInputConnection) mAnySoftKeyboardUnderTest.getCurrentInputConnection();
 
@@ -182,7 +182,7 @@ public class AnySoftKeyboardGesturesTest extends AnySoftKeyboardBaseTest {
 
   @Test
   public void testSwipeUp() {
-    AnyKeyboard currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     TestInputConnection inputConnection =
         (TestInputConnection) mAnySoftKeyboardUnderTest.getCurrentInputConnection();
 
@@ -204,7 +204,7 @@ public class AnySoftKeyboardGesturesTest extends AnySoftKeyboardBaseTest {
 
   @Test
   public void testSwipeDown() {
-    AnyKeyboard currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     TestInputConnection inputConnection =
         (TestInputConnection) mAnySoftKeyboardUnderTest.getCurrentInputConnection();
 

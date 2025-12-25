@@ -2,8 +2,8 @@ package com.anysoftkeyboard.quicktextkeys.ui;
 
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.anysoftkeyboard.keyboards.views.OnKeyboardActionListener;
 import com.anysoftkeyboard.quicktextkeys.HistoryQuickTextKey;
 
@@ -99,7 +99,7 @@ import com.anysoftkeyboard.quicktextkeys.HistoryQuickTextKey;
   }
 
   @Override
-  public boolean onGestureTypingInputStart(int x, int y, AnyKeyboard.AnyKey key, long eventTime) {
+  public boolean onGestureTypingInputStart(int x, int y, KeyboardKey key, long eventTime) {
     return false;
   }
 

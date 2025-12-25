@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
 import com.anysoftkeyboard.keyboards.Keyboard;
 
 /**
- * Tracks dirty regions and the last invalidated key so {@link AnyKeyboardViewBase} can keep its
+ * Tracks dirty regions and the last invalidated key so {@link KeyboardViewBase} can keep its
  * rendering book-keeping separate from drawing logic.
  */
 final class InvalidateTracker {

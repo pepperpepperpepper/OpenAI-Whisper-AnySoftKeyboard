@@ -20,7 +20,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.addons.AddOn;
 
-public class GenericKeyboard extends ExternalAnyKeyboard {
+public class GenericKeyboard extends ExternalKeyboard {
   private final String mKeyboardId;
 
   public GenericKeyboard(

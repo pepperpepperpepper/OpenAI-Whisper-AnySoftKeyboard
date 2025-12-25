@@ -3,7 +3,7 @@ package com.anysoftkeyboard.keyboards.views;
 import android.graphics.Rect;
 import com.anysoftkeyboard.keyboards.Keyboard;
 
-/** Wraps dirty-rect bookkeeping to keep AnyKeyboardViewBase slimmer. */
+/** Wraps dirty-rect bookkeeping to keep KeyboardViewBase slimmer. */
 final class InvalidateHelper {
 
   private final InvalidateTracker invalidateTracker = new InvalidateTracker();
@@ -16,11 +16,11 @@ final class InvalidateHelper {
     return invalidateTracker.invalidatedKey();
   }
 
-  void invalidateAll(AnyKeyboardViewBase host) {
+  void invalidateAll(KeyboardViewBase host) {
     invalidateTracker.invalidateAll(host);
   }
 
-  void invalidateKey(AnyKeyboardViewBase host, Keyboard.Key key, int paddingLeft, int paddingTop) {
+  void invalidateKey(KeyboardViewBase host, Keyboard.Key key, int paddingLeft, int paddingTop) {
     invalidateTracker.invalidateKey(host, key, paddingLeft, paddingTop);
   }
 

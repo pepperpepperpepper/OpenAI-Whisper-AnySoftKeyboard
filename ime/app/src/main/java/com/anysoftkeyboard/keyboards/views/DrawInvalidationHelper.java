@@ -3,7 +3,7 @@ package com.anysoftkeyboard.keyboards.views;
 import android.graphics.Rect;
 
 /**
- * Wraps {@link InvalidateTracker} operations so AnyKeyboardViewBase doesn't manage the tracker
+ * Wraps {@link InvalidateTracker} operations so KeyboardViewBase doesn't manage the tracker
  * directly. Keeps invalidate and dirty-rect bookkeeping together.
  */
 final class DrawInvalidationHelper {
@@ -21,12 +21,12 @@ final class DrawInvalidationHelper {
     tracker.clearAfterDraw();
   }
 
-  android.graphics.Rect invalidateAll(AnyKeyboardViewBase view) {
+  android.graphics.Rect invalidateAll(KeyboardViewBase view) {
     tracker.invalidateAll(view);
     return tracker.dirtyRect();
   }
 
-  void invalidateKey(AnyKeyboardViewBase view, com.anysoftkeyboard.keyboards.Keyboard.Key key) {
+  void invalidateKey(KeyboardViewBase view, com.anysoftkeyboard.keyboards.Keyboard.Key key) {
     tracker.invalidateKey(view, key, view.getPaddingLeft(), view.getPaddingTop());
   }
 

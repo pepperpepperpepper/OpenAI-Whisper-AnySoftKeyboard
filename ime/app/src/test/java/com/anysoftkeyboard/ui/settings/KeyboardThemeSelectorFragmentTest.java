@@ -7,10 +7,10 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import androidx.test.core.app.ApplicationProvider;
 import com.anysoftkeyboard.RobolectricFragmentTestCase;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
 import com.f2prateek.rx.preferences2.Preference;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class KeyboardThemeSelectorFragmentTest
     final TextView summary = fragment.getView().findViewById(R.id.apply_overlay_summary);
 
     final Preference<Boolean> pref =
-        AnyApplication.prefs(ApplicationProvider.getApplicationContext())
+        NskApplicationBase.prefs(ApplicationProvider.getApplicationContext())
             .getBoolean(
                 R.string.settings_key_apply_remote_app_colors,
                 R.bool.settings_default_apply_remote_app_colors);
@@ -66,7 +66,7 @@ public class KeyboardThemeSelectorFragmentTest
     final View demoAppsRoot = fragment.getView().findViewById(R.id.overlay_demo_apps_root);
     Assert.assertEquals(View.VISIBLE, demoAppsRoot.getVisibility());
 
-    DemoAnyKeyboardView keyboard = fragment.getView().findViewById(R.id.demo_keyboard_view);
+    DemoKeyboardView keyboard = fragment.getView().findViewById(R.id.demo_keyboard_view);
     Assert.assertNotNull(keyboard);
 
     Assert.assertNull(

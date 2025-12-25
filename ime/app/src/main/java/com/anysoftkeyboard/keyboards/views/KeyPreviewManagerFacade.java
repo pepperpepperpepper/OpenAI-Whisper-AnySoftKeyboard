@@ -8,7 +8,7 @@ import com.anysoftkeyboard.keyboards.views.preview.KeyPreviewsController;
 import com.anysoftkeyboard.keyboards.views.preview.NullKeyPreviewsManager;
 import com.anysoftkeyboard.keyboards.views.preview.PreviewPopupTheme;
 
-/** Wraps preview show/dismiss logic so {@link AnyKeyboardViewBase} can delegate. */
+/** Wraps preview show/dismiss logic so {@link KeyboardViewBase} can delegate. */
 final class KeyPreviewManagerFacade {
   private KeyPreviewsController keyPreviewsManager = new NullKeyPreviewsManager();
 
@@ -27,7 +27,7 @@ final class KeyPreviewManagerFacade {
   void showPreviewForKey(
       @NonNull Keyboard.Key key,
       @Nullable Drawable iconToDraw,
-      @NonNull AnyKeyboardViewBase view,
+      @NonNull KeyboardViewBase view,
       @NonNull PreviewPopupTheme previewPopupTheme,
       @Nullable CharSequence labelCandidate) {
     if (iconToDraw != null) {

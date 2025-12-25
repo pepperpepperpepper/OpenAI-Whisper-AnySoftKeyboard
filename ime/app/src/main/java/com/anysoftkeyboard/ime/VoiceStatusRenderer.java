@@ -5,8 +5,8 @@ import android.os.Looper;
 import android.view.View;
 import androidx.annotation.Nullable;
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.google.android.voiceime.VoiceImeController.VoiceInputState;
 
 /**
@@ -21,7 +21,7 @@ public final class VoiceStatusRenderer {
   private Runnable errorFlashRunnable;
 
   public void updateVoiceKeyState(
-      @Nullable AnyKeyboard keyboard, boolean isRecording, @Nullable View inputView) {
+      @Nullable KeyboardDefinition keyboard, boolean isRecording, @Nullable View inputView) {
     if (keyboard == null) return;
     boolean stateChanged = keyboard.setVoice(isRecording, false);
     if (stateChanged && inputView != null) {
@@ -30,7 +30,7 @@ public final class VoiceStatusRenderer {
   }
 
   public void updateSpaceBarRecordingStatus(
-      @Nullable AnyKeyboard keyboard, boolean isRecording, @Nullable View inputView) {
+      @Nullable KeyboardDefinition keyboard, boolean isRecording, @Nullable View inputView) {
     if (keyboard == null) return;
     for (Keyboard.Key key : keyboard.getKeys()) {
       if (key.getPrimaryCode() == KeyCodes.SPACE) {
@@ -42,7 +42,7 @@ public final class VoiceStatusRenderer {
   }
 
   public void updateVoiceInputStatus(
-      @Nullable AnyKeyboard keyboard, @Nullable View inputView, VoiceInputState newState) {
+      @Nullable KeyboardDefinition keyboard, @Nullable View inputView, VoiceInputState newState) {
     if (voiceState == newState) return;
     voiceState = newState;
 
@@ -66,7 +66,7 @@ public final class VoiceStatusRenderer {
     return voiceState;
   }
 
-  private void startErrorFlashing(@Nullable AnyKeyboard keyboard, @Nullable View inputView) {
+  private void startErrorFlashing(@Nullable KeyboardDefinition keyboard, @Nullable View inputView) {
     stopErrorFlashing();
     errorFlashRunnable =
         new Runnable() {
@@ -90,7 +90,7 @@ public final class VoiceStatusRenderer {
     errorFlashState = false;
   }
 
-  private void applySpaceLabel(@Nullable AnyKeyboard keyboard, @Nullable View inputView) {
+  private void applySpaceLabel(@Nullable KeyboardDefinition keyboard, @Nullable View inputView) {
     if (keyboard == null) return;
     for (Keyboard.Key key : keyboard.getKeys()) {
       if (key.getPrimaryCode() == KeyCodes.SPACE) {

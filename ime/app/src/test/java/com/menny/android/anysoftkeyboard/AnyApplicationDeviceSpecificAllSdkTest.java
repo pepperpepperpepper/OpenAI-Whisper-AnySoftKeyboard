@@ -8,9 +8,6 @@ import android.os.Build;
 import android.os.Vibrator;
 import android.view.GestureDetector;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
-import com.anysoftkeyboard.devicespecific.AskOnGestureListener;
-import com.anysoftkeyboard.devicespecific.AskV19GestureDetector;
-import com.anysoftkeyboard.devicespecific.AskV8GestureDetector;
 import com.anysoftkeyboard.devicespecific.Clipboard;
 import com.anysoftkeyboard.devicespecific.ClipboardV11;
 import com.anysoftkeyboard.devicespecific.ClipboardV16;
@@ -23,6 +20,9 @@ import com.anysoftkeyboard.devicespecific.DeviceSpecificV24;
 import com.anysoftkeyboard.devicespecific.DeviceSpecificV26;
 import com.anysoftkeyboard.devicespecific.DeviceSpecificV28;
 import com.anysoftkeyboard.devicespecific.DeviceSpecificV29;
+import com.anysoftkeyboard.devicespecific.NskOnGestureListener;
+import com.anysoftkeyboard.devicespecific.NskV19GestureDetector;
+import com.anysoftkeyboard.devicespecific.NskV8GestureDetector;
 import com.anysoftkeyboard.devicespecific.PressVibrator;
 import com.anysoftkeyboard.devicespecific.PressVibratorV1;
 import com.anysoftkeyboard.devicespecific.PressVibratorV26;
@@ -127,34 +127,34 @@ public abstract class AnyApplicationDeviceSpecificAllSdkTest {
           GestureDetector.class,
           GestureDetector.class,
           GestureDetector.class,
-          AskV8GestureDetector.class, // 8
-          AskV8GestureDetector.class,
-          AskV8GestureDetector.class, // 10
-          AskV8GestureDetector.class, // 11
-          AskV8GestureDetector.class,
-          AskV8GestureDetector.class,
-          AskV8GestureDetector.class, // 14
-          AskV8GestureDetector.class,
-          AskV8GestureDetector.class, // 16
-          AskV8GestureDetector.class,
-          AskV8GestureDetector.class,
-          AskV19GestureDetector.class, // 19
-          AskV19GestureDetector.class, // 20
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class, // 30
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class,
-          AskV19GestureDetector.class);
+          NskV8GestureDetector.class, // 8
+          NskV8GestureDetector.class,
+          NskV8GestureDetector.class, // 10
+          NskV8GestureDetector.class, // 11
+          NskV8GestureDetector.class,
+          NskV8GestureDetector.class,
+          NskV8GestureDetector.class, // 14
+          NskV8GestureDetector.class,
+          NskV8GestureDetector.class, // 16
+          NskV8GestureDetector.class,
+          NskV8GestureDetector.class,
+          NskV19GestureDetector.class, // 19
+          NskV19GestureDetector.class, // 20
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class, // 30
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class,
+          NskV19GestureDetector.class);
 
   private final List<Class<? extends PressVibrator>> mExpectedPressVibratorClass =
       Arrays.asList(
@@ -200,7 +200,7 @@ public abstract class AnyApplicationDeviceSpecificAllSdkTest {
 
     final Application application = getApplicationContext();
 
-    final DeviceSpecific deviceSpecific = AnyApplication.getDeviceSpecific();
+    final DeviceSpecific deviceSpecific = NskApplicationBase.getDeviceSpecific();
     Assert.assertNotNull(deviceSpecific);
     Assert.assertSame(
         mExpectedDeviceSpecificClass.get(Build.VERSION.SDK_INT), deviceSpecific.getClass());
@@ -212,7 +212,7 @@ public abstract class AnyApplicationDeviceSpecificAllSdkTest {
     Assert.assertSame(mExpectedClipboardClass.get(Build.VERSION.SDK_INT), clipboard.getClass());
 
     final GestureDetector gestureDetector =
-        deviceSpecific.createGestureDetector(application, Mockito.mock(AskOnGestureListener.class));
+        deviceSpecific.createGestureDetector(application, Mockito.mock(NskOnGestureListener.class));
     Assert.assertNotNull(gestureDetector);
     Assert.assertSame(
         mExpectedGestureDetectorClass.get(Build.VERSION.SDK_INT), gestureDetector.getClass());

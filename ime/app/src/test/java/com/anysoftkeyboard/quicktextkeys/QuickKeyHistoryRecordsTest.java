@@ -5,7 +5,7 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import android.annotation.SuppressLint;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.prefs.RxSharedPrefs;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.List;
 import org.junit.Assert;
@@ -22,7 +22,7 @@ public class QuickKeyHistoryRecordsTest {
 
   @Before
   public void setUp() {
-    mSharedPreferences = AnyApplication.prefs(getApplicationContext());
+    mSharedPreferences = NskApplicationBase.prefs(getApplicationContext());
   }
 
   @Test

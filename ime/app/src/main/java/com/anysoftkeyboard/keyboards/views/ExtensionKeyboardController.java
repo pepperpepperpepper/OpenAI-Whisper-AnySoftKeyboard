@@ -8,14 +8,14 @@ import androidx.annotation.Nullable;
 import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.keyboardextensions.KeyboardExtension;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
-import com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey;
-import com.anysoftkeyboard.keyboards.ExternalAnyKeyboard;
+import com.anysoftkeyboard.keyboards.ExternalKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
 import com.anysoftkeyboard.keyboards.Keyboard.Row;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.KeyboardDimens;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.anysoftkeyboard.rx.GenericOnError;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -59,7 +59,7 @@ final class ExtensionKeyboardController {
     void showUtilityKeyboardPopup(@NonNull Keyboard.Key popupKey);
 
     @Nullable
-    AnyKeyboard keyboard();
+    KeyboardDefinition keyboard();
   }
 
   private final Host host;
@@ -87,7 +87,7 @@ final class ExtensionKeyboardController {
     this.extensionKeyboardYActivationPoint = Integer.MIN_VALUE;
 
     disposables.add(
-        AnyApplication.prefs(host.context())
+        NskApplicationBase.prefs(host.context())
             .getBoolean(
                 R.string.settings_key_extension_keyboard_enabled,
                 R.bool.settings_default_extension_keyboard_enabled)
@@ -106,7 +106,7 @@ final class ExtensionKeyboardController {
                 GenericOnError.onError("settings_key_extension_keyboard_enabled")));
 
     disposables.add(
-        AnyApplication.prefs(host.context())
+        NskApplicationBase.prefs(host.context())
             .getBoolean(
                 R.string.settings_key_is_sticky_extesion_keyboard,
                 R.bool.settings_default_is_sticky_extesion_keyboard)
@@ -120,7 +120,7 @@ final class ExtensionKeyboardController {
     extensionKeyboardYDismissPoint = normalKeyHeight;
   }
 
-  void onKeyboardSet(@NonNull AnyKeyboard newKeyboard) {
+  void onKeyboardSet(@NonNull KeyboardDefinition newKeyboard) {
     extensionKey = null;
     utilityKey = null;
     extensionVisible = false;
@@ -158,12 +158,12 @@ final class ExtensionKeyboardController {
 
   void openUtilityKeyboard() {
     host.dismissAllKeyPreviews();
-    final AnyKeyboard keyboard = host.keyboard();
+    final KeyboardDefinition keyboard = host.keyboard();
     if (keyboard == null) {
       return;
     }
     if (utilityKey == null) {
-      utilityKey = new AnyKey(new Row(keyboard), host.themedKeyboardDimens());
+      utilityKey = new KeyboardKey(new Row(keyboard), host.themedKeyboardDimens());
       utilityKey.edgeFlags = Keyboard.EDGE_BOTTOM;
       utilityKey.height = 0;
       utilityKey.width = 0;
@@ -180,7 +180,7 @@ final class ExtensionKeyboardController {
 
   boolean onTouchEvent(@NonNull MotionEvent motionEvent) {
     final int action = motionEvent.getActionMasked();
-    final AnyKeyboard keyboard = host.keyboard();
+    final KeyboardDefinition keyboard = host.keyboard();
     if (keyboard == null) return false;
 
     if (action == MotionEvent.ACTION_DOWN) {
@@ -216,7 +216,7 @@ final class ExtensionKeyboardController {
 
       if (SystemClock.uptimeMillis() - extensionKeyboardAreaEntranceTime
           > DELAY_BEFORE_POPPING_UP_EXTENSION_KBD) {
-        if (!(keyboard instanceof ExternalAnyKeyboard externalKeyboard)) {
+        if (!(keyboard instanceof ExternalKeyboard externalKeyboard)) {
           return host.forwardTouchToSuper(motionEvent);
         }
 
@@ -240,7 +240,7 @@ final class ExtensionKeyboardController {
         extensionVisible = true;
         host.dismissAllKeyPreviews();
         if (extensionKey == null) {
-          extensionKey = new AnyKey(new Row(keyboard), host.themedKeyboardDimens());
+          extensionKey = new KeyboardKey(new Row(keyboard), host.themedKeyboardDimens());
           extensionKey.edgeFlags = 0;
           extensionKey.height = 1;
           extensionKey.width = 1;

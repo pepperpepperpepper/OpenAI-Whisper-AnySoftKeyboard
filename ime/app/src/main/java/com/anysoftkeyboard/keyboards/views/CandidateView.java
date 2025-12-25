@@ -35,8 +35,8 @@ import com.anysoftkeyboard.overlay.OverlayDataNormalizer;
 import com.anysoftkeyboard.overlay.ThemeOverlayCombiner;
 import com.anysoftkeyboard.rx.GenericOnError;
 import com.anysoftkeyboard.theme.KeyboardTheme;
-import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.BuildConfig;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.disposables.CompositeDisposable;
 import java.util.ArrayList;
@@ -168,7 +168,7 @@ public class CandidateView extends View implements ThemeableChild {
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     mDisposables.add(
-        AnyApplication.prefs(getContext())
+        NskApplicationBase.prefs(getContext())
             .getBoolean(
                 R.string.settings_key_workaround_disable_rtl_fix,
                 R.bool.settings_default_workaround_disable_rtl_fix)

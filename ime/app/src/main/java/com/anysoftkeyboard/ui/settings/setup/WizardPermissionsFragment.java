@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.permissions.PermissionRequestHelper;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 
@@ -63,7 +63,7 @@ public class WizardPermissionsFragment extends WizardPageBaseFragment
   }
 
   private boolean isContactsDictionaryDisabled(Context context) {
-    return !AnyApplication.prefs(context)
+    return !NskApplicationBase.prefs(context)
         .getBoolean(
             R.string.settings_key_use_contacts_dictionary,
             R.bool.settings_default_contacts_dictionary)
@@ -132,7 +132,7 @@ public class WizardPermissionsFragment extends WizardPageBaseFragment
         }
       }
       case R.id.ask_for_notification_permissions_action ->
-          AnyApplication.notifier(activity).askForNotificationPostPermission(this);
+          NskApplicationBase.notifier(activity).askForNotificationPostPermission(this);
       case R.id.skip_notification_permissions_action -> {
         mNotificationSkipped = true;
         refreshWizardPager();

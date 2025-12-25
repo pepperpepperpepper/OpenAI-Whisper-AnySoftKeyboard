@@ -2,9 +2,9 @@ package com.anysoftkeyboard.ime;
 
 /** Host adapter for {@link WordRevertHandler} to live outside the service class. */
 final class WordRevertHost implements WordRevertHandler.Host {
-  private final AnySoftKeyboardSuggestions host;
+  private final ImeSuggestionsController host;
 
-  WordRevertHost(AnySoftKeyboardSuggestions host) {
+  WordRevertHost(ImeSuggestionsController host) {
     this.host = host;
   }
 

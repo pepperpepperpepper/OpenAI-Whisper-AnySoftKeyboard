@@ -8,7 +8,7 @@ import com.anysoftkeyboard.dictionaries.DictionaryAddOnAndBuilder;
 import com.anysoftkeyboard.nextword.NextWordDictionary;
 import com.anysoftkeyboard.nextword.NextWordStatistics;
 import com.anysoftkeyboard.rx.RxSchedulers;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -30,7 +30,8 @@ final class NextWordUsageStatsLoader {
     statsCategory.removeAll();
 
     disposables.add(
-        Observable.fromIterable(AnyApplication.getExternalDictionaryFactory(context).getAllAddOns())
+        Observable.fromIterable(
+                NskApplicationBase.getExternalDictionaryFactory(context).getAllAddOns())
             .filter(addOn -> addOn.getLanguage() != null && !addOn.getLanguage().isEmpty())
             .distinct(DictionaryAddOnAndBuilder::getLanguage)
             .subscribeOn(RxSchedulers.background())

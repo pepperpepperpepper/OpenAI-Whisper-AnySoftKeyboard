@@ -4,7 +4,7 @@ import com.anysoftkeyboard.keyboards.views.preview.PreviewPopupTheme;
 import com.anysoftkeyboard.overlay.ThemeOverlayCombiner;
 
 final class KeyboardViewThemeValueApplierFactory
-    implements AnyKeyboardViewBaseInitializer.ThemeValueApplierFactory {
+    implements KeyboardViewBaseInitializer.ThemeValueApplierFactory {
 
   private final ThemeOverlayCombiner themeOverlayCombiner;
   private final KeyboardDimensFromTheme keyboardDimens;

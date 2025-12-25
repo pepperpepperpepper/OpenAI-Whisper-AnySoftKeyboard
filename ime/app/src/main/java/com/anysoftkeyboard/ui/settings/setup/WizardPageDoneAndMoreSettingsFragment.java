@@ -7,17 +7,17 @@ import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
 import com.anysoftkeyboard.ui.settings.MainSettingsActivity;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 
 public class WizardPageDoneAndMoreSettingsFragment extends WizardPageBaseFragment
     implements View.OnClickListener {
 
-  private DemoAnyKeyboardView mDemoAnyKeyboardView;
+  private DemoKeyboardView mDemoKeyboardView;
 
   @Override
   protected int getPageLayoutId() {
@@ -31,7 +31,7 @@ public class WizardPageDoneAndMoreSettingsFragment extends WizardPageBaseFragmen
     view.findViewById(R.id.go_to_theme_action).setOnClickListener(this);
     view.findViewById(R.id.go_to_all_settings_action).setOnClickListener(this);
 
-    mDemoAnyKeyboardView = view.findViewById(R.id.demo_keyboard_view);
+    mDemoKeyboardView = view.findViewById(R.id.demo_keyboard_view);
   }
 
   @Override
@@ -73,12 +73,12 @@ public class WizardPageDoneAndMoreSettingsFragment extends WizardPageBaseFragmen
   @Override
   public void onStart() {
     super.onStart();
-    AnyKeyboard defaultKeyboard =
-        AnyApplication.getKeyboardFactory(requireContext())
+    KeyboardDefinition defaultKeyboard =
+        NskApplicationBase.getKeyboardFactory(requireContext())
             .getEnabledAddOn()
             .createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
-    defaultKeyboard.loadKeyboard(mDemoAnyKeyboardView.getThemedKeyboardDimens());
-    mDemoAnyKeyboardView.setKeyboard(defaultKeyboard, null, null);
+    defaultKeyboard.loadKeyboard(mDemoKeyboardView.getThemedKeyboardDimens());
+    mDemoKeyboardView.setKeyboard(defaultKeyboard, null, null);
 
     SetupSupport.popupViewAnimationWithIds(
         getView(),
@@ -92,6 +92,6 @@ public class WizardPageDoneAndMoreSettingsFragment extends WizardPageBaseFragmen
   @Override
   public void onDestroyView() {
     super.onDestroyView();
-    mDemoAnyKeyboardView.onViewNotRequired();
+    mDemoKeyboardView.onViewNotRequired();
   }
 }

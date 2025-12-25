@@ -3,7 +3,7 @@ package com.anysoftkeyboard.ime.gesturetyping;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.dictionaries.Dictionary;
 import com.anysoftkeyboard.dictionaries.DictionaryBackgroundLoader;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -11,16 +11,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class WordListDictionaryListener implements DictionaryBackgroundLoader.Listener {
 
   public interface Callback {
-    void consumeWords(AnyKeyboard keyboard, List<char[][]> words, List<int[]> wordFrequencies);
+    void consumeWords(
+        KeyboardDefinition keyboard, List<char[][]> words, List<int[]> wordFrequencies);
   }
 
   private ArrayList<char[][]> mWords = new ArrayList<>();
   private final ArrayList<int[]> mWordFrequencies = new ArrayList<>();
   private final Callback mOnLoadedCallback;
   private final AtomicInteger mExpectedDictionaries = new AtomicInteger(0);
-  private final AnyKeyboard mKeyboard;
+  private final KeyboardDefinition mKeyboard;
 
-  public WordListDictionaryListener(AnyKeyboard keyboard, Callback wordsConsumer) {
+  public WordListDictionaryListener(KeyboardDefinition keyboard, Callback wordsConsumer) {
     mKeyboard = keyboard;
     mOnLoadedCallback = wordsConsumer;
   }

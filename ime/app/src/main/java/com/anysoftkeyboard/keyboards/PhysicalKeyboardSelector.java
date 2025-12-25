@@ -13,11 +13,11 @@ final class PhysicalKeyboardSelector {
       int keyboardsCount,
       int startIndex,
       EditorInfo editorInfo,
-      java.util.function.BiFunction<Integer, EditorInfo, AnyKeyboard> keyboardFetcher) {
+      java.util.function.BiFunction<Integer, EditorInfo, KeyboardDefinition> keyboardFetcher) {
 
     int testsLeft = keyboardsCount;
     int index = startIndex;
-    AnyKeyboard current = keyboardFetcher.apply(index, editorInfo);
+    KeyboardDefinition current = keyboardFetcher.apply(index, editorInfo);
 
     while (!(current instanceof HardKeyboardTranslator) && (testsLeft > 0)) {
       index = IndexCycler.next(index, keyboardsCount, scroll);
@@ -29,11 +29,11 @@ final class PhysicalKeyboardSelector {
   }
 
   static final class Selection {
-    final AnyKeyboard keyboard;
+    final KeyboardDefinition keyboard;
     final int index;
     final boolean exhausted;
 
-    Selection(AnyKeyboard keyboard, int index, boolean exhausted) {
+    Selection(KeyboardDefinition keyboard, int index, boolean exhausted) {
       this.keyboard = keyboard;
       this.index = index;
       this.exhausted = exhausted;

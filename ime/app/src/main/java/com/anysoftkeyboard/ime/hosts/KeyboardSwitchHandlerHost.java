@@ -4,11 +4,11 @@ import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.anysoftkeyboard.ime.KeyboardSwitchHandler;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.KeyboardSwitcher;
 import com.anysoftkeyboard.keyboards.NextKeyboardType;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardView;
 import com.anysoftkeyboard.keyboards.views.InputViewBinder;
+import com.anysoftkeyboard.keyboards.views.KeyboardView;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -16,9 +16,9 @@ import java.util.function.Supplier;
 public final class KeyboardSwitchHandlerHost implements KeyboardSwitchHandler.Host {
 
   private final Supplier<KeyboardSwitcher> keyboardSwitcher;
-  private final Supplier<AnyKeyboard> currentKeyboard;
-  private final Supplier<AnyKeyboard> currentAlphabetKeyboard;
-  private final Consumer<AnyKeyboard> setKeyboardForView;
+  private final Supplier<KeyboardDefinition> currentKeyboard;
+  private final Supplier<KeyboardDefinition> currentAlphabetKeyboard;
+  private final Consumer<KeyboardDefinition> setKeyboardForView;
   private final Runnable showLanguageSelectionDialog;
   private final BiConsumer<Integer, Boolean> showToastMessage;
   private final BiConsumer<EditorInfo, NextKeyboardType> nextKeyboard;
@@ -28,9 +28,9 @@ public final class KeyboardSwitchHandlerHost implements KeyboardSwitchHandler.Ho
 
   public KeyboardSwitchHandlerHost(
       @NonNull Supplier<KeyboardSwitcher> keyboardSwitcher,
-      @NonNull Supplier<AnyKeyboard> currentKeyboard,
-      @NonNull Supplier<AnyKeyboard> currentAlphabetKeyboard,
-      @NonNull Consumer<AnyKeyboard> setKeyboardForView,
+      @NonNull Supplier<KeyboardDefinition> currentKeyboard,
+      @NonNull Supplier<KeyboardDefinition> currentAlphabetKeyboard,
+      @NonNull Consumer<KeyboardDefinition> setKeyboardForView,
       @NonNull Runnable showLanguageSelectionDialog,
       @NonNull BiConsumer<Integer, Boolean> showToastMessage,
       @NonNull BiConsumer<EditorInfo, NextKeyboardType> nextKeyboard,
@@ -57,18 +57,18 @@ public final class KeyboardSwitchHandlerHost implements KeyboardSwitchHandler.Ho
 
   @Nullable
   @Override
-  public AnyKeyboard getCurrentKeyboard() {
+  public KeyboardDefinition getCurrentKeyboard() {
     return currentKeyboard.get();
   }
 
   @NonNull
   @Override
-  public AnyKeyboard getCurrentAlphabetKeyboard() {
+  public KeyboardDefinition getCurrentAlphabetKeyboard() {
     return currentAlphabetKeyboard.get();
   }
 
   @Override
-  public void setKeyboardForView(@NonNull AnyKeyboard keyboard) {
+  public void setKeyboardForView(@NonNull KeyboardDefinition keyboard) {
     setKeyboardForView.accept(keyboard);
   }
 
@@ -94,8 +94,8 @@ public final class KeyboardSwitchHandlerHost implements KeyboardSwitchHandler.Ho
 
   @Nullable
   @Override
-  public AnyKeyboardView getInputView() {
+  public KeyboardView getInputView() {
     final InputViewBinder binder = inputViewBinder.get();
-    return binder instanceof AnyKeyboardView ? (AnyKeyboardView) binder : null;
+    return binder instanceof KeyboardView ? (KeyboardView) binder : null;
   }
 }

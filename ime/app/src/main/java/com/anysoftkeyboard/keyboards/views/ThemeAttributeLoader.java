@@ -12,7 +12,7 @@ import com.menny.android.anysoftkeyboard.BuildConfig;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.Set;
 
-/** Loads theme attributes and icons, keeping AnyKeyboardViewBase thinner. */
+/** Loads theme attributes and icons, keeping KeyboardViewBase thinner. */
 final class ThemeAttributeLoader {
 
   interface Host {

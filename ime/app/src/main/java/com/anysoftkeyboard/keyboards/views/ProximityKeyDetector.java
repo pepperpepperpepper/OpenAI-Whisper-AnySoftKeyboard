@@ -17,8 +17,8 @@
 package com.anysoftkeyboard.keyboards.views;
 
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import java.util.Arrays;
 
 class ProximityKeyDetector extends KeyDetector {
@@ -38,14 +38,14 @@ class ProximityKeyDetector extends KeyDetector {
 
   @Override
   public int getKeyIndexAndNearbyCodes(int x, int y, int[] allKeys) {
-    final AnyKeyboard keyboard = mKeyboard;
+    final KeyboardDefinition keyboard = mKeyboard;
     if (keyboard == null) return 0;
 
     final Keyboard.Key[] keys = getKeys();
     final int touchX = getTouchX(x);
     final int touchY = getTouchY(y);
-    int primaryIndex = AnyKeyboardViewBase.NOT_A_KEY;
-    int closestKey = AnyKeyboardViewBase.NOT_A_KEY;
+    int primaryIndex = KeyboardViewBase.NOT_A_KEY;
+    int closestKey = KeyboardViewBase.NOT_A_KEY;
     int closestKeyDist = mProximityThresholdSquare + 1;
     boolean hasSpace = false;
     int[] distances = mDistances;
@@ -89,7 +89,7 @@ class ProximityKeyDetector extends KeyDetector {
         }
       }
     }
-    if (primaryIndex == AnyKeyboardViewBase.NOT_A_KEY) {
+    if (primaryIndex == KeyboardViewBase.NOT_A_KEY) {
       primaryIndex = closestKey;
     }
 

@@ -27,7 +27,7 @@ public class AnySoftKeyboardThemeOverlayTest extends AnySoftKeyboardBaseTest {
 
     OverlayData appliedData = captureOverlay();
     Assert.assertFalse(appliedData.isValid());
-    Assert.assertSame(AnySoftKeyboardThemeOverlay.INVALID_OVERLAY_DATA, appliedData);
+    Assert.assertSame(ImeThemeOverlay.INVALID_OVERLAY_DATA, appliedData);
   }
 
   @Test
@@ -60,7 +60,7 @@ public class AnySoftKeyboardThemeOverlayTest extends AnySoftKeyboardBaseTest {
 
     SharedPrefsHelper.setPrefsValue(R.string.settings_key_apply_remote_app_colors, false);
     simulateOnStartInputFlow(false, createEditorInfoTextWithSuggestionsForSetUp());
-    Assert.assertSame(captureOverlay(), AnySoftKeyboardThemeOverlay.INVALID_OVERLAY_DATA);
+    Assert.assertSame(captureOverlay(), ImeThemeOverlay.INVALID_OVERLAY_DATA);
   }
 
   @Test
@@ -73,7 +73,7 @@ public class AnySoftKeyboardThemeOverlayTest extends AnySoftKeyboardBaseTest {
 
     OverlayData appliedData = captureOverlay();
     Assert.assertFalse(appliedData.isValid());
-    Assert.assertSame(AnySoftKeyboardThemeOverlay.INVALID_OVERLAY_DATA, appliedData);
+    Assert.assertSame(ImeThemeOverlay.INVALID_OVERLAY_DATA, appliedData);
   }
 
   @Test

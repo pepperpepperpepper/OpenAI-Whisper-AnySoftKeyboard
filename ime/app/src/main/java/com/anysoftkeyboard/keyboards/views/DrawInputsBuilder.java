@@ -3,14 +3,14 @@ package com.anysoftkeyboard.keyboards.views;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.KeyDrawableStateProvider;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.overlay.ThemeOverlayCombiner;
 import com.anysoftkeyboard.overlay.ThemeResourcesHolder;
 import java.util.Locale;
 
-/** Builds {@link DrawInputs} snapshots to keep {@link AnyKeyboardViewBase} slimmer. */
+/** Builds {@link DrawInputs} snapshots to keep {@link KeyboardViewBase} slimmer. */
 final class DrawInputsBuilder {
 
   private final ThemeOverlayCombiner themeOverlayCombiner;
@@ -35,7 +35,7 @@ final class DrawInputsBuilder {
   DrawInputs build(
       Canvas canvas,
       Rect dirtyRect,
-      AnyKeyboard keyboard,
+      KeyboardDefinition keyboard,
       CharSequence keyboardName,
       Keyboard.Key[] keys,
       @Nullable Keyboard.Key invalidKey,

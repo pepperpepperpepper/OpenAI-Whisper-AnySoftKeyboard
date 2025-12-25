@@ -2,14 +2,14 @@ package com.anysoftkeyboard.ime;
 
 import com.anysoftkeyboard.dictionaries.Suggest;
 import com.anysoftkeyboard.dictionaries.WordComposer;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.views.CandidateView;
 
 /** Host adapter for {@link SuggestionPicker} to keep the service slimmer. */
 final class SuggestionPickerHost implements SuggestionPicker.Host {
-  private final AnySoftKeyboardSuggestions host;
+  private final ImeSuggestionsController host;
 
-  SuggestionPickerHost(AnySoftKeyboardSuggestions host) {
+  SuggestionPickerHost(ImeSuggestionsController host) {
     this.host = host;
   }
 
@@ -51,7 +51,7 @@ final class SuggestionPickerHost implements SuggestionPicker.Host {
   }
 
   @Override
-  public AnyKeyboard getCurrentAlphabetKeyboard() {
+  public KeyboardDefinition getCurrentAlphabetKeyboard() {
     return host.getCurrentAlphabetKeyboard();
   }
 

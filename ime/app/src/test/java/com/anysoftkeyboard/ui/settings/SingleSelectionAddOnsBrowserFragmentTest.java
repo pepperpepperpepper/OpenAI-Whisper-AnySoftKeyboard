@@ -15,7 +15,7 @@ import com.anysoftkeyboard.AddOnTestUtils;
 import com.anysoftkeyboard.RobolectricFragmentTestCase;
 import com.anysoftkeyboard.TestableAnySoftKeyboard;
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -39,7 +39,7 @@ public class SingleSelectionAddOnsBrowserFragmentTest
     View demoView = fragment.getView().findViewById(R.id.demo_keyboard_view);
     Assert.assertNotNull(demoView);
     Assert.assertEquals(View.VISIBLE, demoView.getVisibility());
-    Assert.assertTrue(demoView instanceof DemoAnyKeyboardView);
+    Assert.assertTrue(demoView instanceof DemoKeyboardView);
   }
 
   @Test
@@ -49,7 +49,7 @@ public class SingleSelectionAddOnsBrowserFragmentTest
     View demoView = fragment.getView().findViewById(R.id.demo_keyboard_view);
     Assert.assertNotNull(demoView);
     Assert.assertEquals(View.VISIBLE, demoView.getVisibility());
-    Assert.assertTrue(demoView instanceof DemoAnyKeyboardView);
+    Assert.assertTrue(demoView instanceof DemoKeyboardView);
   }
 
   @Test
@@ -76,11 +76,11 @@ public class SingleSelectionAddOnsBrowserFragmentTest
     View demoView = fragment.getView().findViewById(R.id.demo_keyboard_view);
     Assert.assertNotNull(demoView);
     Assert.assertEquals(View.VISIBLE, demoView.getVisibility());
-    Assert.assertTrue(demoView instanceof DemoAnyKeyboardView);
+    Assert.assertTrue(demoView instanceof DemoKeyboardView);
 
-    DemoAnyKeyboardView demoAnyKeyboardView = (DemoAnyKeyboardView) demoView;
+    DemoKeyboardView demoKeyboardView = (DemoKeyboardView) demoView;
     Assert.assertEquals(
-        "12335055-4aa6-49dc-8456-c7d38a1a5123", demoAnyKeyboardView.getKeyboard().getKeyboardId());
+        "12335055-4aa6-49dc-8456-c7d38a1a5123", demoKeyboardView.getKeyboard().getKeyboardId());
   }
 
   @Test
@@ -103,10 +103,10 @@ public class SingleSelectionAddOnsBrowserFragmentTest
     View demoView = fragment.getView().findViewById(R.id.demo_keyboard_view);
     Assert.assertNotNull(demoView);
     Assert.assertEquals(View.VISIBLE, demoView.getVisibility());
-    Assert.assertTrue(demoView instanceof DemoAnyKeyboardView);
+    Assert.assertTrue(demoView instanceof DemoKeyboardView);
 
-    DemoAnyKeyboardView demoAnyKeyboardView = (DemoAnyKeyboardView) demoView;
-    Assert.assertEquals("symbols_keyboard", demoAnyKeyboardView.getKeyboard().getKeyboardId());
+    DemoKeyboardView demoKeyboardView = (DemoKeyboardView) demoView;
+    Assert.assertEquals("symbols_keyboard", demoKeyboardView.getKeyboard().getKeyboardId());
   }
 
   @Test

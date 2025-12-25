@@ -17,14 +17,14 @@
 package com.anysoftkeyboard.keyboards.views;
 
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 
 /** Simple lookup helper for finding keys by primary code. */
 class KeyLookup {
 
   @Nullable
-  Keyboard.Key findKeyByPrimaryKeyCode(@Nullable AnyKeyboard keyboard, int keyCode) {
+  Keyboard.Key findKeyByPrimaryKeyCode(@Nullable KeyboardDefinition keyboard, int keyCode) {
     if (keyboard == null) return null;
     for (Keyboard.Key key : keyboard.getKeys()) {
       if (key.getPrimaryCode() == keyCode) return key;

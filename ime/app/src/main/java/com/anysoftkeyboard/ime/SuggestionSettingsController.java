@@ -11,7 +11,7 @@ import io.reactivex.Observable;
 /** Centralizes suggestion-related preference subscriptions. */
 final class SuggestionSettingsController {
 
-  void attach(@NonNull AnySoftKeyboardSuggestions host, @NonNull Suggest suggest) {
+  void attach(@NonNull ImeSuggestionsController host, @NonNull Suggest suggest) {
     final Observable<Boolean> powerSavingShowSuggestionsObservable =
         Observable.combineLatest(
             host.prefs()
@@ -54,7 +54,7 @@ final class SuggestionSettingsController {
   }
 
   /** Applies current pref snapshot immediately (helps tests before reactive streams emit). */
-  void applySnapshot(@NonNull AnySoftKeyboardSuggestions host, @NonNull Suggest suggest) {
+  void applySnapshot(@NonNull ImeSuggestionsController host, @NonNull Suggest suggest) {
     final boolean showSuggestions =
         host.prefs()
             .getBoolean(
@@ -81,7 +81,7 @@ final class SuggestionSettingsController {
   }
 
   private void applyAutoPickConfig(
-      AnySoftKeyboardSuggestions host, Suggest suggest, Triple<Boolean, String, Boolean> triple) {
+      ImeSuggestionsController host, Suggest suggest, Triple<Boolean, String, Boolean> triple) {
     final boolean showSuggestions = triple.getFirst();
     final String autoPickAggressiveness = triple.getSecond();
     final boolean trySplitting = triple.getThird();

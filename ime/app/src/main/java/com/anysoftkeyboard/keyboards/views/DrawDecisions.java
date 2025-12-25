@@ -4,9 +4,10 @@ import android.content.res.ColorStateList;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.KeyDrawableStateProvider;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.anysoftkeyboard.overlay.ThemeResourcesHolder;
 
 final class DrawDecisions {
@@ -32,7 +33,7 @@ final class DrawDecisions {
   }
 
   int resolveTextColor(
-      AnyKeyboard.AnyKey key,
+      KeyboardKey key,
       ThemeResourcesHolder themeResourcesHolder,
       ColorStateList keyTextColor,
       boolean keyIsSpace,
@@ -63,10 +64,12 @@ final class DrawDecisions {
 
   ModifierStates modifierStates(@NonNull Keyboard keyboard) {
     final boolean function =
-        keyboard instanceof AnyKeyboard && ((AnyKeyboard) keyboard).isFunctionActive();
+        keyboard instanceof KeyboardDefinition
+            && ((KeyboardDefinition) keyboard).isFunctionActive();
     final boolean control =
-        keyboard instanceof AnyKeyboard && ((AnyKeyboard) keyboard).isControlActive();
-    final boolean alt = keyboard instanceof AnyKeyboard && ((AnyKeyboard) keyboard).isAltActive();
+        keyboard instanceof KeyboardDefinition && ((KeyboardDefinition) keyboard).isControlActive();
+    final boolean alt =
+        keyboard instanceof KeyboardDefinition && ((KeyboardDefinition) keyboard).isAltActive();
     return new ModifierStates(function, control, alt);
   }
 

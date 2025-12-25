@@ -9,7 +9,7 @@ import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 
-/** Collects all preference-driven bindings for AnyKeyboardViewBase to keep the view slimmer. */
+/** Collects all preference-driven bindings for KeyboardViewBase to keep the view slimmer. */
 final class KeyboardViewPreferenceBinder {
 
   void bind(

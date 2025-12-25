@@ -25,7 +25,7 @@ import com.anysoftkeyboard.debug.TestInputActivity;
 import com.anysoftkeyboard.prefs.DirectBootAwareSharedPreferences;
 import com.anysoftkeyboard.prefs.RxSharedPrefs;
 import com.anysoftkeyboard.saywhat.PublicNotice;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.io.File;
 import java.io.FileInputStream;
@@ -69,7 +69,7 @@ public class MikeRozoffKeyboardSwitchInstrumentedTest {
   public void setUp() throws Exception {
     clearLogcat();
     configureMikeRozoffAsDefault();
-    AnyApplication application = (AnyApplication) ApplicationProvider.getApplicationContext();
+    NskApplicationBase application = ApplicationProvider.getApplicationContext();
     boolean trackerRegistered = false;
     for (PublicNotice notice : application.getPublicNotices()) {
       if ("ImeStateTrackerKeyboardVisibility".equals(notice.getName())) {
@@ -85,7 +85,7 @@ public class MikeRozoffKeyboardSwitchInstrumentedTest {
     wakeAndUnlockDevice();
     ensureImeEnabledAndSelected();
     com.anysoftkeyboard.keyboards.KeyboardFactory factoryPostConfig =
-        AnyApplication.getKeyboardFactory(ApplicationProvider.getApplicationContext());
+        NskApplicationBase.getKeyboardFactory(ApplicationProvider.getApplicationContext());
     Log.d(TAG, "Post-config enabled IDs: " + factoryPostConfig.getEnabledIds());
     Log.d(TAG, "Post-config active id: " + factoryPostConfig.getEnabledAddOn().getId());
     mScenario = ActivityScenario.launch(TestInputActivity.class);
@@ -153,13 +153,13 @@ public class MikeRozoffKeyboardSwitchInstrumentedTest {
         .putBoolean("keyboard_mike-rozoff-symbols-ext-001", false)
         .apply();
 
-    RxSharedPrefs rxPrefs = AnyApplication.prefs(appContext);
+    RxSharedPrefs rxPrefs = NskApplicationBase.prefs(appContext);
     rxPrefs
         .getStringSet(R.string.settings_key_persistent_layout_per_package_id_mapping)
         .set(Collections.singleton(appContext.getPackageName() + " -> mike-rozoff-main-001"));
 
     com.anysoftkeyboard.keyboards.KeyboardFactory factory =
-        AnyApplication.getKeyboardFactory(appContext);
+        NskApplicationBase.getKeyboardFactory(appContext);
     if (factory.getAddOnById(ROZOFF_MAIN_ID) == null) {
       fail(
           "Mike Rozoff add-on is not installed. Install the standalone APK from "
@@ -224,13 +224,12 @@ public class MikeRozoffKeyboardSwitchInstrumentedTest {
         mDevice.wait(
             Until.findObject(
                 By.res(resId("AnyKeyboardMainView"))
-                    .clazz("com.anysoftkeyboard.keyboards.views.AnyKeyboardView")),
+                    .clazz("com.anysoftkeyboard.keyboards.views.KeyboardView")),
             2000);
     if (keyboard == null) {
       keyboard =
           mDevice.wait(
-              Until.findObject(By.clazz("com.anysoftkeyboard.keyboards.views.AnyKeyboardView")),
-              2000);
+              Until.findObject(By.clazz("com.anysoftkeyboard.keyboards.views.KeyboardView")), 2000);
     }
     if (keyboard == null) {
       keyboard = mDevice.wait(Until.findObject(By.pkg(getAppPackage())), 2000);
@@ -451,7 +450,7 @@ public class MikeRozoffKeyboardSwitchInstrumentedTest {
               + ImeStateTracker.getLastEditorInfo());
       if (lastId == null) {
         com.anysoftkeyboard.keyboards.KeyboardAddOnAndBuilder factoryActive =
-            AnyApplication.getKeyboardFactory(ApplicationProvider.getApplicationContext())
+            NskApplicationBase.getKeyboardFactory(ApplicationProvider.getApplicationContext())
                 .getEnabledAddOn();
         if (expectedKeyboardId.equals(factoryActive.getId())) {
           Log.w(

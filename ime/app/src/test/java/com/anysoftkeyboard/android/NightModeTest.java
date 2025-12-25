@@ -14,7 +14,7 @@ import androidx.test.core.app.ApplicationProvider;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
@@ -56,7 +56,7 @@ public class NightModeTest {
   @Test
   public void testApplicationObservable() {
     AtomicBoolean atomicBoolean = new AtomicBoolean();
-    AnyApplication application = getApplicationContext();
+    NskApplicationBase application = getApplicationContext();
     final Disposable subscribe =
         application
             .getNightModeObservable()
@@ -92,7 +92,7 @@ public class NightModeTest {
     SharedPrefsHelper.setPrefsValue(R.string.settings_key_night_mode, "never");
 
     AtomicBoolean atomicBoolean = new AtomicBoolean();
-    AnyApplication application = getApplicationContext();
+    NskApplicationBase application = getApplicationContext();
     final Disposable subscribe =
         NightMode.observeNightModeState(application, 0, R.bool.settings_default_true)
             .subscribe(
@@ -123,7 +123,7 @@ public class NightModeTest {
     SharedPrefsHelper.setPrefsValue(R.string.settings_key_night_mode, "always");
 
     AtomicBoolean atomicBoolean = new AtomicBoolean();
-    AnyApplication application = getApplicationContext();
+    NskApplicationBase application = getApplicationContext();
     final Disposable subscribe =
         NightMode.observeNightModeState(application, 0, R.bool.settings_default_true)
             .subscribe(
@@ -154,7 +154,7 @@ public class NightModeTest {
     SharedPrefsHelper.setPrefsValue(R.string.settings_key_night_mode, "follow_system");
 
     AtomicBoolean atomicBoolean = new AtomicBoolean();
-    AnyApplication application = getApplicationContext();
+    NskApplicationBase application = getApplicationContext();
     final Disposable subscribe =
         NightMode.observeNightModeState(application, 0, R.bool.settings_default_true)
             .subscribe(
@@ -189,7 +189,7 @@ public class NightModeTest {
     SharedPrefsHelper.setPrefsValue(R.string.settings_key_night_mode, "follow_system");
 
     AtomicBoolean atomicBoolean = new AtomicBoolean();
-    AnyApplication application = getApplicationContext();
+    NskApplicationBase application = getApplicationContext();
     final Disposable subscribe =
         NightMode.observeNightModeState(
                 application,

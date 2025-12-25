@@ -13,9 +13,9 @@ public final class KeyboardUIStateHandler extends Handler {
       R.id.keyboard_ui_handler_MSG_RESTART_NEW_WORD_SUGGESTIONS;
   public static final int MSG_CLOSE_DICTIONARIES = R.id.keyboard_ui_handler_MSG_CLOSE_DICTIONARIES;
 
-  private final WeakReference<AnySoftKeyboardSuggestions> mKeyboard;
+  private final WeakReference<ImeSuggestionsController> mKeyboard;
 
-  public KeyboardUIStateHandler(AnySoftKeyboardSuggestions keyboard) {
+  public KeyboardUIStateHandler(ImeSuggestionsController keyboard) {
     super(Looper.getMainLooper());
     mKeyboard = new WeakReference<>(keyboard);
   }
@@ -32,22 +32,22 @@ public final class KeyboardUIStateHandler extends Handler {
 
   @Override
   public void handleMessage(Message msg) {
-    AnySoftKeyboardSuggestions ask = mKeyboard.get();
+    ImeSuggestionsController controller = mKeyboard.get();
 
-    if (ask == null) {
+    if (controller == null) {
       // delayed posts and such may result in the reference gone
       return;
     }
 
     switch (msg.what) {
       case MSG_UPDATE_SUGGESTIONS:
-        ask.performUpdateSuggestions();
+        controller.performUpdateSuggestions();
         break;
       case MSG_RESTART_NEW_WORD_SUGGESTIONS:
-        ask.performRestartWordSuggestion();
+        controller.performRestartWordSuggestion();
         break;
       case MSG_CLOSE_DICTIONARIES:
-        ask.closeDictionaries();
+        controller.closeDictionaries();
         break;
       default:
         super.handleMessage(msg);

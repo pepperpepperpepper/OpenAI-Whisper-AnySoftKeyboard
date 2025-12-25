@@ -1,8 +1,8 @@
 package com.anysoftkeyboard.keyboards.views;
 
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 
-/** Thin wrapper around preview presenter to keep AnyKeyboardViewBase slimmer. */
+/** Thin wrapper around preview presenter to keep KeyboardViewBase slimmer. */
 final class KeyPreviewInteractor {
   private final PreviewPopupPresenter previewPopupPresenter;
 
@@ -21,7 +21,7 @@ final class KeyPreviewInteractor {
   void showPreview(
       int keyIndex,
       PointerTracker tracker,
-      AnyKeyboard keyboard,
+      KeyboardDefinition keyboard,
       java.util.function.Function<Integer, CharSequence> labelSupplier) {
     previewPopupPresenter.showPreview(keyIndex, tracker, keyboard, labelSupplier);
   }

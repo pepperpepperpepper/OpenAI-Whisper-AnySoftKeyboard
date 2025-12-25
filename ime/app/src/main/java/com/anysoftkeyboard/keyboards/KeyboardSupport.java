@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.base.utils.Logger;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 import java.util.StringTokenizer;
@@ -91,7 +91,7 @@ public class KeyboardSupport {
     final boolean landscape =
         context.getResources().getConfiguration().orientation
             == Configuration.ORIENTATION_LANDSCAPE;
-    return AnyApplication.prefs(context)
+    return NskApplicationBase.prefs(context)
         .getInteger(
             landscape
                 ? R.string.settings_key_zoom_percent_in_landscape

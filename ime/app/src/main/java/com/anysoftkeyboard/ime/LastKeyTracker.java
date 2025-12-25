@@ -3,7 +3,7 @@ package com.anysoftkeyboard.ime;
 import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.keyboards.Keyboard;
 
-/** Tracks last pressed key/code to keep AnySoftKeyboardSuggestions lean. */
+/** Tracks last pressed key/code to keep {@link ImeSuggestionsController} lean. */
 final class LastKeyTracker {
 
   private Keyboard.Key lastKey;

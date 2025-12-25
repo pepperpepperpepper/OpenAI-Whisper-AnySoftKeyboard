@@ -10,16 +10,16 @@ final class GenericRowApplier {
   static final class Result {
     final int maxGenericRowsWidth;
     @Nullable final Keyboard.Key controlKey;
-    @Nullable final AnyKeyboard.AnyKey altKey;
-    @Nullable final AnyKeyboard.AnyKey functionKey;
-    @Nullable final AnyKeyboard.AnyKey voiceKey;
+    @Nullable final KeyboardKey altKey;
+    @Nullable final KeyboardKey functionKey;
+    @Nullable final KeyboardKey voiceKey;
 
     Result(
         int maxGenericRowsWidth,
         @Nullable Keyboard.Key controlKey,
-        @Nullable AnyKeyboard.AnyKey altKey,
-        @Nullable AnyKeyboard.AnyKey functionKey,
-        @Nullable AnyKeyboard.AnyKey voiceKey) {
+        @Nullable KeyboardKey altKey,
+        @Nullable KeyboardKey functionKey,
+        @Nullable KeyboardKey voiceKey) {
       this.maxGenericRowsWidth = maxGenericRowsWidth;
       this.controlKey = controlKey;
       this.altKey = altKey;
@@ -45,9 +45,9 @@ final class GenericRowApplier {
     final Keyboard parentKeyboard = keys.isEmpty() ? null : keys.get(0).row.mParent;
 
     Keyboard.Key controlKey = null;
-    AnyKeyboard.AnyKey altKey = null;
-    AnyKeyboard.AnyKey functionKey = null;
-    AnyKeyboard.AnyKey voiceKey = null;
+    KeyboardKey altKey = null;
+    KeyboardKey functionKey = null;
+    KeyboardKey voiceKey = null;
 
     int rowKeyInsertIndex = initialRowKeyInsertIndex;
     for (Keyboard.Key rowKey : rowKeys) {
@@ -58,8 +58,7 @@ final class GenericRowApplier {
       final int rowWidth = Keyboard.Key.getEndX(rowKey);
       if (rowWidth > maxGenericRowsWidth) maxGenericRowsWidth = rowWidth;
       keys.add(rowKeyInsertIndex, rowKey);
-      if (rowKey instanceof AnyKeyboard.AnyKey) {
-        final AnyKeyboard.AnyKey anyRowKey = (AnyKeyboard.AnyKey) rowKey;
+      if (rowKey instanceof KeyboardKey anyRowKey) {
         switch (anyRowKey.getPrimaryCode()) {
           case KeyCodes.CTRL:
             controlKey = anyRowKey;

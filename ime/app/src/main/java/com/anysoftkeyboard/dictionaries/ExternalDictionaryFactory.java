@@ -26,11 +26,11 @@ import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.addons.AddOnsFactory;
 import com.anysoftkeyboard.addons.AddOnsFactory.ReceiverSpec;
 import com.anysoftkeyboard.base.utils.Logger;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.KeyboardFactory;
 import com.anysoftkeyboard.prefs.DirectBootAwareSharedPreferences;
-import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.BuildConfig;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public class ExternalDictionaryFactory extends AddOnsFactory<DictionaryAddOnAndB
             PluginActions.METADATA_DICTIONARIES_ASK_MENNY));
   }
 
-  public static String getDictionaryOverrideKey(AnyKeyboard currentKeyboard) {
+  public static String getDictionaryOverrideKey(KeyboardDefinition currentKeyboard) {
     return String.format(
         Locale.US,
         "%s%s%s",
@@ -190,21 +190,21 @@ public class ExternalDictionaryFactory extends AddOnsFactory<DictionaryAddOnAndB
   }
 
   @NonNull
-  public List<DictionaryAddOnAndBuilder> getBuildersForKeyboard(AnyKeyboard keyboard) {
+  public List<DictionaryAddOnAndBuilder> getBuildersForKeyboard(KeyboardDefinition keyboard) {
     List<DictionaryAddOnAndBuilder> builders = new ArrayList<>();
     final String dictionaryValue =
         mSharedPreferences.getString(getDictionaryOverrideKey(keyboard), null);
 
     if (TextUtils.isEmpty(dictionaryValue)) {
       final DictionaryAddOnAndBuilder builderByLocale =
-          AnyApplication.getExternalDictionaryFactory(mContext)
+          NskApplicationBase.getExternalDictionaryFactory(mContext)
               .getDictionaryBuilderByLocale(keyboard.getDefaultDictionaryLocale());
       if (builderByLocale != null) builders.add(builderByLocale);
     } else {
       String[] ids = dictionaryValue.split(":", -1);
       for (String id : ids) {
         final DictionaryAddOnAndBuilder addOnById =
-            AnyApplication.getExternalDictionaryFactory(mContext).getAddOnById(id);
+            NskApplicationBase.getExternalDictionaryFactory(mContext).getAddOnById(id);
         if (addOnById != null) builders.add(addOnById);
       }
     }
@@ -213,7 +213,7 @@ public class ExternalDictionaryFactory extends AddOnsFactory<DictionaryAddOnAndB
   }
 
   public void setBuildersForKeyboard(
-      AnyKeyboard keyboard, List<DictionaryAddOnAndBuilder> buildersForKeyboard) {
+      KeyboardDefinition keyboard, List<DictionaryAddOnAndBuilder> buildersForKeyboard) {
     final String mappingSettingsKey = getDictionaryOverrideKey(keyboard);
     SharedPreferences.Editor editor = mSharedPreferences.edit();
     if (buildersForKeyboard.size() == 0) {
@@ -232,7 +232,7 @@ public class ExternalDictionaryFactory extends AddOnsFactory<DictionaryAddOnAndB
   @NonNull
   public static Iterable<String> getLocalesFromDictionaryAddOns(@NonNull Context context) {
     return Observable.fromIterable(
-            AnyApplication.getExternalDictionaryFactory(context).getAllAddOns())
+            NskApplicationBase.getExternalDictionaryFactory(context).getAllAddOns())
         .filter(addOn -> !TextUtils.isEmpty(addOn.getLanguage()))
         .map(DictionaryAddOnAndBuilder::getLanguage)
         .distinct() // will not return any previously seen value

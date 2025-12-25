@@ -41,7 +41,7 @@ import com.anysoftkeyboard.addons.SingleAddOnsFactory;
 import com.anysoftkeyboard.addons.ui.AddOnStoreSearchController;
 import com.anysoftkeyboard.addons.ui.AddOnStoreSearchView;
 import com.anysoftkeyboard.base.utils.Logger;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,7 +64,7 @@ public abstract class AbstractAddOnsBrowserFragment<E extends AddOn> extends Fra
 
   private final ItemTouchHelper mRecyclerViewItemTouchHelper;
   private RecyclerView mRecyclerView;
-  @Nullable private DemoAnyKeyboardView mSelectedKeyboardView;
+  @Nullable private DemoKeyboardView mSelectedKeyboardView;
 
   @Nullable private AddOnStoreSearchController mMarketSearchController;
   private int mColumnsCount = 2;
@@ -281,7 +281,7 @@ public abstract class AbstractAddOnsBrowserFragment<E extends AddOn> extends Fra
   }
 
   protected abstract void applyAddOnToDemoKeyboardView(
-      @NonNull final E addOn, @NonNull final DemoAnyKeyboardView demoKeyboardView);
+      @NonNull final E addOn, @NonNull final DemoKeyboardView demoKeyboardView);
 
   @Nullable
   protected abstract String getMarketSearchKeyword();
@@ -291,7 +291,7 @@ public abstract class AbstractAddOnsBrowserFragment<E extends AddOn> extends Fra
 
   private class KeyboardAddOnViewHolder extends RecyclerView.ViewHolder
       implements View.OnClickListener {
-    private final DemoAnyKeyboardView mDemoKeyboardView;
+    private final DemoKeyboardView mDemoKeyboardView;
     private final ImageView mAddOnEnabledView;
     private final TextView mAddOnTitle;
     private final TextView mAddOnDescription;

@@ -7,7 +7,7 @@ import com.menny.android.anysoftkeyboard.R;
 import java.util.List;
 
 @SuppressWarnings("this-escape")
-public class PopupListKeyboard extends AnyPopupKeyboard {
+public class PopupListKeyboard extends PopupKeyboard {
   private final int mAdditionalWidth;
 
   public PopupListKeyboard(
@@ -28,11 +28,11 @@ public class PopupListKeyboard extends AnyPopupKeyboard {
     baseKey.label = keysNames.get(0);
     baseKey.text = keyValues.get(0);
     float x = baseKey.width;
-    AnyKey aKey = null;
+    KeyboardKey aKey = null;
     for (int entryIndex = 1; entryIndex < keysNames.size(); entryIndex++) {
       x += (keyHorizontalGap / 2);
 
-      aKey = new AnyKey(row, keyboardDimens);
+      aKey = new KeyboardKey(row, keyboardDimens);
       aKey.mCodes = new int[] {0};
       aKey.mShiftedCodes = new int[] {0};
       aKey.label = keysNames.get(entryIndex);

@@ -9,7 +9,7 @@ import com.anysoftkeyboard.theme.KeyboardTheme;
 
 final class KeyboardThemeController {
 
-  private final AnyKeyboardViewBase view;
+  private final KeyboardViewBase view;
   private final KeyIconResolver keyIconResolver;
   private final TextWidthCache textWidthCache;
   private final ThemeOverlayCombiner themeOverlayCombiner;
@@ -21,7 +21,7 @@ final class KeyboardThemeController {
   @Nullable private KeyboardTheme lastSetTheme;
 
   KeyboardThemeController(
-      AnyKeyboardViewBase view,
+      KeyboardViewBase view,
       KeyIconResolver keyIconResolver,
       TextWidthCache textWidthCache,
       ThemeOverlayCombiner themeOverlayCombiner,

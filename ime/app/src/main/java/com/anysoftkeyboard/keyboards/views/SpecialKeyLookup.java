@@ -4,10 +4,10 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.KeyDrawableStateProvider;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 
-/** Encapsulates special-key label/icon lookup to keep AnyKeyboardViewBase slimmer. */
+/** Encapsulates special-key label/icon lookup to keep KeyboardViewBase slimmer. */
 final class SpecialKeyLookup {
 
   private final KeyIconResolver keyIconResolver;
@@ -25,7 +25,7 @@ final class SpecialKeyLookup {
       int keyboardActionType,
       KeyDrawableStateProvider drawableStatesProvider,
       ActionIconStateSetter actionIconStateSetter,
-      AnyKeyboard keyboard) {
+      KeyboardDefinition keyboard) {
     return SpecialKeyAppearanceUpdater.getIconForKeyCode(
         keyCode,
         keyboardActionType,
@@ -41,7 +41,7 @@ final class SpecialKeyLookup {
       int keyboardActionType,
       CharSequence nextAlphabetKeyboardName,
       CharSequence nextSymbolsKeyboardName,
-      AnyKeyboard keyboard,
+      KeyboardDefinition keyboard,
       Context context) {
     return SpecialKeyAppearanceUpdater.guessLabelForKey(
         keyCode,

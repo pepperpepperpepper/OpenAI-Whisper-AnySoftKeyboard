@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.theme.KeyboardTheme;
 import com.anysoftkeyboard.theme.KeyboardThemeFactory;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,7 +24,7 @@ public class ThemeAttributeLoaderTest {
   public void testMikeRozoffThemeAppliesKeyBackground() {
     KeyboardTheme theme = requireTheme(MIKE_ROZOFF_THEME_ID);
 
-    AnyKeyboardViewBase view = new AnyKeyboardViewBase(getApplicationContext(), null);
+    KeyboardViewBase view = new KeyboardViewBase(getApplicationContext(), null);
     view.setKeyboardTheme(theme);
 
     Drawable keyBackground = view.getCurrentResourcesHolder().getKeyBackground();
@@ -37,7 +37,7 @@ public class ThemeAttributeLoaderTest {
   public void testMikeRozoffPopupThemeAppliesPopupKeyBackground() {
     KeyboardTheme theme = requireTheme(MIKE_ROZOFF_THEME_ID);
 
-    PopupAnyKeyboardView popupView = new PopupAnyKeyboardView(getApplicationContext(), null);
+    PopupKeyboardView popupView = new PopupKeyboardView(getApplicationContext(), null);
     popupView.setKeyboardTheme(theme);
 
     Drawable keyBackground = popupView.getCurrentResourcesHolder().getKeyBackground();
@@ -47,7 +47,8 @@ public class ThemeAttributeLoaderTest {
   }
 
   private static KeyboardTheme requireTheme(String themeId) {
-    KeyboardThemeFactory factory = AnyApplication.getKeyboardThemeFactory(getApplicationContext());
+    KeyboardThemeFactory factory =
+        NskApplicationBase.getKeyboardThemeFactory(getApplicationContext());
     KeyboardTheme theme = factory.getAddOnById(themeId);
     Assert.assertNotNull("Expected theme to exist: " + themeId, theme);
     return theme;

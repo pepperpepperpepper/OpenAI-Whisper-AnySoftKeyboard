@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.SystemClock;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardViewWithExtraDraw;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewWithExtraDraw;
 
 public class TypingExtraDraw implements ExtraDraw {
 
@@ -31,7 +31,7 @@ public class TypingExtraDraw implements ExtraDraw {
 
   @Override
   public boolean onDraw(
-      Canvas canvas, Paint originalPaint, AnyKeyboardViewWithExtraDraw parentKeyboardView) {
+      Canvas canvas, Paint originalPaint, KeyboardViewWithExtraDraw parentKeyboardView) {
     final long currentAnimationTime = SystemClock.elapsedRealtime() - mStartTime;
     if (currentAnimationTime > mTotalDuration) {
       return false;

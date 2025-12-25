@@ -5,7 +5,7 @@ import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.dictionaries.WordComposer;
 
 /**
- * Extracted handler for {@link AnySoftKeyboardSuggestions#onUpdateSelection}. Keeps the branching
+ * Extracted handler for {@link ImeSuggestionsController#onUpdateSelection}. Keeps the branching
  * logic out of the main IME class while preserving behavior.
  */
 final class SelectionUpdateProcessor {

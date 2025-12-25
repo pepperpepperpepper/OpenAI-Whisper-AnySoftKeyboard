@@ -31,7 +31,7 @@ public interface DeviceSpecific {
 
   String getApiLevel();
 
-  GestureDetector createGestureDetector(Context appContext, AskOnGestureListener listener);
+  GestureDetector createGestureDetector(Context appContext, NskOnGestureListener listener);
 
   void commitCorrectionToInputConnection(
       InputConnection ic, int wordOffsetInInput, CharSequence oldWord, CharSequence newWord);

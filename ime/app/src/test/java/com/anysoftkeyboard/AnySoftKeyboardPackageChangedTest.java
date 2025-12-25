@@ -12,10 +12,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.test.core.app.ApplicationProvider;
 import com.anysoftkeyboard.addons.AddOn;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
-import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.BuildConfig;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,10 +44,10 @@ public class AnySoftKeyboardPackageChangedTest {
   @Before
   public void setUp() throws Exception {
     mSoftKeyboard = Robolectric.buildService(TestableAnySoftKeyboard.class).create().get();
-    mKeyboard = AnyApplication.getKeyboardFactory(getApplicationContext()).getEnabledAddOn();
-    mTheme = AnyApplication.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn();
+    mKeyboard = NskApplicationBase.getKeyboardFactory(getApplicationContext()).getEnabledAddOn();
+    mTheme = NskApplicationBase.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn();
     mQuickTextKey =
-        AnyApplication.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn();
+        NskApplicationBase.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn();
   }
 
   @Test
@@ -55,12 +55,14 @@ public class AnySoftKeyboardPackageChangedTest {
     ApplicationProvider.getApplicationContext().sendBroadcast(new Intent());
     Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
     Assert.assertSame(
-        mKeyboard, AnyApplication.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
+        mKeyboard,
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertSame(
-        mTheme, AnyApplication.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
+        mTheme,
+        NskApplicationBase.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertSame(
         mQuickTextKey,
-        AnyApplication.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
+        NskApplicationBase.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
   }
 
   @Test
@@ -72,12 +74,14 @@ public class AnySoftKeyboardPackageChangedTest {
     ApplicationProvider.getApplicationContext().sendBroadcast(intent);
     Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
     Assert.assertSame(
-        mKeyboard, AnyApplication.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
+        mKeyboard,
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertSame(
-        mTheme, AnyApplication.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
+        mTheme,
+        NskApplicationBase.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertSame(
         mQuickTextKey,
-        AnyApplication.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
+        NskApplicationBase.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
   }
 
   @Test
@@ -90,12 +94,14 @@ public class AnySoftKeyboardPackageChangedTest {
     ApplicationProvider.getApplicationContext().sendBroadcast(intent);
     Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
     Assert.assertNotSame(
-        mKeyboard, AnyApplication.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
+        mKeyboard,
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertNotSame(
-        mTheme, AnyApplication.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
+        mTheme,
+        NskApplicationBase.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertNotSame(
         mQuickTextKey,
-        AnyApplication.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
+        NskApplicationBase.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
   }
 
   @Test
@@ -108,12 +114,14 @@ public class AnySoftKeyboardPackageChangedTest {
     ApplicationProvider.getApplicationContext().sendBroadcast(intent);
     Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
     Assert.assertSame(
-        mKeyboard, AnyApplication.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
+        mKeyboard,
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertSame(
-        mTheme, AnyApplication.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
+        mTheme,
+        NskApplicationBase.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertSame(
         mQuickTextKey,
-        AnyApplication.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
+        NskApplicationBase.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
   }
 
   @Test
@@ -126,12 +134,14 @@ public class AnySoftKeyboardPackageChangedTest {
     ApplicationProvider.getApplicationContext().sendBroadcast(intent);
     Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
     Assert.assertNotSame(
-        mKeyboard, AnyApplication.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
+        mKeyboard,
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertNotSame(
-        mTheme, AnyApplication.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
+        mTheme,
+        NskApplicationBase.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertNotSame(
         mQuickTextKey,
-        AnyApplication.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
+        NskApplicationBase.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
   }
 
   @Test
@@ -144,12 +154,14 @@ public class AnySoftKeyboardPackageChangedTest {
     ApplicationProvider.getApplicationContext().sendBroadcast(intent);
     Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
     Assert.assertSame(
-        mKeyboard, AnyApplication.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
+        mKeyboard,
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertSame(
-        mTheme, AnyApplication.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
+        mTheme,
+        NskApplicationBase.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn());
     Assert.assertSame(
         mQuickTextKey,
-        AnyApplication.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
+        NskApplicationBase.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOn());
   }
 
   @Test
@@ -176,7 +188,8 @@ public class AnySoftKeyboardPackageChangedTest {
     ApplicationProvider.getApplicationContext().sendBroadcast(intent);
     TestRxSchedulers.drainAllTasks();
     Assert.assertNotSame(
-        mKeyboard, AnyApplication.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
+        mKeyboard,
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
   }
 
   @Test
@@ -200,7 +213,8 @@ public class AnySoftKeyboardPackageChangedTest {
     ApplicationProvider.getApplicationContext().sendBroadcast(intent);
     Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
     Assert.assertSame(
-        mKeyboard, AnyApplication.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
+        mKeyboard,
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
   }
 
   @Test
@@ -223,13 +237,14 @@ public class AnySoftKeyboardPackageChangedTest {
     ApplicationProvider.getApplicationContext().sendBroadcast(intent);
     Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
     Assert.assertSame(
-        mKeyboard, AnyApplication.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
+        mKeyboard,
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getEnabledAddOn());
   }
 
   @Test
   public void testClearsCachesAndDoesNotCreatesViewIfNeverCreated() throws Exception {
     mSoftKeyboard.getKeyboardSwitcherForTests().getEnabledKeyboardsBuilders();
-    AnyKeyboard[] array =
+    KeyboardDefinition[] array =
         mSoftKeyboard.getKeyboardSwitcherForTests().getCachedAlphabetKeyboardsArray();
     Assert.assertNull(mSoftKeyboard.getInputView());
 

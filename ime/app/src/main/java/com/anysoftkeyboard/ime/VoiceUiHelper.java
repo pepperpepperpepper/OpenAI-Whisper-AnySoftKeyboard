@@ -2,7 +2,7 @@ package com.anysoftkeyboard.ime;
 
 import android.view.View;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.views.InputViewBinder;
 import com.google.android.voiceime.VoiceImeController;
 import com.google.android.voiceime.VoiceImeController.VoiceInputState;
@@ -20,13 +20,15 @@ public final class VoiceUiHelper {
   }
 
   public void updateVoiceKeyState(
-      @Nullable AnyKeyboard currentKeyboard, @Nullable InputViewBinder view) {
+      @Nullable KeyboardDefinition currentKeyboard, @Nullable InputViewBinder view) {
     voiceStatusRenderer.updateVoiceKeyState(
         currentKeyboard, voiceImeController.isRecording(), asViewOrNull(view));
   }
 
   public void updateSpaceBarRecordingStatus(
-      boolean isRecording, @Nullable AnyKeyboard currentKeyboard, @Nullable InputViewBinder view) {
+      boolean isRecording,
+      @Nullable KeyboardDefinition currentKeyboard,
+      @Nullable InputViewBinder view) {
     if (isRecording) {
       updateVoiceInputStatus(VoiceInputState.RECORDING, currentKeyboard, view);
     } else if (voiceStatusRenderer.getCurrentState() != VoiceInputState.WAITING) {
@@ -36,7 +38,7 @@ public final class VoiceUiHelper {
 
   public void updateVoiceInputStatus(
       VoiceInputState newState,
-      @Nullable AnyKeyboard currentKeyboard,
+      @Nullable KeyboardDefinition currentKeyboard,
       @Nullable InputViewBinder view) {
     voiceStatusRenderer.updateVoiceInputStatus(currentKeyboard, asViewOrNull(view), newState);
   }

@@ -17,8 +17,8 @@
 package com.anysoftkeyboard.keyboards.views;
 
 import androidx.annotation.NonNull;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 
 public interface OnKeyboardActionListener {
 
@@ -104,7 +104,7 @@ public interface OnKeyboardActionListener {
    *
    * @return true if handled, else this is not a possible gesture.
    */
-  boolean onGestureTypingInputStart(int x, int y, AnyKeyboard.AnyKey key, long eventTime);
+  boolean onGestureTypingInputStart(int x, int y, KeyboardKey key, long eventTime);
 
   void onGestureTypingInput(int x, int y, long eventTime);
 

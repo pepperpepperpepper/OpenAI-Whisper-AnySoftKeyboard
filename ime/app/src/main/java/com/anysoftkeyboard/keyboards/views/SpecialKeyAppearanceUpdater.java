@@ -6,24 +6,25 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.GenericKeyboard;
 import com.anysoftkeyboard.keyboards.KeyDrawableStateProvider;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.function.Function;
 
 /**
  * Handles dynamic icons/labels for special keys (enter/mode/shift/etc.).
  *
- * <p>Isolated to keep {@link AnyKeyboardViewBase} slimmer while preserving existing behavior.
+ * <p>Isolated to keep {@link KeyboardViewBase} slimmer while preserving existing behavior.
  */
 final class SpecialKeyAppearanceUpdater {
 
   private SpecialKeyAppearanceUpdater() {}
 
   static void applySpecialKeys(
-      @NonNull AnyKeyboard keyboard,
+      @NonNull KeyboardDefinition keyboard,
       int keyboardActionType,
       CharSequence nextAlphabetKeyboardName,
       CharSequence nextSymbolsKeyboardName,
@@ -39,7 +40,7 @@ final class SpecialKeyAppearanceUpdater {
       enterKey.icon = null;
       enterKey.iconPreview = null;
       enterKey.label = null;
-      ((AnyKeyboard.AnyKey) enterKey).shiftedKeyLabel = null;
+      ((KeyboardKey) enterKey).shiftedKeyLabel = null;
       Drawable icon =
           getIconToDrawForKey(
               enterKey,
@@ -63,7 +64,7 @@ final class SpecialKeyAppearanceUpdater {
                 keyboard,
                 context);
         enterKey.label = label;
-        ((AnyKeyboard.AnyKey) enterKey).shiftedKeyLabel = label;
+        ((KeyboardKey) enterKey).shiftedKeyLabel = label;
       }
       if (enterKey.icon == null && TextUtils.isEmpty(enterKey.label)) {
         Drawable enterIcon =
@@ -129,7 +130,7 @@ final class SpecialKeyAppearanceUpdater {
       KeyIconResolver keyIconResolver,
       ActionIconStateSetter actionIconStateSetter,
       SpecialKeyLabelProvider specialKeyLabelProvider,
-      AnyKeyboard keyboard,
+      KeyboardDefinition keyboard,
       Context context) {
     Keyboard.Key key = findKeyByPrimaryKeyCode.apply(keyCode);
     if (key != null && TextUtils.isEmpty(key.label)) {
@@ -163,7 +164,7 @@ final class SpecialKeyAppearanceUpdater {
       CharSequence nextAlphabetKeyboardName,
       CharSequence nextSymbolsKeyboardName,
       SpecialKeyLabelProvider specialKeyLabelProvider,
-      @Nullable AnyKeyboard keyboard,
+      @Nullable KeyboardDefinition keyboard,
       @NonNull Context context) {
     switch (keyCode) {
       case KeyCodes.ENTER:
@@ -217,7 +218,7 @@ final class SpecialKeyAppearanceUpdater {
       KeyDrawableStateProvider drawableStatesProvider,
       ActionIconStateSetter actionIconStateSetter,
       KeyIconResolver keyIconResolver,
-      @Nullable AnyKeyboard keyboard) {
+      @Nullable KeyboardDefinition keyboard) {
     Drawable icon = keyIconResolver.getIconForKeyCode(keyCode);
     if (icon == null) {
       return null;
@@ -289,7 +290,7 @@ final class SpecialKeyAppearanceUpdater {
   private static Drawable getIconToDrawForKey(
       Keyboard.Key key,
       boolean feedback,
-      AnyKeyboard keyboard,
+      KeyboardDefinition keyboard,
       int keyboardActionType,
       KeyDrawableStateProvider drawableStatesProvider,
       KeyIconResolver keyIconResolver,

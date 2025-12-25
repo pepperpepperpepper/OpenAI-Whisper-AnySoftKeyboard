@@ -2,13 +2,17 @@ package com.anysoftkeyboard.ime;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.anysoftkeyboard.keyboards.KeyboardSwitcher;
 import com.anysoftkeyboard.keyboards.NextKeyboardType;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardView;
+import com.anysoftkeyboard.keyboards.views.KeyboardView;
 
-/** Handles keyboard switching and layout mode keys to keep {@link AnySoftKeyboard} smaller. */
+/**
+ * Handles keyboard switching and layout mode keys to keep {@link
+ * com.anysoftkeyboard.ImeServiceBase} smaller.
+ */
 public final class KeyboardSwitchHandler {
 
   public interface Host {
@@ -16,12 +20,12 @@ public final class KeyboardSwitchHandler {
     KeyboardSwitcher getKeyboardSwitcher();
 
     @Nullable
-    AnyKeyboard getCurrentKeyboard();
+    KeyboardDefinition getCurrentKeyboard();
 
     @NonNull
-    AnyKeyboard getCurrentAlphabetKeyboard();
+    KeyboardDefinition getCurrentAlphabetKeyboard();
 
-    void setKeyboardForView(@NonNull AnyKeyboard keyboard);
+    void setKeyboardForView(@NonNull KeyboardDefinition keyboard);
 
     void showLanguageSelectionDialog();
 
@@ -33,7 +37,7 @@ public final class KeyboardSwitchHandler {
     void nextAlterKeyboard(@Nullable android.view.inputmethod.EditorInfo editorInfo);
 
     @Nullable
-    AnyKeyboardView getInputView();
+    KeyboardView getInputView();
   }
 
   private final Host host;
@@ -56,7 +60,7 @@ public final class KeyboardSwitchHandler {
       case com.anysoftkeyboard.api.KeyCodes.COMPACT_LAYOUT_TO_LEFT:
         if (host.getInputView() != null) {
           if (condenseModeManager.setModeFromKeyCode(primaryCode)) {
-            AnyKeyboard current = host.getCurrentKeyboard();
+            KeyboardDefinition current = host.getCurrentKeyboard();
             if (current != null) host.setKeyboardForView(current);
           }
         }
@@ -90,7 +94,7 @@ public final class KeyboardSwitchHandler {
         host.nextKeyboard(null, NextKeyboardType.OtherMode);
         return true;
       case com.anysoftkeyboard.api.KeyCodes.UTILITY_KEYBOARD:
-        final AnyKeyboardView inputView = host.getInputView();
+        final KeyboardView inputView = host.getInputView();
         if (inputView != null) {
           inputView.openUtilityKeyboard();
         }
@@ -117,8 +121,8 @@ public final class KeyboardSwitchHandler {
     if (key == null) {
       return null;
     }
-    if (key instanceof AnyKeyboard.AnyKey anyKey) {
-      final String extraData = anyKey.getExtraKeyData();
+    if (key instanceof KeyboardKey keyboardKey) {
+      final String extraData = keyboardKey.getExtraKeyData();
       if (!android.text.TextUtils.isEmpty(extraData)) {
         return extraData;
       }

@@ -2,8 +2,8 @@ package com.anysoftkeyboard.keyboards.views;
 
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
-import com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import java.util.Locale;
 
 final class PointerMultiTapHandler {
@@ -41,7 +41,7 @@ final class PointerMultiTapHandler {
   }
 
   void reset() {
-    sharedData.lastSentKeyIndex = AnyKeyboardViewBase.NOT_A_KEY;
+    sharedData.lastSentKeyIndex = KeyboardViewBase.NOT_A_KEY;
     tapCount = 0;
     lastTapTime = -1;
     inMultiTap = false;
@@ -70,7 +70,7 @@ final class PointerMultiTapHandler {
   @NonNull
   CharSequence getPreviewText(@NonNull Keyboard.Key key) {
     boolean isShifted = keyDetector.isKeyShifted(key);
-    AnyKey anyKey = (AnyKey) key;
+    KeyboardKey anyKey = (KeyboardKey) key;
     if (isShifted && !TextUtils.isEmpty(anyKey.shiftedKeyLabel)) {
       return anyKey.shiftedKeyLabel;
     } else if (!TextUtils.isEmpty(anyKey.label)) {

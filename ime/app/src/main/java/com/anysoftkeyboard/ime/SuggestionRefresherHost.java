@@ -5,9 +5,9 @@ import java.util.List;
 
 /** Host adapter for {@link SuggestionRefresher} to live outside the service class. */
 final class SuggestionRefresherHost implements SuggestionRefresher.Host {
-  private final AnySoftKeyboardSuggestions host;
+  private final ImeSuggestionsController host;
 
-  SuggestionRefresherHost(AnySoftKeyboardSuggestions host) {
+  SuggestionRefresherHost(ImeSuggestionsController host) {
     this.host = host;
   }
 

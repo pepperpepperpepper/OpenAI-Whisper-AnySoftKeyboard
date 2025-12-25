@@ -31,7 +31,7 @@ import com.anysoftkeyboard.nextword.NextWord;
 import com.anysoftkeyboard.nextword.NextWordSuggestions;
 import com.anysoftkeyboard.notification.NotificationIds;
 import com.anysoftkeyboard.ui.settings.MainSettingsActivity;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,7 +106,7 @@ public class ContactsDictionary extends ContentObserverDictionary implements Nex
           PendingIntent.getActivity(
               mContext, dismissRequestCode, dismissIntent, CompatUtils.appendImmutableFlag(0));
 
-      var notifier = AnyApplication.notifier(mContext);
+      var notifier = NskApplicationBase.notifier(mContext);
       var builder =
           notifier
               .buildNotification(

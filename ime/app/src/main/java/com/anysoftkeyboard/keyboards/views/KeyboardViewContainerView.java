@@ -113,7 +113,7 @@ public class KeyboardViewContainerView extends ViewGroup implements ThemeableChi
     if (SHOW_CLICKS) {
       mClicksDrawer.addTranslatedClick(ev);
       if (mClicksDrawer.shouldDraw()) {
-        if (mStandardKeyboardView instanceof AnyKeyboardViewWithExtraDraw extraDrawer) {
+        if (mStandardKeyboardView instanceof KeyboardViewWithExtraDraw extraDrawer) {
           extraDrawer.addExtraDraw(mClicksDrawer);
         }
       }
@@ -334,7 +334,7 @@ public class KeyboardViewContainerView extends ViewGroup implements ThemeableChi
 
     @Override
     public boolean onDraw(
-        Canvas canvas, Paint keyValuesPaint, AnyKeyboardViewWithExtraDraw parentKeyboardView) {
+        Canvas canvas, Paint keyValuesPaint, KeyboardViewWithExtraDraw parentKeyboardView) {
       if (++mFrames > 200) {
         mFrames = 0;
         clearClicks();

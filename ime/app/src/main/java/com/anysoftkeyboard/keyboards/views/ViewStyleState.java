@@ -1,6 +1,6 @@
 package com.anysoftkeyboard.keyboards.views;
 
-/** Holds simple view style floats to keep AnyKeyboardViewBase slimmer. */
+/** Holds simple view style floats to keep KeyboardViewBase slimmer. */
 final class ViewStyleState {
   private float backgroundDimAmount;
   private float originalVerticalCorrection;

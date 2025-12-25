@@ -5,7 +5,7 @@ import android.view.KeyEvent;
 import com.anysoftkeyboard.dictionaries.WordComposer;
 
 /**
- * Extracted deletion logic to slim {@link com.anysoftkeyboard.AnySoftKeyboard}. Encapsulates the
+ * Extracted deletion logic to slim {@link com.anysoftkeyboard.ImeServiceBase}. Encapsulates the
  * multi-tap/backspace/forward-delete handling paths.
  */
 public final class DeleteActionHelper {

@@ -24,7 +24,7 @@ import android.os.Environment;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.prefs.DirectBootAwareSharedPreferences;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.io.File;
 import java.io.IOException;
@@ -95,9 +95,9 @@ public class DeveloperUtils {
       appName.append(" v").append(info.versionName).append(" release ").append(info.versionCode);
       appName
           .append(". Installed on ")
-          .append(AnyApplication.getCurrentVersionInstallTime(context))
+          .append(NskApplicationBase.getCurrentVersionInstallTime(context))
           .append(", first release installed was ")
-          .append(AnyApplication.getFirstAppVersionInstalled(context))
+          .append(NskApplicationBase.getFirstAppVersionInstalled(context))
           .append(".");
     } catch (PackageManager.NameNotFoundException e) {
       appName.append(" !!! Error with package info !!! ");

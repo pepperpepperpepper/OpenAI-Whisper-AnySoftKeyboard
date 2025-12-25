@@ -20,7 +20,7 @@ import android.content.ComponentName;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardViewBase;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewBase;
 import com.anysoftkeyboard.saywhat.PublicNotices;
 
 /*
@@ -36,8 +36,7 @@ public class SoftKeyboard extends PublicNotices {
   This TURNED-OFF code is used to simulate
   a very slow InputConnection updates:
   On some devices and apps, the onUpdateSelection callback will be
-  very delayed, and may get com.anysoftkeyboard.ime.AnySoftKeyboardSuggestions.mGlobalCursorPosition
-  out-of-sync.
+  very delayed, and may get cursor/suggestions state out-of-sync.
    */
   private static final boolean DELAY_SELECTION_UPDATES = false;
   private Handler mDelayer = null;
@@ -83,10 +82,10 @@ public class SoftKeyboard extends PublicNotices {
   }
 
   @Nullable
-  public AnyKeyboardViewBase getCurrentKeyboardViewForDebug() {
+  public KeyboardViewBase getCurrentKeyboardViewForDebug() {
     final com.anysoftkeyboard.keyboards.views.InputViewBinder binder = getInputView();
-    if (binder instanceof AnyKeyboardViewBase) {
-      return (AnyKeyboardViewBase) binder;
+    if (binder instanceof KeyboardViewBase) {
+      return (KeyboardViewBase) binder;
     }
     return null;
   }

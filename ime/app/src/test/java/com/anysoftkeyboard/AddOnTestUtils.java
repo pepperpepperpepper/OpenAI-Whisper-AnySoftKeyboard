@@ -3,7 +3,7 @@ package com.anysoftkeyboard;
 import androidx.test.core.app.ApplicationProvider;
 import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.addons.AddOnsFactory;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 
 public class AddOnTestUtils {
   public static void ensureAddOnAtIndexEnabled(
@@ -14,7 +14,7 @@ public class AddOnTestUtils {
 
   public static void ensureKeyboardAtIndexEnabled(int index, boolean enabled) {
     ensureAddOnAtIndexEnabled(
-        AnyApplication.getKeyboardFactory(ApplicationProvider.getApplicationContext()),
+        NskApplicationBase.getKeyboardFactory(ApplicationProvider.getApplicationContext()),
         index,
         enabled);
   }

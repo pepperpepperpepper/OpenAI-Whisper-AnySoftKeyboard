@@ -4,7 +4,7 @@ import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.AnySoftKeyboard;
+import com.anysoftkeyboard.ImeServiceBase;
 import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.keyboards.Keyboard;
@@ -12,7 +12,7 @@ import com.anysoftkeyboard.keyboards.views.InputViewBinder;
 import com.menny.android.anysoftkeyboard.BuildConfig;
 import java.util.Objects;
 
-/** Handles the non-function (character-ish) key paths for {@link AnySoftKeyboard}. */
+/** Handles the non-function (character-ish) key paths for {@link ImeServiceBase}. */
 public final class NonFunctionKeyHandler {
 
   private static final String TAG = "NSKNonFunctionKeyHandler";
@@ -28,7 +28,7 @@ public final class NonFunctionKeyHandler {
   }
 
   public void handle(
-      @NonNull AnySoftKeyboard ime,
+      @NonNull ImeServiceBase ime,
       int primaryCode,
       @Nullable Keyboard.Key key,
       int multiTapIndex,
@@ -102,7 +102,7 @@ public final class NonFunctionKeyHandler {
   }
 
   private void handleEnterKey(
-      @NonNull AnySoftKeyboard ime, InputConnectionRouter inputConnectionRouter) {
+      @NonNull ImeServiceBase ime, InputConnectionRouter inputConnectionRouter) {
     if (ime.mShiftKeyState.isPressed() && inputConnectionRouter.hasConnection()) {
       // power-users feature ahead: Shift+Enter
       // getting away from firing the default editor action, by forcing newline
@@ -132,13 +132,13 @@ public final class NonFunctionKeyHandler {
     }
   }
 
-  private void sendTab(@NonNull AnySoftKeyboard ime, InputConnectionRouter inputConnectionRouter) {
+  private void sendTab(@NonNull ImeServiceBase ime, InputConnectionRouter inputConnectionRouter) {
     TerminalKeySender.sendTab(
         inputConnectionRouter, TerminalKeySender.isTerminalEmulation(ime.currentInputEditorInfo()));
   }
 
   private void sendEscape(
-      @NonNull AnySoftKeyboard ime,
+      @NonNull ImeServiceBase ime,
       InputConnectionRouter inputConnectionRouter,
       @NonNull Runnable sendEscapeChar) {
     final boolean terminalEmulation =
@@ -146,21 +146,21 @@ public final class NonFunctionKeyHandler {
     TerminalKeySender.sendEscape(inputConnectionRouter, terminalEmulation, sendEscapeChar);
   }
 
-  private void updateControlKeyUi(@NonNull AnySoftKeyboard ime) {
+  private void updateControlKeyUi(@NonNull ImeServiceBase ime) {
     final InputViewBinder inputView = ime.getInputView();
     if (inputView != null) {
       inputView.setControl(ime.mControlKeyState.isActive());
     }
   }
 
-  private void updateAltKeyUi(@NonNull AnySoftKeyboard ime) {
+  private void updateAltKeyUi(@NonNull ImeServiceBase ime) {
     final InputViewBinder inputView = ime.getInputView();
     if (inputView != null) {
       inputView.setAlt(ime.mAltKeyState.isActive(), ime.mAltKeyState.isLocked());
     }
   }
 
-  private void updateFunctionKeyUi(@NonNull AnySoftKeyboard ime) {
+  private void updateFunctionKeyUi(@NonNull ImeServiceBase ime) {
     final InputViewBinder inputView = ime.getInputView();
     if (inputView != null) {
       inputView.setFunction(ime.mFunctionKeyState.isActive(), ime.mFunctionKeyState.isLocked());

@@ -30,17 +30,19 @@ import com.anysoftkeyboard.dictionaries.SuggestImpl;
 import com.anysoftkeyboard.dictionaries.SuggestionsProvider;
 import com.anysoftkeyboard.dictionaries.WordComposer;
 import com.anysoftkeyboard.dictionaries.content.ContactsDictionary;
-import com.anysoftkeyboard.ime.AnySoftKeyboardClipboard;
+import com.anysoftkeyboard.ime.ImeClipboard;
 import com.anysoftkeyboard.ime.InputConnectionRouter;
 import com.anysoftkeyboard.ime.gesturetyping.WordListDictionaryListener;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.GenericKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
 import com.anysoftkeyboard.keyboards.KeyboardAddOnAndBuilder;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
+import com.anysoftkeyboard.keyboards.KeyboardSwitchedListener;
 import com.anysoftkeyboard.keyboards.KeyboardSwitcher;
 import com.anysoftkeyboard.keyboards.ThemedKeyboardDimensProvider;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardView;
 import com.anysoftkeyboard.keyboards.views.CandidateView;
+import com.anysoftkeyboard.keyboards.views.KeyboardView;
 import com.anysoftkeyboard.keyboards.views.KeyboardViewContainerView;
 import com.anysoftkeyboard.overlay.OverlayData;
 import com.anysoftkeyboard.overlay.OverlyDataCreator;
@@ -63,7 +65,7 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
   public static final long DELAY_BETWEEN_TYPING = GET_SUGGESTIONS_DELAY + 1;
 
   private TestableKeyboardSwitcher mTestableKeyboardSwitcher;
-  private AnyKeyboardView mSpiedKeyboardView;
+  private KeyboardView mSpiedKeyboardView;
   private EditorInfo mEditorInfo;
   private TestInputConnection mInputConnection;
   private CandidateView mMockCandidateView;
@@ -100,7 +102,7 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
   }
 
   @Nullable
-  public static Keyboard.Key findKeyWithPrimaryKeyCode(int keyCode, AnyKeyboard keyboard) {
+  public static Keyboard.Key findKeyWithPrimaryKeyCode(int keyCode, KeyboardDefinition keyboard) {
     for (Keyboard.Key aKey : keyboard.getKeys()) {
       if (aKey.getPrimaryCode() == keyCode) {
         return aKey;
@@ -157,11 +159,11 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
     return mSpiedOverlayCreator;
   }
 
-  public AnySoftKeyboardClipboard.ClipboardActionOwner getClipboardActionOwnerImpl() {
+  public ImeClipboard.ClipboardActionOwner getClipboardActionOwnerImpl() {
     return mClipboardActionOwnerImpl;
   }
 
-  public AnySoftKeyboardClipboard.ClipboardStripActionProvider getClipboardStripActionProvider() {
+  public ImeClipboard.ClipboardStripActionProvider getClipboardStripActionProvider() {
     return mSuggestionClipboardEntry;
   }
 
@@ -336,7 +338,7 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
   @Override
   protected KeyboardViewContainerView createInputViewContainer() {
     final KeyboardViewContainerView originalInputContainer = super.createInputViewContainer();
-    AnyKeyboardView inputView = (AnyKeyboardView) originalInputContainer.getStandardKeyboardView();
+    KeyboardView inputView = (KeyboardView) originalInputContainer.getStandardKeyboardView();
     final int inputViewId = ((View) inputView).getId();
 
     originalInputContainer.removeAllViews();
@@ -351,7 +353,7 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
     return originalInputContainer;
   }
 
-  public AnyKeyboardView getSpiedKeyboardView() {
+  public KeyboardView getSpiedKeyboardView() {
     return mSpiedKeyboardView;
   }
 
@@ -415,7 +417,7 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
     }
   }
 
-  public AnyKeyboard getCurrentKeyboardForTests() {
+  public KeyboardDefinition getCurrentKeyboardForTests() {
     return getCurrentKeyboard();
   }
 
@@ -432,9 +434,9 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
   public void simulateKeyPress(Keyboard.Key key, final boolean advanceTime) {
     final int primaryCode;
     final int[] nearByKeyCodes;
-    final AnyKeyboard keyboard = getCurrentKeyboard();
+    final KeyboardDefinition keyboard = getCurrentKeyboard();
     Assert.assertNotNull(keyboard);
-    if (key instanceof AnyKeyboard.AnyKey /*this will ensure this instance is not a mock*/) {
+    if (key instanceof KeyboardKey /*this will ensure this instance is not a mock*/) {
       primaryCode =
           key.getCodeAtIndex(
               0,
@@ -537,7 +539,7 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
   @NonNull
   @Override
   protected DictionaryBackgroundLoader.Listener getDictionaryLoadedListener(
-      @NonNull AnyKeyboard currentAlphabetKeyboard) {
+      @NonNull KeyboardDefinition currentAlphabetKeyboard) {
     final DictionaryBackgroundLoader.Listener dictionaryLoadedListener =
         super.getDictionaryLoadedListener(currentAlphabetKeyboard);
     if (dictionaryLoadedListener instanceof WordListDictionaryListener) {
@@ -626,12 +628,12 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
     private boolean mViewSet;
     @InputModeId private int mInputModeId;
 
-    public TestableKeyboardSwitcher(@NonNull AnySoftKeyboard ime) {
+    public TestableKeyboardSwitcher(@NonNull KeyboardSwitchedListener ime) {
       super(ime, ApplicationProvider.getApplicationContext());
     }
 
     @Override
-    public /*was protected, now public*/ AnyKeyboard createKeyboardFromCreator(
+    public /*was protected, now public*/ KeyboardDefinition createKeyboardFromCreator(
         int mode, KeyboardAddOnAndBuilder creator) {
       return super.createKeyboardFromCreator(mode, creator);
     }
@@ -689,15 +691,15 @@ public class TestableAnySoftKeyboard extends SoftKeyboard {
       Assert.assertFalse(mViewSet);
     }
 
-    public List<AnyKeyboard> getCachedAlphabetKeyboards() {
+    public List<KeyboardDefinition> getCachedAlphabetKeyboards() {
       return Collections.unmodifiableList(Arrays.asList(mAlphabetKeyboards));
     }
 
-    public AnyKeyboard[] getCachedAlphabetKeyboardsArray() {
+    public KeyboardDefinition[] getCachedAlphabetKeyboardsArray() {
       return mAlphabetKeyboards;
     }
 
-    public List<AnyKeyboard> getCachedSymbolsKeyboards() {
+    public List<KeyboardDefinition> getCachedSymbolsKeyboards() {
       return Collections.unmodifiableList(Arrays.asList(mSymbolsKeyboardsArray));
     }
   }

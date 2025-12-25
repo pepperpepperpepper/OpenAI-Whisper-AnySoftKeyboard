@@ -18,12 +18,13 @@ package com.anysoftkeyboard.keyboards.views;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import java.util.Arrays;
 
 public abstract class KeyDetector {
-  @Nullable protected AnyKeyboard mKeyboard;
+  @Nullable protected KeyboardDefinition mKeyboard;
 
   private final int[] mNearByCodes;
   @NonNull private Keyboard.Key[] mKeys = new Keyboard.Key[0];
@@ -41,7 +42,7 @@ public abstract class KeyDetector {
     mNearByCodes = new int[getMaxNearbyKeys()];
   }
 
-  public Keyboard.Key[] setKeyboard(AnyKeyboard keyboard, @Nullable Keyboard.Key shiftKey) {
+  public Keyboard.Key[] setKeyboard(KeyboardDefinition keyboard, @Nullable Keyboard.Key shiftKey) {
     mShiftKey = shiftKey;
     mKeyboard = keyboard;
 
@@ -80,10 +81,10 @@ public abstract class KeyDetector {
    *
    * @return Allocates and returns an array that can hold all key indices returned by {@link
    *     #getKeyIndexAndNearbyCodes} method. All elements in the returned array are initialized by
-   *     {@link AnyKeyboardViewBase#NOT_A_KEY} value.
+   *     {@link KeyboardViewBase#NOT_A_KEY} value.
    */
   int[] newCodeArray() {
-    Arrays.fill(mNearByCodes, AnyKeyboardViewBase.NOT_A_KEY);
+    Arrays.fill(mNearByCodes, KeyboardViewBase.NOT_A_KEY);
     return mNearByCodes;
   }
 
@@ -111,7 +112,7 @@ public abstract class KeyDetector {
 
   public boolean isKeyShifted(@NonNull Keyboard.Key key) {
     if (mKeyboard == null) return false;
-    AnyKeyboard.AnyKey anyKey = (AnyKeyboard.AnyKey) key;
+    KeyboardKey anyKey = (KeyboardKey) key;
     return mKeyboard.keyboardSupportShift()
         && ((mShiftKey != null && mShiftKey.pressed)
             || (anyKey.isShiftCodesAlways() && mKeyboard.isShifted()));

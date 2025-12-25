@@ -5,7 +5,7 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
 import com.anysoftkeyboard.utils.EmojiUtils;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +19,7 @@ public class DefaultGenderPrefTrackerTest {
   @Test
   public void getDefaultGender() {
     DefaultGenderPrefTracker tracker =
-        new DefaultGenderPrefTracker(AnyApplication.prefs(getApplicationContext()));
+        new DefaultGenderPrefTracker(NskApplicationBase.prefs(getApplicationContext()));
 
     // default value is null
     Assert.assertNull(tracker.getDefaultGender());
@@ -67,7 +67,7 @@ public class DefaultGenderPrefTrackerTest {
   @Test
   public void testDispose() {
     DefaultGenderPrefTracker tracker =
-        new DefaultGenderPrefTracker(AnyApplication.prefs(getApplicationContext()));
+        new DefaultGenderPrefTracker(NskApplicationBase.prefs(getApplicationContext()));
     Assert.assertFalse(tracker.isDisposed());
 
     Assert.assertNull(tracker.getDefaultGender());

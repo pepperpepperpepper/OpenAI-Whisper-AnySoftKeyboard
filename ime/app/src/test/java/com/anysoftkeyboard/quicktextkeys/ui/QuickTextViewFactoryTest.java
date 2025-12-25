@@ -1,7 +1,7 @@
 package com.anysoftkeyboard.quicktextkeys.ui;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.menny.android.anysoftkeyboard.AnyApplication.prefs;
+import static com.menny.android.anysoftkeyboard.NskApplicationBase.prefs;
 import static org.mockito.Mockito.mock;
 
 import android.view.ViewGroup;

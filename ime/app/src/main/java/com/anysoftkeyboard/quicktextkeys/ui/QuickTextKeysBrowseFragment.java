@@ -6,14 +6,14 @@ import androidx.annotation.Nullable;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import com.anysoftkeyboard.addons.AddOnsFactory;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
-import com.anysoftkeyboard.keyboards.AnyPopupKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.PopupKeyboard;
 import com.anysoftkeyboard.keyboards.PopupListKeyboard;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
 import com.anysoftkeyboard.quicktextkeys.QuickTextKey;
 import com.anysoftkeyboard.ui.settings.AbstractAddOnsBrowserFragment;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 
 public class QuickTextKeysBrowseFragment extends AbstractAddOnsBrowserFragment<QuickTextKey> {
@@ -35,8 +35,8 @@ public class QuickTextKeysBrowseFragment extends AbstractAddOnsBrowserFragment<Q
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    mSkinToneTracker = new DefaultSkinTonePrefTracker(AnyApplication.prefs(requireContext()));
-    mGenderTracker = new DefaultGenderPrefTracker(AnyApplication.prefs(requireContext()));
+    mSkinToneTracker = new DefaultSkinTonePrefTracker(NskApplicationBase.prefs(requireContext()));
+    mGenderTracker = new DefaultGenderPrefTracker(NskApplicationBase.prefs(requireContext()));
   }
 
   @Override
@@ -49,7 +49,7 @@ public class QuickTextKeysBrowseFragment extends AbstractAddOnsBrowserFragment<Q
   @NonNull
   @Override
   protected AddOnsFactory<QuickTextKey> getAddOnFactory() {
-    return AnyApplication.getQuickTextKeyFactory(requireContext());
+    return NskApplicationBase.getQuickTextKeyFactory(requireContext());
   }
 
   @Override
@@ -62,11 +62,11 @@ public class QuickTextKeysBrowseFragment extends AbstractAddOnsBrowserFragment<Q
 
   @Override
   protected void applyAddOnToDemoKeyboardView(
-      @NonNull QuickTextKey addOn, @NonNull DemoAnyKeyboardView demoKeyboardView) {
-    AnyKeyboard keyboard;
+      @NonNull QuickTextKey addOn, @NonNull DemoKeyboardView demoKeyboardView) {
+    KeyboardDefinition keyboard;
     if (addOn.isPopupKeyboardUsed()) {
       keyboard =
-          new AnyPopupKeyboard(
+          new PopupKeyboard(
               addOn,
               getContext(),
               addOn.getPopupKeyboardResId(),

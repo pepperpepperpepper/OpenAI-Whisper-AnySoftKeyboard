@@ -13,8 +13,8 @@ import java.util.function.Supplier;
 /**
  * Lightweight helper that centralizes safe access to the current InputConnection.
  *
- * <p>This keeps null checks and common operations (key events, batch edits) in one place so
- * AnySoftKeyboard can shrink over time without behavior changes.
+ * <p>This keeps null checks and common operations (key events, batch edits) in one place so the IME
+ * service can shrink over time without behavior changes.
  */
 public final class InputConnectionRouter {
 

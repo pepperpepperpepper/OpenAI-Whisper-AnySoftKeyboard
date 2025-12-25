@@ -1,13 +1,13 @@
 package com.anysoftkeyboard.keyboards.views;
 
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.KeyDrawableStateProvider;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 
 /** Applies icons/labels to special keys based on state. */
 final class SpecialKeysApplier {
 
   void apply(
-      AnyKeyboard keyboard,
+      KeyboardDefinition keyboard,
       int keyboardActionType,
       CharSequence nextAlphabetKeyboardName,
       CharSequence nextSymbolsKeyboardName,

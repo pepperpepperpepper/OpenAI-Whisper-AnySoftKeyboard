@@ -20,7 +20,7 @@ import android.os.SystemClock;
 import android.view.KeyEvent;
 import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.base.utils.Logger;
-import com.anysoftkeyboard.ime.AnySoftKeyboardBase;
+import com.anysoftkeyboard.ime.ImeBase;
 import com.anysoftkeyboard.keyboards.KeyEventStateMachine.State;
 import com.menny.android.anysoftkeyboard.BuildConfig;
 import java.security.InvalidParameterException;
@@ -121,8 +121,7 @@ public class HardKeyboardSequenceHandler {
     return State.RESET == this.addNewKey(currentKeyEvent, multiTapTimeout);
   }
 
-  public int getCurrentCharacter(
-      int currentKeyEvent, AnySoftKeyboardBase inputHandler, int multiTapTimeout) {
+  public int getCurrentCharacter(int currentKeyEvent, ImeBase inputHandler, int multiTapTimeout) {
     State result = this.addNewKey(currentKeyEvent, multiTapTimeout);
     if (result == State.FULL_MATCH || result == State.PART_MATCH) {
       int mappedChar = mCurrentSequence.getCharacter();

@@ -11,7 +11,7 @@ final class WordRestartGate {
       boolean predictionOn, boolean allowSuggestionsRestart, @Nullable InputViewBinder inputView) {
     if (!predictionOn || !allowSuggestionsRestart || inputView == null || !inputView.isShown()) {
       Logger.d(
-          AnySoftKeyboardSuggestions.TAG,
+          ImeSuggestionsController.TAG,
           "performRestartWordSuggestion: no need to restart: isPredictionOn=%s,"
               + " mAllowSuggestionsRestart=%s",
           predictionOn,

@@ -31,7 +31,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import app.cash.copper.rx2.RxContentResolver;
 import com.anysoftkeyboard.permissions.PermissionRequestHelper;
 import com.anysoftkeyboard.rx.RxSchedulers;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
@@ -75,7 +75,7 @@ public class SetupWizardActivity extends AppCompatActivity {
     return new WizardPagesAdapter(
         this,
         !SetupSupport.hasLanguagePackForCurrentLocale(
-            AnyApplication.getKeyboardFactory(getApplicationContext()).getAllAddOns()));
+            NskApplicationBase.getKeyboardFactory(getApplicationContext()).getAllAddOns()));
   }
 
   @Override

@@ -18,7 +18,12 @@ android {
     defaultConfig {
         //adding additional fields to the BuildConfig class.
         String support_email_address = System.getenv("ANYSOFTKEYBOARD_CRASH_REPORT_EMAIL")
-        println 'crash report email is: ' + support_email_address
+        if (support_email_address == null || support_email_address.trim().isEmpty()) {
+            support_email_address = "crashreports@mail.fdroid.uh-oh.wtf"
+            println 'ANYSOFTKEYBOARD_CRASH_REPORT_EMAIL is not set; defaulting crash report email to: ' + support_email_address
+        } else {
+            println 'crash report email is: ' + support_email_address
+        }
 
         buildConfigField "String", "CRASH_REPORT_EMAIL_ADDRESS", '"' + support_email_address + '"'
 

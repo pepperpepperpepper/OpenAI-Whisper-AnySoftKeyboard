@@ -2,7 +2,7 @@ package com.anysoftkeyboard.keyboards.views;
 
 import android.graphics.Typeface;
 
-/** Holds text size/style state to keep AnyKeyboardViewBase lean. */
+/** Holds text size/style state to keep KeyboardViewBase lean. */
 final class KeyTextStyleState {
 
   private float keyTextSize;

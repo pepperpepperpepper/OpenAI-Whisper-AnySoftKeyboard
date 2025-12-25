@@ -1,6 +1,6 @@
 package com.anysoftkeyboard.keyboards;
 
-import static com.menny.android.anysoftkeyboard.AnyApplication.prefs;
+import static com.menny.android.anysoftkeyboard.NskApplicationBase.prefs;
 
 import android.content.Context;
 import androidx.annotation.BoolRes;

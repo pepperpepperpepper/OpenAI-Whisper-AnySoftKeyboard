@@ -8,7 +8,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import com.anysoftkeyboard.keyboards.views.KeyboardViewContainerView;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 
 public class ClearGestureStripActionProvider
@@ -28,7 +28,7 @@ public class ClearGestureStripActionProvider
     mRootView.setOnClickListener(
         view -> {
           mOnClicked.run();
-          var prefs = AnyApplication.prefs(mContext);
+          var prefs = NskApplicationBase.prefs(mContext);
           var timesShown =
               prefs.getInteger(
                   R.string.settings_key_show_slide_for_gesture_back_word_counter,

@@ -122,8 +122,8 @@ obvious and shrinking `:ime:app` into a thin shell.
 6. **View code depends on IME runtime (reverse dependency)**
    - Status: **completed (2025-12-19)**
    - Previous symptom:
-     - `com.anysoftkeyboard.keyboards.views.CandidateView` imported `AnySoftKeyboardSuggestions` and stored a direct service reference (`mService`).
-     - `AnyKeyboardViewBase/AnyKeyboardView/KeyboardViewContainerView` imported/implemented `InputViewBinder/InputViewActionsProvider` which lived under `com.anysoftkeyboard.ime`.
+     - `com.anysoftkeyboard.keyboards.views.CandidateView` imported `ImeSuggestionsController` and stored a direct service reference (`mService`).
+     - `KeyboardViewBase/KeyboardView/KeyboardViewContainerView` imported/implemented `InputViewBinder/InputViewActionsProvider` which lived under `com.anysoftkeyboard.ime`.
    - Why this matters: it creates “reverse” edges where view/touch/render code depends on IME runtime, making both sides harder to split and inviting “helpers” that bridge layers.
    - Decision (this plan): views depend only on **view-owned contracts**.
      - A view may talk “up” only via a narrow `Host` interface owned by the view package (or a dedicated view-contract package), not by importing IME service types.
@@ -151,17 +151,27 @@ This is the current “facts on the ground” snapshot that informed the focus l
 
 Top offenders (excluding tests; `BaseCharactersTable.java` is data-only):
 
-- `ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java` (~822 LOC)
-- `ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java` (~651 LOC)
-- `ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java` (~712 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/KeyboardViewBase.java` (~799 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/ImeServiceBase.java` (~645 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/ime/ImeSuggestionsController.java` (~704 LOC)
 - `ime/app/src/main/java/com/anysoftkeyboard/keyboards/KeyboardSwitcher.java` (~620 LOC)
 - `ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/PointerTracker.java` (~423 LOC)
-- `ime/app/src/main/java/com/anysoftkeyboard/keyboards/AnyKeyboard.java` (~472 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/keyboards/KeyboardDefinition.java` (~472 LOC)
 
 - Done (2025-12-20): extracted `KeyboardRowBase`/`KeyboardKeyBase` out of `Keyboard.java` (keeping `Keyboard.Row/Key` wrappers)
   and moved `KeyDrawableStateProvider` to `com.anysoftkeyboard.keyboards` (keyboard model no longer depends on `*.views` for key state).
 - Done (2025-12-20): extracted `PointerKeySender` from `PointerTracker` so `PointerTracker` primarily owns per-pointer state
   transitions (down/move/up) and delegates “how to emit key events” to a single owned component.
+- Done (2025-12-24): introduced `KeyboardDefinition` as the keyboard model owner; migrated internal call-sites + tests off the
+  temporary `AnyKeyboard` shim, then deleted it.
+- Done (2025-12-24): promoted `KeyboardKey` to the public key type and removed the nested `KeyboardDefinition.AnyKey`;
+  migrated production + tests to use `KeyboardKey` directly.
+- Done (2025-12-24): introduced `ImeServiceBase` as the core IME service owner; migrated internal call-sites away from the legacy
+  `AnySoftKeyboard` type name, then deleted the shim.
+- Done (2025-12-24): introduced `ImeSuggestionsController` as the suggestions lifecycle owner; migrated internal call-sites away from
+  the legacy `AnySoftKeyboardSuggestions` type name, then deleted the shim.
+- Done (2025-12-24): migrated internal collaborators to depend on owned `ImeServiceBase`/`ImeSuggestionsController` types instead of
+  legacy names (and removed temporary legacy shims once migration was complete).
 
 ### Helper sprawl (actual inventory)
 
@@ -171,13 +181,13 @@ Top offenders (excluding tests; `BaseCharactersTable.java` is data-only):
     EmojiUtils/IMEUtil/LocaleTools/ModifierKeyState/Workarounds/XmlUtils/Triple/XmlWriter)
 - Done (2025-12-20): reduced root-package helper sprawl by moving former helpers (`DeleteActionHelper`,
   `ModifierKeyEventHelper`, `SelectionEditHelper`, `SpecialWrapHelper`, `TerminalKeySender`) into `com.anysoftkeyboard.ime`,
-  and moving wiring hosts into `com.anysoftkeyboard.ime.hosts` (e.g., `AnySoftKeyboard*Host` wrappers).
-- Done (2025-12-20): shrank `AnySoftKeyboard.java` by removing large anonymous action/callback implementations; host wrappers now
+  and moving wiring hosts into `com.anysoftkeyboard.ime.hosts` (e.g., `Ime*Host` wrappers).
+- Done (2025-12-20): shrank `ImeServiceBase` by removing large anonymous action/callback implementations; host wrappers now
   accept callback value objects and are wired via method references.
-- Done (2025-12-21): extracted `AnySoftKeyboard`’s `onCreate()` wiring into `AnySoftKeyboardInitializer` so the service is primarily
+- Done (2025-12-21): extracted `ImeServiceBase`’s `onCreate()` wiring into `ImeServiceInitializer` so the service is primarily
   a host/orchestrator and wiring changes don’t bloat the entrypoint file.
 - Done (2025-12-21): extracted crash-handler wiring (RxJava + default uncaught handler + Chewbacca setup) into
-  `com.anysoftkeyboard.crash.CrashHandlerInstaller` so `AnyApplication` stays an entrypoint host.
+  `com.anysoftkeyboard.crash.CrashHandlerInstaller` so `NskApplicationBase` stays an entrypoint host.
 - Naming scan (signal only): there are currently ~46 production files named `*Utils/*Util/*Helper` across modules.
   - Not all of these are “bad” (many are properly owned inside `com.anysoftkeyboard.ime.*` or `com.anysoftkeyboard.keyboards.views.*`),
     but they are a strong attractor for “helper sprawl”.
@@ -197,7 +207,7 @@ Top offenders (excluding tests; `BaseCharactersTable.java` is data-only):
 ### Dependency direction (spot checks)
 
 - Engine modules do not import IME runtime types (good boundary hygiene):
-  - `engine-core/engine-presage/engine-neural` contain no `import com.anysoftkeyboard.ime.*` and no `import com.anysoftkeyboard.AnySoftKeyboard`.
+  - `engine-core/engine-presage/engine-neural` contain no `import com.anysoftkeyboard.ime.*` and no `import com.anysoftkeyboard.ImeServiceBase`.
 
 ### “App shell owns algorithms” (resolved)
 
@@ -243,7 +253,7 @@ obvious _within a single layer_, not if it becomes a cross-layer dumping ground.
 - **UI layer** (`com.anysoftkeyboard.ui.*`)
   - Owns: screens, settings UX, summaries, wiring to orchestrators.
   - Must not: implement engine/dictionary logic; keep work in owners below.
-- **IME runtime layer** (`com.anysoftkeyboard.ime.*`, `com.anysoftkeyboard.AnySoftKeyboard`)
+- **IME runtime layer** (`com.anysoftkeyboard.ime.*`, `com.anysoftkeyboard.ImeServiceBase`)
   - Owns: lifecycle, editor state, input routing, high-level orchestration.
   - Must not: contain touch math/render code, or engine internals.
 - **Keyboard switching/model layer** (`com.anysoftkeyboard.keyboards.*`)
@@ -277,11 +287,11 @@ concepts, we should stop and decide ownership before writing code.
 
 - **IME lifecycle + editor state**
   - Owner: `:ime:app` / `com.anysoftkeyboard.ime`
-  - Hosts: `com.anysoftkeyboard.AnySoftKeyboard` (service), `EditorStateTracker` (state), `InputConnectionRouter` (routing)
+  - Hosts: `com.anysoftkeyboard.ImeServiceBase` (service), `EditorStateTracker` (state), `InputConnectionRouter` (routing)
   - Must not: reach into view rendering or engine implementations directly
 - **IME preferences (reactive primitives + feature binding)**
   - Owner: `:ime:prefs` (storage + reactive primitives), `:ime:app` (feature-specific binding)
-  - Hosts: `RxSharedPrefs` (primitive), binders like `AnySoftKeyboardPrefsBinder` / `SuggestionSettingsController`
+  - Hosts: `RxSharedPrefs` (primitive), binders like `ImePrefsBinder` / `SuggestionSettingsController`
   - Must not: hide “real state” in scattered helpers that each interpret prefs differently
 - **Keyboard switching + mode resolution**
   - Owner: `:ime:app` / `com.anysoftkeyboard.keyboards`
@@ -289,23 +299,23 @@ concepts, we should stop and decide ownership before writing code.
   - Must not: depend on Android view classes; expose narrow info needed by views
 - **Touch dispatch + gesture/timing**
   - Owner: `:ime:app` / `com.anysoftkeyboard.keyboards.views`
-  - Hosts: `AnyKeyboardViewBase`, `TouchDispatcher`, `PointerTracker` (low-level touch tracking)
+  - Hosts: `KeyboardViewBase`, `TouchDispatcher`, `PointerTracker` (low-level touch tracking)
   - Done (2025-12-21): extracted gesture-typing path state out of `PointerTracker` into
     `GestureTypingPathTracker`, making the touch pipeline’s “gesture typing vs. tap” seam explicit.
-  - Done (2025-12-21): extracted the extension-keyboard popup touch state machine out of `AnyKeyboardView` into
+  - Done (2025-12-21): extracted the extension-keyboard popup touch state machine out of `KeyboardView` into
     `ExtensionKeyboardController` (thresholds, prefs wiring, popup-key setup) so the view stays a thin event host.
   - Must not: depend on IME service types; talk via a small `Host`/callback interface
 - **Rendering + layout math**
   - Owner: `:ime:app` / `com.anysoftkeyboard.keyboards.views`
-  - Hosts: `AnyKeyboardViewBase` and focused render components (e.g., dirty-region decisions, icon resolution, hint/name text)
-  - Done (2025-12-21): extracted watermark state + drawing out of `AnyKeyboardView` into `KeyboardWatermarks` so the view focuses on
+  - Hosts: `KeyboardViewBase` and focused render components (e.g., dirty-region decisions, icon resolution, hint/name text)
+  - Done (2025-12-21): extracted watermark state + drawing out of `KeyboardView` into `KeyboardWatermarks` so the view focuses on
     event wiring and delegates rendering details to a single owned component.
-  - Done (2025-12-21): extracted gesture-trail state + drawing out of `AnyKeyboardView` into `GestureTrailRenderer` so gesture typing
+  - Done (2025-12-21): extracted gesture-trail state + drawing out of `KeyboardView` into `GestureTrailRenderer` so gesture typing
     visualization and the gesture-detector disablement rule live in one owner.
   - Must not: access preferences directly; consume a precomputed “render config”
 - **Suggestions orchestration (IME-side)**
   - Owner: `:ime:app` / `com.anysoftkeyboard.ime`
-  - Hosts: `AnySoftKeyboardSuggestions`, `SuggestionsProvider`
+  - Hosts: `ImeSuggestionsController`, `SuggestionsProvider`
   - State SoT: `SuggestionsSessionState` (prediction/correction/selection expectations + dictionary-load state)
   - Must not: embed engine-specific logic or pipeline algorithms (normalization/merging/fallback belong below)
 - **Word composing state**
@@ -326,7 +336,7 @@ concepts, we should stop and decide ownership before writing code.
   - Must not: contain Java policy (model selection/URLs/settings belong in `:engine-presage`/`:ime:app`)
 - **Gesture typing**
   - Owner: `:ime:app` / `com.anysoftkeyboard.ime` (session lifecycle), `:ime:gesturetyping` (algorithm)
-  - Hosts: `AnySoftKeyboardWithGestureTyping` (enablement + detector lifecycle), `GestureTypingDetector` (algorithm state)
+  - Hosts: `ImeWithGestureTyping` (enablement + detector lifecycle), `GestureTypingDetector` (algorithm state)
   - Must not: leak view/touch/render state into the algorithm owner
 - **Voice input**
   - Owner: `:ime:voiceime`
@@ -334,7 +344,7 @@ concepts, we should stop and decide ownership before writing code.
   - Must not: leak backend-specific state into IME service classes; route through a single controller
 - **Theme selection + remote overlay**
   - Owner: `:ime:app` (apply + cache), `:ime:overlay` (overlay data compute)
-  - Hosts: `KeyboardThemeFactory` (theme selection), `AnySoftKeyboardThemeOverlay` (overlay cache + apply gate)
+  - Hosts: `KeyboardThemeFactory` (theme selection), `ImeThemeOverlay` (overlay cache + apply gate)
   - Must not: duplicate overlay caches or “apply remote colors” gates across multiple call sites
 - **Notifications**
   - Owner: `:ime:notification`
@@ -360,31 +370,31 @@ This is the “who owns state” table. If a feature doesn’t have one SoT, we 
 - **IME session/editor state**
   - Current SoT: `ImeSessionState` (in `com.anysoftkeyboard.ime`) owns the current `EditorInfo` snapshot,
     `EditorStateTracker`, and `InputConnectionRouter`.
-  - Done (2025-12-20): wired `AnySoftKeyboardBase` lifecycle (`onStartInput`/`onFinishInput`/`onUpdateSelection`) to update
+  - Done (2025-12-20): wired `ImeBase` lifecycle (`onStartInput`/`onFinishInput`/`onUpdateSelection`) to update
     `ImeSessionState`, so cursor/selection and InputConnection access flow through the session state.
   - Done (2025-12-20): migrated IME-side adapters/handlers to use `ImeSessionState`/`InputConnectionRouter` accessors instead of
     reaching into `mInputConnectionRouter` directly.
-  - Done (2025-12-20): switched `AnySoftKeyboard` key dispatch + `AnySoftKeyboardSuggestions` composing/selection helpers to use
-    session-owned `ImeSessionState` accessors (no direct `mInputConnectionRouter` usage outside `AnySoftKeyboardBase`).
+  - Done (2025-12-20): switched `ImeServiceBase` key dispatch + `ImeSuggestionsController` composing/selection helpers to use
+    session-owned `ImeSessionState` accessors (no direct `mInputConnectionRouter` usage outside `ImeBase`).
   - Done (2025-12-20): expanded `InputConnectionRouter` with common composing/commit/selection/meta operations and migrated IME-side
     collaborators (`SelectionEditHelper`, `TextInputDispatcher`/`TypingSimulator`, `CharacterInputHandler`, and the abort-composing
-    path in `AnySoftKeyboardSuggestions`) to call the router instead of touching `InputConnection` directly.
+    path in `ImeSuggestionsController`) to call the router instead of touching `InputConnection` directly.
   - Done (2025-12-20): routed “restart word” + cursor-touching-word checks through `InputConnectionRouter`
-    (`KeyboardUIStateHandler`/`AnySoftKeyboardSuggestions`/`WordRestartCoordinator`/`WordRestartHelper`/`CursorTouchChecker`), removing
+    (`KeyboardUIStateHandler`/`ImeSuggestionsController`/`WordRestartCoordinator`/`WordRestartHelper`/`CursorTouchChecker`), removing
     nullable `InputConnection` plumbing.
   - Done (2025-12-20): migrated back-word/forward-delete/deleteLastCharactersFromInput/clear-input through `InputConnectionRouter`
-    (`BackWordDeleter`, `DeleteActionHelper`, and `AnySoftKeyboardFunctionKeyHost`/`FunctionKeyHandler`), removing `InputConnection`
+    (`BackWordDeleter`, `DeleteActionHelper`, and `ImeFunctionKeyHost`/`FunctionKeyHandler`), removing `InputConnection`
     parameter plumbing from IME actions.
   - Done (2025-12-21): migrated remaining IME feature slices to `InputConnectionRouter`
     (`SeparatorHandler`/`SeparatorActionHelper`/`SeparatorOutputHandler`, `NonFunctionKeyHandler`,
     `ModifierKeyEventHelper`, `TerminalKeySender`, `FunctionKeyHandler`, `NavigationKeyHandler`,
-    `AnySoftKeyboardClipboard` selection/clipboard paths, `SuggestionPicker`/`SuggestionCommitter`/`CompletionHandler`,
+    `ImeClipboard` selection/clipboard paths, `SuggestionPicker`/`SuggestionCommitter`/`CompletionHandler`,
     `ShiftStateController` caps-mode lookup, `SelectionUpdateProcessor` connection gating, `WordRevertHandler`,
-    `AnySoftKeyboardHardware` meta-key handling, `AnySoftKeyboardWithGestureTyping` gesture commit path,
-    `AnySoftKeyboardMediaInsertion` commit path, `MultiTapEditCoordinator`),
+    `ImeHardware` meta-key handling, `ImeWithGestureTyping` gesture commit path,
+    `ImeMediaInsertion` commit path, `MultiTapEditCoordinator`),
     removing `InputConnection` parameter plumbing and reducing direct `InputConnection` touch points.
   - Done (2025-12-20): migrated production call sites away from direct `getCurrentInputEditorInfo()` usage by introducing
-    `AnySoftKeyboardBase.currentInputEditorInfo()` (session-owned snapshot with fallback for tests).
+    `ImeBase.currentInputEditorInfo()` (session-owned snapshot with fallback for tests).
   - Migration rule: pass `ImeSessionState` (or a narrow interface) into collaborators instead of re-fetching global state.
 
 - **Keyboard selection + mode**
@@ -398,40 +408,40 @@ This is the “who owns state” table. If a feature doesn’t have one SoT, we 
     (alphabet/symbol mode + lock, last editor snapshot, last indices, direct override keyboard).
 
 - **Touch/gesture dispatch**
-  - Current SoT: split between `AnyKeyboardViewBase` + `PointerTracker` + `TouchDispatcher`.
+  - Current SoT: split between `KeyboardViewBase` + `PointerTracker` + `TouchDispatcher`.
   - Proposed SoT: keep `TouchDispatcher` as the only multi-pointer session state; `PointerTracker` stays per-pointer.
   - Done (2025-12-20): moved “disable touches + cancel all pointers” behavior into `TouchDispatcher` and removed the unused `TouchStateHelper`.
   - Migration rule: view talks upward via a narrow `Host` interface only (no IME/service imports).
 
 - **Gesture typing**
   - Current SoT: `GestureTypingController` (in `com.anysoftkeyboard.ime.gesturetyping`) owns feature enablement,
-    detector caching, and per-gesture timing/path state; `AnySoftKeyboardWithGestureTyping` is the IME host.
+    detector caching, and per-gesture timing/path state; `ImeWithGestureTyping` is the IME host.
   - Done (2025-12-21): extracted `GestureTypingController` and moved gesture-typing-only helpers
     (`ClearGestureStripActionProvider`, `WordListDictionaryListener`) into the feature-owned package so the host class is
     mostly lifecycle delegation.
 
 - **Rendering caches/layout decisions**
-  - Current SoT: mostly `AnyKeyboardViewBase`, but caches/decisions drift into helpers.
-  - Proposed SoT: `KeyboardRenderState` owned by `AnyKeyboardViewBase` (private nested class or package-private).
+  - Current SoT: mostly `KeyboardViewBase`, but caches/decisions drift into helpers.
+  - Proposed SoT: `KeyboardRenderState` owned by `KeyboardViewBase` (private nested class or package-private).
   - Migration rule: render helpers take a `RenderState` snapshot instead of re-reading prefs or global state.
   - Done (2025-12-20): extracted view-owned render/style state holders (`ViewStyleState`, `KeyTextStyleState`, `KeyDisplayState`,
-    `KeyShadowStyle`) and routed drawing via `KeyboardDrawCoordinator` so `AnyKeyboardViewBase` is primarily a host/wiring class.
-  - Done (2025-12-21): introduced `AnyKeyboardViewBase.KeyboardRenderState` as the single owner of mutable render inputs
+    `KeyShadowStyle`) and routed drawing via `KeyboardDrawCoordinator` so `KeyboardViewBase` is primarily a host/wiring class.
+  - Done (2025-12-21): introduced `KeyboardViewBase.KeyboardRenderState` as the single owner of mutable render inputs
     (current keyboard/keys, action type, and next-keyboard labels), and migrated view subclasses/hosts to use accessors instead of
     reaching into view fields directly.
   - Done (2025-12-21): extracted `CandidateView`’s candidate-strip rendering loop into `CandidateStripRenderer` so `CandidateView`
     is mostly state/gesture/host wiring and the renderer owns draw-time caches (width/position arrays + bg padding).
 
 - **Suggestions enablement + pref-driven flags**
-  - Current SoT: split between `AnySoftKeyboardSuggestions` flags and reactive preference streams.
-  - Proposed SoT: `SuggestionSettingsController` is the only interpreter of suggestion-related prefs; `AnySoftKeyboardSuggestions` owns runtime flags derived from it.
+  - Current SoT: split between `ImeSuggestionsController` runtime flags and reactive preference streams.
+  - Proposed SoT: `SuggestionSettingsController` is the only interpreter of suggestion-related prefs; `ImeSuggestionsController` owns runtime flags derived from it.
   - Done (2025-12-20): centralized suggestion-pref interpretation in `SuggestionSettingsController` and applied a synchronous
     pref snapshot on IME create so tests don’t depend on async Rx emissions.
   - Done (2025-12-21): extracted `SuggestionsProvider` preference subscriptions into `SuggestionsProviderPrefsBinder` so `SuggestionsProvider`
     stays focused on dictionary orchestration.
   - Done (2025-12-21): extracted dictionary setup/state out of `SuggestionsProvider` into `SuggestionsDictionariesManager`
     (setup hash, dictionary lists, load/close lifecycle), so `SuggestionsProvider` is a thin next-word/prefs host.
-  - Done (2025-12-21): extracted `WordComposerTracker` out of `AnySoftKeyboardSuggestions` so current/previous word state and swapping
+  - Done (2025-12-21): extracted `WordComposerTracker` out of `ImeSuggestionsController` so current/previous word state and swapping
     is owned in a single component (no direct `WordComposer` field mutation in the host).
   - Done (2025-12-21): introduced `SuggestionsSessionState` as the single owner of suggestions-session state holders (prediction flags,
     correction state, selection expectations, dictionary-load state) to reduce scattered state fields in the host.
@@ -463,10 +473,10 @@ This is the “who owns state” table. If a feature doesn’t have one SoT, we 
     focused on discovery/parsing/registry and selection policies live in their own owners.
 
 - **Theme + overlay**
-  - Current SoT: `KeyboardThemeFactory` (selected theme) + `AnySoftKeyboardThemeOverlay` (overlay cache/gate).
+  - Current SoT: `KeyboardThemeFactory` (selected theme) + `ImeThemeOverlay` (overlay cache/gate).
   - Proposed SoT: keep; do not duplicate overlay caches in UI/view code.
-  - Done (2025-12-22): moved fallback-theme selection into `AnyKeyboardViewBase` so `ThemeAttributeLoaderRunner` stays
-    dependency-clean (no direct `AnyApplication`/theme-factory access in the helper).
+  - Done (2025-12-22): moved fallback-theme selection into `KeyboardViewBase` so `ThemeAttributeLoaderRunner` stays
+    dependency-clean (no direct `NskApplicationBase`/theme-factory access in the helper).
 
 - **Voice input**
   - Current SoT: `VoiceImeController` (`:ime:voiceime`) owns recording state + trigger entrypoints (start recognition + lifecycle)
@@ -555,7 +565,7 @@ everything into more helpers”; it’s to collapse ownership back into a few So
 - **Root-package helpers**: files under `com.anysoftkeyboard.*` with “helper” behavior should move into their owning concept package
   (`.ime`, `.keyboards`, `.keyboards.views`, `.ui`) and narrow visibility. Done (2025-12-20): moved former root-package helpers
   (`DeleteActionHelper`, `SelectionEditHelper`, `ModifierKeyEventHelper`, `SpecialWrapHelper`, `TerminalKeySender`,
-  `BackWordDeleter`, `LayoutSwitchAnimationListener`, `FullscreenExtractViewController`, `AnySoftKeyboardPrefsBinder`)
+  `BackWordDeleter`, `LayoutSwitchAnimationListener`, `FullscreenExtractViewController`, `ImePrefsBinder`)
   into `com.anysoftkeyboard.ime`.
 - **Single-use view helpers**: if a class only exists to implement a callback for a single owner, localize it so it does not become a
   reusable “helper attractor”.
@@ -580,8 +590,8 @@ Every refactor slice should satisfy this checklist before it is considered “do
   - manifest component entrypoints, intent actions/meta-data, preferences keys, and add-on contracts.
 - Internal architecture should converge on NSK naming _by concept ownership_, not by mass renames:
   - rename when the owner is clear and we can provide a stable alias/migration.
-- A file/class still named `AnySoftKeyboard*` is not “upstream ASK usage”; it is technical debt retained for upgrade
-  stability while we carve the monoliths into owned components.
+- A file/class still named `AnySoftKeyboard*` (mostly test runners and legacy entrypoints) is not “upstream ASK usage”; it is
+  technical debt retained for upgrade stability while we carve the monoliths into owned components.
 
 ## Refactor Backlog (keep shippable)
 
@@ -596,43 +606,43 @@ LOC is only a signal. We do **not** treat ~400 LOC as “too big” by itself. W
 As of 2025-12-22 (excluding test files; `BaseCharactersTable.java` is data-only):
 
 - Watch list (largest):
-  - `ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/AnyKeyboardViewBase.java` (~799 LOC)
-  - `ime/app/src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardSuggestions.java` (~692 LOC)
-  - `ime/app/src/main/java/com/anysoftkeyboard/AnySoftKeyboard.java` (~651 LOC)
-  - `ime/app/src/main/java/com/anysoftkeyboard/keyboards/KeyboardSwitcher.java` (~629 LOC)
-  - `engine-neural/src/main/java/com/anysoftkeyboard/dictionaries/neural/NeuralPredictionManager.java` (~497 LOC)
-  - `ime/app/src/main/java/com/anysoftkeyboard/keyboards/AnyKeyboard.java` (~472 LOC)
-  - `ime/app/src/main/java/com/anysoftkeyboard/ime/gesturetyping/GestureTypingController.java` (~469 LOC)
-  - `ime/gesturetyping/src/main/java/com/anysoftkeyboard/gesturetyping/GestureTypingDetector.java` (~467 LOC)
-  - `ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/BTreeDictionary.java` (~457 LOC)
-  - `ime/releaseinfo/src/main/java/com/anysoftkeyboard/releaseinfo/VersionChangeLogs.java` (~456 LOC)
-  - `ime/app/src/main/java/com/anysoftkeyboard/keyboards/Keyboard.java` (~451 LOC)
-  - `ime/app/src/main/java/com/anysoftkeyboard/dictionaries/SuggestImpl.java` (~434 LOC)
-  - `ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/PointerTracker.java` (~423 LOC)
-  - `ime/voiceime/src/main/java/com/google/android/voiceime/OpenAITranscriber.java` (~404 LOC)
-  - `ime/app/src/main/java/com/anysoftkeyboard/ui/settings/AbstractAddOnsBrowserFragment.java` (~400 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/KeyboardViewBase.java` (~799 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/ime/ImeSuggestionsController.java` (~704 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/ImeServiceBase.java` (~645 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/keyboards/KeyboardSwitcher.java` (~629 LOC)
+- `engine-neural/src/main/java/com/anysoftkeyboard/dictionaries/neural/NeuralPredictionManager.java` (~497 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/keyboards/KeyboardDefinition.java` (~472 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/ime/gesturetyping/GestureTypingController.java` (~469 LOC)
+- `ime/gesturetyping/src/main/java/com/anysoftkeyboard/gesturetyping/GestureTypingDetector.java` (~467 LOC)
+- `ime/dictionaries/src/main/java/com/anysoftkeyboard/dictionaries/BTreeDictionary.java` (~457 LOC)
+- `ime/releaseinfo/src/main/java/com/anysoftkeyboard/releaseinfo/VersionChangeLogs.java` (~456 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/keyboards/Keyboard.java` (~451 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/dictionaries/SuggestImpl.java` (~434 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/keyboards/views/PointerTracker.java` (~423 LOC)
+- `ime/voiceime/src/main/java/com/google/android/voiceime/OpenAITranscriber.java` (~404 LOC)
+- `ime/app/src/main/java/com/anysoftkeyboard/ui/settings/AbstractAddOnsBrowserFragment.java` (~400 LOC)
 
 - Done (2025-12-22): extracted the clipboard strip UI owner (`ClipboardStripActionProvider`) out of
-  `AnySoftKeyboardClipboard` (file now ~353 LOC) while keeping thin nested wrapper types for tests/compat.
+  `ImeClipboard` (file now ~353 LOC) while keeping thin nested wrapper types for tests/compat.
 - Done (2025-12-22): consolidated “load dictionaries for the current keyboard” into a single owner
   (`KeyboardDictionariesLoader`) and removed the tiny `DictionaryLoadGate/DictionaryLoadState/DictionaryLoaderHelper`
   sprawl from the suggestions runtime.
 - Done (2025-12-22): extracted inline-suggestion strip actions (`InlineSuggestionsAction`,
-  `AutofillStripAction`) out of `AnySoftKeyboardInlineSuggestions` so the class is a thinner
+  `AutofillStripAction`) out of `ImeInlineSuggestions` so the class is a thinner
   InputMethodService hook host.
-- Done (2025-12-22): extracted soft-input window layout parameter updates out of `AnySoftKeyboardBase` into
+- Done (2025-12-22): extracted soft-input window layout parameter updates out of `ImeBase` into
   `SoftInputWindowLayoutUpdater` so the base service stays focused on session + view lifecycle.
-- Done (2025-12-22): extracted preferences auto-restore out of `AnyApplication` into
+- Done (2025-12-22): extracted preferences auto-restore out of `NskApplicationBase` (legacy `AnyApplication` shim) into
   `PrefsAutoRestorer` to keep the app entrypoint focused on app-wide wiring.
 - Done (2025-12-22): moved small suggestion-algorithm helpers (`AbbreviationSuggestionCallback`,
   `AutoTextSuggestionCallback`, `SuggestionWordMatcher`) from `:ime:app` to `:ime:dictionaries` so
   app code doesn’t accumulate low-level dictionary logic.
-- Done (2025-12-22): simplified `AnySoftKeyboardKeyboardTagsSearcher.TagsSuggestionList` by using `AbstractList`
-  and explicitly rejecting list mutations, shrinking `AnySoftKeyboardKeyboardTagsSearcher` from ~399 to ~306 LOC.
+- Done (2025-12-22): simplified `ImeKeyboardTagsSearcher.TagsSuggestionList` by using `AbstractList`
+  and explicitly rejecting list mutations, shrinking `ImeKeyboardTagsSearcher` from ~399 to ~306 LOC.
 - Done (2025-12-22): extracted modifier-state application (`KeyboardModifierStateApplier`) out of
-  `AnyKeyboardViewBase` (file now ~799 LOC) to keep the view host focused on coordination.
+  `KeyboardViewBase` (file now ~799 LOC) to keep the view host focused on coordination.
 - Done (2025-12-22): removed the inline no-op `DictionaryBackgroundLoader.Listener` from
-  `AnySoftKeyboardSuggestions` by introducing `DictionaryBackgroundLoader.SILENT_LISTENER` (file now ~692 LOC).
+  `ImeSuggestionsController` by introducing `DictionaryBackgroundLoader.SILENT_LISTENER` (file now ~692 LOC).
 
 LOC is a prioritization signal, not a KPI. We accept larger hosts when they remain cohesive and “own” a concept; we
 split files only when we can create a clear seam without increasing coupling/helper chains.
@@ -645,6 +655,9 @@ Refresh counts:
 - Continue pruning ASK-only resources/strings/tasks while keeping compatibility shims (actions/meta-data/queries).
 - Keep dual authorities minimal (FileProvider/prefs); do not rename exported authorities without a migration plan.
 - Keep `askCompat` flavor as the “max compatibility” build; `nsk` is the default.
+- Done (2025-12-24): migrated internal code + tests off the legacy `AnyApplication` type name to the owned
+  `NskApplicationBase`; `AnyApplication` remains only as a thin compatibility shim referenced by the legacy
+  manifest/application entrypoint.
 - Done (2025-12-21): removed unused legacy script `setup_anysoftkeyboard_english.sh`.
 - Done (2025-12-21): added CTS-style add-on discovery tests for dual namespaces:
   - JVM: `com.anysoftkeyboard.compat.PluginDiscoveryCtsTest`
@@ -659,9 +672,9 @@ Refresh counts:
 - Done (2025-12-21): moved `GestureTypingDetector` into `:ime:gesturetyping` and decoupled it from the keyboard model
   (`Keyboard.Key`) via a narrow `GestureKey` interface. `:ime:app` provides adapters at the lifecycle host.
 - Done (2025-12-21): extracted the gesture-typing “commit/case/keyboard-adapter” slices into a single feature-owned package
-  (`com.anysoftkeyboard.ime.gesturetyping`), shrinking `AnySoftKeyboardWithGestureTyping` while keeping ownership local (not generic helpers).
+  (`com.anysoftkeyboard.ime.gesturetyping`), shrinking `ImeWithGestureTyping` while keeping ownership local (not generic helpers).
 - Done (2025-12-21): extracted `HardKeyboardAction`/`HardKeyboardTranslator` into `com.anysoftkeyboard.keyboards.physical`, removing
-  the `AnyKeyboard` → `AnySoftKeyboardBase` dependency edge and keeping “physical keyboard translation” owned in one place.
+  a keyboard-model → IME runtime dependency edge and keeping “physical keyboard translation” owned in one place.
 - Done (2025-12-21): moved `BTreeDictionary` into `:ime:dictionaries` (dictionary implementation no longer lives in `:ime:app`)
   and moved `maximum_dictionary_words_to_load` into `:ime:dictionaries` resources.
 - Done (2025-12-21): moved `AutoText`/`AutoTextImpl` and `InMemoryDictionary` into `:ime:dictionaries` to keep dictionary engines

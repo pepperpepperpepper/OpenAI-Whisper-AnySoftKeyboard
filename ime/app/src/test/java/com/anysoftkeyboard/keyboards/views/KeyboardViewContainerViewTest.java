@@ -11,7 +11,7 @@ import android.widget.FrameLayout;
 import androidx.test.core.app.ApplicationProvider;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.theme.KeyboardThemeFactory;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,12 +39,12 @@ public class KeyboardViewContainerViewTest {
   public void testDefaultInflation() {
     Assert.assertEquals(2, mUnderTest.getChildCount());
     Assert.assertTrue(mUnderTest.getChildAt(0) instanceof CandidateView);
-    Assert.assertTrue(mUnderTest.getChildAt(1) instanceof AnyKeyboardView);
+    Assert.assertTrue(mUnderTest.getChildAt(1) instanceof KeyboardView);
   }
 
   @Test
   public void testSettingPadding() {
-    AnyKeyboardView mock = Mockito.mock(AnyKeyboardView.class);
+    KeyboardView mock = Mockito.mock(KeyboardView.class);
     mUnderTest.addView(mock);
     Mockito.verify(mock).setBottomOffset(0);
 
@@ -54,14 +54,14 @@ public class KeyboardViewContainerViewTest {
     mUnderTest.setBottomPadding(10);
     Mockito.verify(mock).setBottomOffset(10);
 
-    AnyKeyboardView mock2 = Mockito.mock(AnyKeyboardView.class);
+    KeyboardView mock2 = Mockito.mock(KeyboardView.class);
     mUnderTest.addView(mock2);
     Mockito.verify(mock2).setBottomOffset(10);
   }
 
   @Test
   public void testAddView() {
-    AnyKeyboardView mock = Mockito.mock(AnyKeyboardView.class);
+    KeyboardView mock = Mockito.mock(KeyboardView.class);
     mUnderTest.addView(mock);
 
     Assert.assertEquals(3, mUnderTest.getChildCount());
@@ -74,9 +74,9 @@ public class KeyboardViewContainerViewTest {
   @Test
   public void testAddViewWhenHasThemeWasSet() {
     mUnderTest.setKeyboardTheme(
-        AnyApplication.getKeyboardThemeFactory(ApplicationProvider.getApplicationContext())
+        NskApplicationBase.getKeyboardThemeFactory(ApplicationProvider.getApplicationContext())
             .getEnabledAddOn());
-    AnyKeyboardView mock = Mockito.mock(AnyKeyboardView.class);
+    KeyboardView mock = Mockito.mock(KeyboardView.class);
     mUnderTest.addView(mock);
 
     Assert.assertEquals(3, mUnderTest.getChildCount());
@@ -88,8 +88,8 @@ public class KeyboardViewContainerViewTest {
 
   @Test
   public void testSetOnKeyboardActionListener() {
-    AnyKeyboardView mock1 = Mockito.mock(AnyKeyboardView.class);
-    AnyKeyboardView mock2 = Mockito.mock(AnyKeyboardView.class);
+    KeyboardView mock1 = Mockito.mock(KeyboardView.class);
+    KeyboardView mock2 = Mockito.mock(KeyboardView.class);
 
     mUnderTest.removeAllViews();
 
@@ -113,10 +113,10 @@ public class KeyboardViewContainerViewTest {
   public void testGetStandardKeyboardView() {
     final InputViewBinder originalView = mUnderTest.getStandardKeyboardView();
     Assert.assertNotNull(originalView);
-    Assert.assertTrue(originalView instanceof AnyKeyboardView);
+    Assert.assertTrue(originalView instanceof KeyboardView);
 
-    AnyKeyboardView mock1 = Mockito.mock(AnyKeyboardView.class);
-    AnyKeyboardView mock2 = Mockito.mock(AnyKeyboardView.class);
+    KeyboardView mock1 = Mockito.mock(KeyboardView.class);
+    KeyboardView mock2 = Mockito.mock(KeyboardView.class);
 
     mUnderTest.addView(mock1);
     mUnderTest.addView(mock2);
@@ -129,7 +129,7 @@ public class KeyboardViewContainerViewTest {
     final CandidateView originalView = mUnderTest.getCandidateView();
     Assert.assertNotNull(originalView);
 
-    AnyKeyboardView mock2 = Mockito.mock(AnyKeyboardView.class);
+    KeyboardView mock2 = Mockito.mock(KeyboardView.class);
 
     mUnderTest.addView(mock2);
 
@@ -145,7 +145,7 @@ public class KeyboardViewContainerViewTest {
     final CandidateView originalView = mUnderTest.getCandidateView();
     Assert.assertNotNull(originalView);
     final KeyboardThemeFactory keyboardThemeFactory =
-        AnyApplication.getKeyboardThemeFactory(getApplicationContext());
+        NskApplicationBase.getKeyboardThemeFactory(getApplicationContext());
 
     // switching to light icon
     keyboardThemeFactory.setAddOnEnabled("18c558ef-bc8c-433a-a36e-92c3ca3be4dd", true);

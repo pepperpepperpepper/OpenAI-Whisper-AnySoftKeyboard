@@ -14,11 +14,11 @@ import com.anysoftkeyboard.AnySoftKeyboardBaseTest;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.TestableAnySoftKeyboard;
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.KeyboardSwitcher;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public class AnySoftKeyboardKeyboardSwitcherTest extends AnySoftKeyboardBaseTest
             .getKeyboardSwitcherForTests()
             .getCachedAlphabetKeyboards()
             .size());
-    for (AnyKeyboard keyboard :
+    for (KeyboardDefinition keyboard :
         mAnySoftKeyboardUnderTest.getKeyboardSwitcherForTests().getCachedAlphabetKeyboards()) {
       Assert.assertNotNull(keyboard);
     }
@@ -145,7 +145,7 @@ public class AnySoftKeyboardKeyboardSwitcherTest extends AnySoftKeyboardBaseTest
             .getKeyboardSwitcherForTests()
             .getCachedAlphabetKeyboards()
             .size());
-    for (AnyKeyboard keyboard :
+    for (KeyboardDefinition keyboard :
         mAnySoftKeyboardUnderTest.getKeyboardSwitcherForTests().getCachedAlphabetKeyboards()) {
       Assert.assertNotNull(keyboard);
     }
@@ -464,24 +464,27 @@ public class AnySoftKeyboardKeyboardSwitcherTest extends AnySoftKeyboardBaseTest
     Mockito.verify(mAnySoftKeyboardUnderTest.getSuggest(), Mockito.never())
         .setupSuggestionsForKeyboard(Mockito.anyList(), Mockito.any());
     Mockito.reset(mAnySoftKeyboardUnderTest.getSuggest());
-    AnyApplication.getQuickTextKeyFactory(getApplicationContext())
+    NskApplicationBase.getQuickTextKeyFactory(getApplicationContext())
         .setAddOnEnabled(
-            AnyApplication.getQuickTextKeyFactory(getApplicationContext())
+            NskApplicationBase.getQuickTextKeyFactory(getApplicationContext())
                 .getAllAddOns()
                 .get(1)
                 .getId(),
             true);
     mAnySoftKeyboardUnderTest.getKeyboardSwitcherForTests().verifyKeyboardsFlushed();
     mAnySoftKeyboardUnderTest.getKeyboardSwitcherForTests().verifyNewViewNotSet();
-    AnyApplication.getTopRowFactory(getApplicationContext())
+    NskApplicationBase.getTopRowFactory(getApplicationContext())
         .setAddOnEnabled(
-            AnyApplication.getTopRowFactory(getApplicationContext()).getAllAddOns().get(1).getId(),
+            NskApplicationBase.getTopRowFactory(getApplicationContext())
+                .getAllAddOns()
+                .get(1)
+                .getId(),
             true);
     mAnySoftKeyboardUnderTest.getKeyboardSwitcherForTests().verifyKeyboardsFlushed();
     mAnySoftKeyboardUnderTest.getKeyboardSwitcherForTests().verifyNewViewNotSet();
-    AnyApplication.getBottomRowFactory(getApplicationContext())
+    NskApplicationBase.getBottomRowFactory(getApplicationContext())
         .setAddOnEnabled(
-            AnyApplication.getBottomRowFactory(getApplicationContext())
+            NskApplicationBase.getBottomRowFactory(getApplicationContext())
                 .getAllAddOns()
                 .get(1)
                 .getId(),

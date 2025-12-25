@@ -4,11 +4,11 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.KeyDrawableStateProvider;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import java.util.function.Function;
 
-/** Owns special-key icon/label resolution to keep {@link AnyKeyboardViewBase} slimmer. */
+/** Owns special-key icon/label resolution to keep {@link KeyboardViewBase} slimmer. */
 final class SpecialKeyManager {
 
   private final SpecialKeyLookup specialKeyLookup;
@@ -33,7 +33,7 @@ final class SpecialKeyManager {
   }
 
   void applySpecialKeys(
-      AnyKeyboard keyboard,
+      KeyboardDefinition keyboard,
       int keyboardActionType,
       CharSequence nextAlphabetKeyboardName,
       CharSequence nextSymbolsKeyboardName,
@@ -64,7 +64,7 @@ final class SpecialKeyManager {
       int keyboardActionType,
       CharSequence nextAlphabetKeyboardName,
       CharSequence nextSymbolsKeyboardName,
-      AnyKeyboard keyboard,
+      KeyboardDefinition keyboard,
       Context context) {
     return specialKeyLookup.labelForKeyCode(
         keyCode,
@@ -76,7 +76,7 @@ final class SpecialKeyManager {
   }
 
   @Nullable
-  Drawable getIconForKeyCode(int keyCode, int keyboardActionType, AnyKeyboard keyboard) {
+  Drawable getIconForKeyCode(int keyCode, int keyboardActionType, KeyboardDefinition keyboard) {
     if (drawableStatesProvider == null || actionIconStateSetter == null) {
       return null;
     }

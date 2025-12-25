@@ -43,7 +43,7 @@ class MiniKeyboardKeyDetector extends KeyDetector {
     final Keyboard.Key[] keys = getKeys();
     final int touchX = getTouchX(x);
     final int touchY = getTouchY(y);
-    int closestKeyIndex = AnyKeyboardViewBase.NOT_A_KEY;
+    int closestKeyIndex = KeyboardViewBase.NOT_A_KEY;
     int closestKeyDist = (y < 0) ? mSlideAllowanceSquareTop : mSlideAllowanceSquare;
     final int keyCount = keys.length;
     for (int i = 0; i < keyCount; i++) {
@@ -54,7 +54,7 @@ class MiniKeyboardKeyDetector extends KeyDetector {
         closestKeyDist = dist;
       }
     }
-    if (allKeys != null && closestKeyIndex != AnyKeyboardViewBase.NOT_A_KEY) {
+    if (allKeys != null && closestKeyIndex != KeyboardViewBase.NOT_A_KEY) {
       final Keyboard.Key key = keys[closestKeyIndex];
       allKeys[0] = key.getCodeAtIndex(0, isKeyShifted(key));
     }

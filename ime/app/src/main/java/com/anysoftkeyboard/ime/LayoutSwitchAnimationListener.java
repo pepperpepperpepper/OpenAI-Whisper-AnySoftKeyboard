@@ -108,8 +108,8 @@ public class LayoutSwitchAnimationListener
 
   @Override
   public void onAnimationEnd(Animation animation) {
-    final com.anysoftkeyboard.keyboards.views.AnyKeyboardView view =
-        (com.anysoftkeyboard.keyboards.views.AnyKeyboardView) mInputViewProvider.getInputView();
+    final com.anysoftkeyboard.keyboards.views.KeyboardView view =
+        (com.anysoftkeyboard.keyboards.views.KeyboardView) mInputViewProvider.getInputView();
     if (view != null) view.requestInAnimation(getEndAnimation(mCurrentAnimationType));
     mOnKeyAction.onKey(mTargetKeyCode);
   }

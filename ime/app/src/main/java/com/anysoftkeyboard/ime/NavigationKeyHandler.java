@@ -3,7 +3,10 @@ package com.anysoftkeyboard.ime;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.api.KeyCodes;
 
-/** Isolates navigation/function-combo key handling away from {@link AnySoftKeyboard}. */
+/**
+ * Isolates navigation/function-combo key handling away from {@link
+ * com.anysoftkeyboard.ImeServiceBase}.
+ */
 public final class NavigationKeyHandler {
 
   public interface Host {

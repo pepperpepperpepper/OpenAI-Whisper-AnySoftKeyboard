@@ -4,7 +4,7 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
 import com.anysoftkeyboard.AddOnTestUtils;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,7 +18,7 @@ public class KeyboardFactoryTest {
 
   @Before
   public void setUp() throws Exception {
-    mKeyboardFactory = AnyApplication.getKeyboardFactory(getApplicationContext());
+    mKeyboardFactory = NskApplicationBase.getKeyboardFactory(getApplicationContext());
   }
 
   @Test
@@ -62,7 +62,7 @@ public class KeyboardFactoryTest {
   @Test
   public void testParsesApiLevel() {
     final KeyboardAddOnAndBuilder english16Keys =
-        AnyApplication.getKeyboardFactory(getApplicationContext())
+        NskApplicationBase.getKeyboardFactory(getApplicationContext())
             .getAddOnById("12335055-4aa6-49dc-8456-c7d38a1a5123");
     Assert.assertNotNull(english16Keys);
     Assert.assertNotEquals(0, english16Keys.getApiVersion());

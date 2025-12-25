@@ -19,22 +19,21 @@ package com.anysoftkeyboard.keyboards.views;
 import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.base.utils.Logger;
-import com.anysoftkeyboard.devicespecific.AskOnGestureListener;
+import com.anysoftkeyboard.devicespecific.NskOnGestureListener;
 import com.menny.android.anysoftkeyboard.BuildConfig;
 
 /**
  * NewSoftKeyboard-branded gesture listener used by the keyboard view.
  *
- * <p>Behavior remains identical to the legacy {@code AskGestureEventsListener}; that class is kept
- * as a thin wrapper for compatibility.
+ * <p>Behavior matches the legacy ASK gesture listener implementation.
  */
-class NskGestureEventsListener implements AskOnGestureListener {
+class NskGestureEventsListener implements NskOnGestureListener {
 
   private static final String TAG = "NSKGestureEventsListener";
 
-  private final AnyKeyboardViewBase mKeyboardView;
+  private final KeyboardViewBase mKeyboardView;
 
-  public NskGestureEventsListener(AnyKeyboardViewBase keyboardView) {
+  public NskGestureEventsListener(KeyboardViewBase keyboardView) {
     mKeyboardView = keyboardView;
   }
 

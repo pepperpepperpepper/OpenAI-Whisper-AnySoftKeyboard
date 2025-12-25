@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
-/** Applies themed attribute values to the view, keeping AnyKeyboardViewBase lean. */
+/** Applies themed attribute values to the view, keeping KeyboardViewBase lean. */
 final class ThemeValueApplier {
 
   private final ThemeOverlayCombiner themeOverlayCombiner;

@@ -9,7 +9,7 @@ import com.anysoftkeyboard.keyboardextensions.KeyboardExtension;
 import com.menny.android.anysoftkeyboard.R;
 
 @VisibleForTesting
-final class GenericRowKeyboard extends AnyKeyboard {
+final class GenericRowKeyboard extends KeyboardDefinition {
 
   private final boolean inAlphabetMode;
 
@@ -69,7 +69,7 @@ final class GenericRowKeyboard extends AnyKeyboard {
   }
 
   @Override
-  protected boolean setupKeyAfterCreation(AnyKey key) {
+  protected boolean setupKeyAfterCreation(KeyboardKey key) {
     if (!super.setupKeyAfterCreation(key)) {
       if (key.popupResId == 0 && inAlphabetMode) {
         switch (key.getPrimaryCode()) {

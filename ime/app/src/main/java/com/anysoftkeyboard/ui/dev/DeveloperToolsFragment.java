@@ -37,8 +37,8 @@ import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.chewbacca.ChewbaccaUtils;
 import com.anysoftkeyboard.rx.RxSchedulers;
 import com.f2prateek.rx.preferences2.Preference;
-import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.BuildConfig;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
@@ -97,7 +97,7 @@ public class DeveloperToolsFragment extends Fragment implements View.OnClickList
         });
 
     mStrictModePrefs =
-        AnyApplication.prefs(requireContext())
+        NskApplicationBase.prefs(requireContext())
             .getBoolean(R.string.settings_key_strict_mode_enabled, R.bool.settings_default_false);
     CheckBox strictMode = view.findViewById(R.id.enable_strict_mode_checkbox);
     strictMode.setChecked(mStrictModePrefs.get());

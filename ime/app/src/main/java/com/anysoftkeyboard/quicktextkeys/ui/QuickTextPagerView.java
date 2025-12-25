@@ -18,7 +18,7 @@ import com.anysoftkeyboard.quicktextkeys.QuickTextKey;
 import com.anysoftkeyboard.remote.MediaType;
 import com.anysoftkeyboard.theme.KeyboardTheme;
 import com.astuetz.PagerSlidingTabStrip;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +109,7 @@ public class QuickTextPagerView extends LinearLayout implements InputViewActions
         new HistoryQuickTextKey(context, mQuickKeyHistoryRecords);
     list.add(historyQuickTextKey);
     // then all the rest
-    list.addAll(AnyApplication.getQuickTextKeyFactory(context).getEnabledAddOns());
+    list.addAll(NskApplicationBase.getQuickTextKeyFactory(context).getEnabledAddOns());
 
     final QuickTextUserPrefs quickTextUserPrefs = new QuickTextUserPrefs(context);
 

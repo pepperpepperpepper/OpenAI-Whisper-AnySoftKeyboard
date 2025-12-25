@@ -27,21 +27,21 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.Navigation;
 import com.anysoftkeyboard.addons.AddOnsFactory;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
 import com.anysoftkeyboard.overlay.OverlayData;
 import com.anysoftkeyboard.overlay.OverlayDataImpl;
 import com.anysoftkeyboard.theme.KeyboardTheme;
 import com.f2prateek.rx.preferences2.Preference;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 
 public class KeyboardThemeSelectorFragment extends AbstractAddOnsBrowserFragment<KeyboardTheme> {
 
   private TextView mApplySummaryText;
   private Preference<Boolean> mApplyPrefs;
-  private DemoAnyKeyboardView mSelectedKeyboardView;
+  private DemoKeyboardView mSelectedKeyboardView;
   private OverlayData mOverlayData = new OverlayDataImpl();
 
   public KeyboardThemeSelectorFragment() {
@@ -51,7 +51,7 @@ public class KeyboardThemeSelectorFragment extends AbstractAddOnsBrowserFragment
   @NonNull
   @Override
   protected AddOnsFactory<KeyboardTheme> getAddOnFactory() {
-    return AnyApplication.getKeyboardThemeFactory(requireContext());
+    return NskApplicationBase.getKeyboardThemeFactory(requireContext());
   }
 
   @Override
@@ -68,7 +68,7 @@ public class KeyboardThemeSelectorFragment extends AbstractAddOnsBrowserFragment
     mSelectedKeyboardView = view.findViewById(R.id.demo_keyboard_view);
 
     mApplyPrefs =
-        AnyApplication.prefs(requireContext())
+        NskApplicationBase.prefs(requireContext())
             .getBoolean(
                 R.string.settings_key_apply_remote_app_colors,
                 R.bool.settings_default_apply_remote_app_colors);
@@ -162,11 +162,11 @@ public class KeyboardThemeSelectorFragment extends AbstractAddOnsBrowserFragment
 
   @Override
   protected void applyAddOnToDemoKeyboardView(
-      @NonNull KeyboardTheme addOn, @NonNull DemoAnyKeyboardView demoKeyboardView) {
+      @NonNull KeyboardTheme addOn, @NonNull DemoKeyboardView demoKeyboardView) {
     demoKeyboardView.setKeyboardTheme(addOn);
     mSelectedKeyboardView.setThemeOverlay(mOverlayData);
-    AnyKeyboard defaultKeyboard =
-        AnyApplication.getKeyboardFactory(requireContext())
+    KeyboardDefinition defaultKeyboard =
+        NskApplicationBase.getKeyboardFactory(requireContext())
             .getEnabledAddOn()
             .createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
     defaultKeyboard.loadKeyboard(demoKeyboardView.getThemedKeyboardDimens());

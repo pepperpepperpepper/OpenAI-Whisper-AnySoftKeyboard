@@ -5,7 +5,7 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
 import com.anysoftkeyboard.utils.EmojiUtils;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +19,7 @@ public class DefaultSkinTonePrefTrackerTest {
   @Test
   public void getDefaultSkinTone() {
     DefaultSkinTonePrefTracker tracker =
-        new DefaultSkinTonePrefTracker(AnyApplication.prefs(getApplicationContext()));
+        new DefaultSkinTonePrefTracker(NskApplicationBase.prefs(getApplicationContext()));
 
     // default value is null
     Assert.assertNull(tracker.getDefaultSkinTone());
@@ -79,7 +79,7 @@ public class DefaultSkinTonePrefTrackerTest {
   @Test
   public void testDispose() {
     DefaultSkinTonePrefTracker tracker =
-        new DefaultSkinTonePrefTracker(AnyApplication.prefs(getApplicationContext()));
+        new DefaultSkinTonePrefTracker(NskApplicationBase.prefs(getApplicationContext()));
     Assert.assertFalse(tracker.isDisposed());
 
     Assert.assertNull(tracker.getDefaultSkinTone());

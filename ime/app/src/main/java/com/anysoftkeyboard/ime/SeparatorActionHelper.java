@@ -7,7 +7,7 @@ import java.util.function.BiConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 
-/** Handles separator key flows pulled out of {@link AnySoftKeyboardSuggestions}. */
+/** Handles separator key flows pulled out of {@link ImeSuggestionsController}. */
 final class SeparatorActionHelper {
 
   static final class Result {

@@ -76,13 +76,13 @@ public class AnySoftKeyboardKeyboardTagsSearcherTest extends AnySoftKeyboardBase
     mAnySoftKeyboardUnderTest.simulateKeyPress(':');
     verifySuggestions(
         true,
-        AnySoftKeyboardKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER,
+        ImeKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER,
         QuickKeyHistoryRecords.DEFAULT_EMOJI);
     mAnySoftKeyboardUnderTest.simulateTextTyping("fa");
     List suggestions = verifyAndCaptureSuggestion(true);
     Assert.assertEquals(134, suggestions.size());
     Assert.assertEquals(
-        AnySoftKeyboardKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "fa", suggestions.get(0));
+        ImeKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "fa", suggestions.get(0));
 
     // now checking that suggestions will work without colon
     mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.DELETE);
@@ -100,20 +100,20 @@ public class AnySoftKeyboardKeyboardTagsSearcherTest extends AnySoftKeyboardBase
     mAnySoftKeyboardUnderTest.simulateKeyPress(':');
     verifySuggestions(
         true,
-        AnySoftKeyboardKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER,
+        ImeKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER,
         QuickKeyHistoryRecords.DEFAULT_EMOJI);
     mAnySoftKeyboardUnderTest.simulateTextTyping("fa");
     List suggestions = verifyAndCaptureSuggestion(true);
     Assert.assertEquals(134, suggestions.size());
     Assert.assertEquals(
-        AnySoftKeyboardKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "fa", suggestions.get(0));
+        ImeKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "fa", suggestions.get(0));
     Assert.assertEquals("⏩", suggestions.get(1));
 
     mAnySoftKeyboardUnderTest.simulateKeyPress('c');
     suggestions = verifyAndCaptureSuggestion(true);
     Assert.assertEquals(132, suggestions.size());
     Assert.assertEquals(
-        AnySoftKeyboardKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "fac", suggestions.get(0));
+        ImeKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "fac", suggestions.get(0));
     Assert.assertEquals("☠", suggestions.get(1));
 
     mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.DELETE);
@@ -121,14 +121,14 @@ public class AnySoftKeyboardKeyboardTagsSearcherTest extends AnySoftKeyboardBase
     suggestions = verifyAndCaptureSuggestion(true);
     Assert.assertEquals(134, suggestions.size());
     Assert.assertEquals(
-        AnySoftKeyboardKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "fa", suggestions.get(0));
+        ImeKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "fa", suggestions.get(0));
     Assert.assertEquals("⏩", suggestions.get(1));
 
     mAnySoftKeyboardUnderTest.simulateKeyPress('c');
     suggestions = verifyAndCaptureSuggestion(true);
     Assert.assertEquals(132, suggestions.size());
     Assert.assertEquals(
-        AnySoftKeyboardKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "fac", suggestions.get(0));
+        ImeKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "fac", suggestions.get(0));
     Assert.assertEquals("☠", suggestions.get(1));
   }
 
@@ -138,15 +138,14 @@ public class AnySoftKeyboardKeyboardTagsSearcherTest extends AnySoftKeyboardBase
     mAnySoftKeyboardUnderTest.simulateKeyPress(':');
     verifySuggestions(
         true,
-        AnySoftKeyboardKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER,
+        ImeKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER,
         QuickKeyHistoryRecords.DEFAULT_EMOJI);
     mAnySoftKeyboardUnderTest.simulateTextTyping("face");
     List suggestions = verifyAndCaptureSuggestion(true);
     Assert.assertNotNull(suggestions);
     Assert.assertEquals(131, suggestions.size());
     Assert.assertEquals(
-        AnySoftKeyboardKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "face",
-        suggestions.get(0));
+        ImeKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "face", suggestions.get(0));
     Assert.assertEquals("☠", suggestions.get(1));
   }
 
@@ -246,7 +245,7 @@ public class AnySoftKeyboardKeyboardTagsSearcherTest extends AnySoftKeyboardBase
     mAnySoftKeyboardUnderTest.simulateTextTyping(":face");
 
     mAnySoftKeyboardUnderTest.pickSuggestionManually(
-        0, AnySoftKeyboardKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "face");
+        0, ImeKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER + "face");
 
     // outputs the typed word
     Assert.assertEquals(":face ", mAnySoftKeyboardUnderTest.getCurrentInputConnectionText());

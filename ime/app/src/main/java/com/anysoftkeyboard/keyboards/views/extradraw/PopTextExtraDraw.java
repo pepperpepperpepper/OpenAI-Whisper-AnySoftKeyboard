@@ -6,7 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardViewWithExtraDraw;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewWithExtraDraw;
 
 public abstract class PopTextExtraDraw implements ExtraDraw {
   private static final int COMPLETE_POP_OUT_ANIMATION_DURATION = 1200;
@@ -25,7 +25,7 @@ public abstract class PopTextExtraDraw implements ExtraDraw {
 
   @Override
   public boolean onDraw(
-      Canvas canvas, Paint keyValuesPaint, AnyKeyboardViewWithExtraDraw parentKeyboardView) {
+      Canvas canvas, Paint keyValuesPaint, KeyboardViewWithExtraDraw parentKeyboardView) {
     final long currentAnimationTime = SystemClock.elapsedRealtime() - mPopStartTime;
     if (currentAnimationTime > COMPLETE_POP_OUT_ANIMATION_DURATION) {
       return false;
@@ -80,7 +80,7 @@ public abstract class PopTextExtraDraw implements ExtraDraw {
 
     @Override
     public boolean onDraw(
-        Canvas canvas, Paint keyValuesPaint, AnyKeyboardViewWithExtraDraw parentKeyboardView) {
+        Canvas canvas, Paint keyValuesPaint, KeyboardViewWithExtraDraw parentKeyboardView) {
       if (mFinished) return false;
 
       mFinished = !super.onDraw(canvas, keyValuesPaint, parentKeyboardView);

@@ -18,7 +18,7 @@ package com.anysoftkeyboard.dictionaries.sqlite;
 
 import android.content.Context;
 import com.anysoftkeyboard.base.utils.Logger;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.disposables.Disposable;
 
@@ -36,7 +36,7 @@ public class AutoDictionary extends SQLiteUserDictionaryBase {
   public AutoDictionary(Context context, String locale) {
     super("Auto", context, locale);
     mPrefDisposable =
-        AnyApplication.prefs(context)
+        NskApplicationBase.prefs(context)
             .getString(
                 R.string.settings_key_auto_dictionary_threshold,
                 R.string.settings_default_auto_dictionary_add_threshold)

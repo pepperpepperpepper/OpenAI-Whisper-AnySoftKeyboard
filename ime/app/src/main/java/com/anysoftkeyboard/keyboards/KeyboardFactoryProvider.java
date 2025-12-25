@@ -8,7 +8,7 @@ import com.menny.android.anysoftkeyboard.R;
 /** Builds the various generic symbol/number/phone keyboards on demand. */
 final class KeyboardFactoryProvider {
 
-  AnyKeyboard createSymbolsKeyboard(
+  KeyboardDefinition createSymbolsKeyboard(
       boolean use16Keys,
       @NonNull AddOn defaultAddOn,
       @NonNull Context context,
@@ -16,7 +16,7 @@ final class KeyboardFactoryProvider {
       int keyboardIndex,
       @NonNull KeyboardDimens keyboardDimens,
       @NonNull KeyboardSwitchedListener listener) {
-    AnyKeyboard keyboard =
+    KeyboardDefinition keyboard =
         switch (keyboardIndex) {
           case KeyboardSwitcher.SYMBOLS_KEYBOARD_REGULAR_INDEX ->
               createGenericKeyboard(

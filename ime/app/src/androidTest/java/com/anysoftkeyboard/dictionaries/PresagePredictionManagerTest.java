@@ -10,7 +10,7 @@ import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.engine.models.ModelDefinition;
 import com.anysoftkeyboard.engine.models.ModelStore;
 import com.anysoftkeyboard.prefs.RxSharedPrefs;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -136,7 +136,7 @@ public class PresagePredictionManagerTest {
   }
 
   private static void forceNgramNextWordPrefs(Context context) {
-    final RxSharedPrefs prefs = AnyApplication.prefs(context);
+    final RxSharedPrefs prefs = NskApplicationBase.prefs(context);
     prefs
         .getString(
             R.string.settings_key_prediction_engine_mode,

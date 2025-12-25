@@ -4,7 +4,7 @@ import androidx.collection.SparseArrayCompat;
 
 /**
  * Holds wrap-character pairs (e.g., " -> \"\" ) and small helpers to keep {@link
- * com.anysoftkeyboard.AnySoftKeyboard} slimmer.
+ * com.anysoftkeyboard.ImeServiceBase} slimmer.
  */
 public final class SpecialWrapHelper {
 

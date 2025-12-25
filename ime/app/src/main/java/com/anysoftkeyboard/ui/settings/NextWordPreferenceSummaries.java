@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 
 final class NextWordPreferenceSummaries {
@@ -15,7 +15,7 @@ final class NextWordPreferenceSummaries {
   @Nullable
   static NeuralFailureStatus readLastNeuralFailureStatus(@NonNull Context context) {
     final String storedValue =
-        AnyApplication.prefs(context)
+        NskApplicationBase.prefs(context)
             .getString(
                 R.string.settings_key_prediction_engine_last_neural_error,
                 R.string.settings_default_prediction_engine_last_neural_error)

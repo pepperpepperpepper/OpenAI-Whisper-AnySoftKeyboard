@@ -1,7 +1,7 @@
 package com.anysoftkeyboard.ime;
 
 import android.text.TextUtils;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 
 /** Handles committing a picked suggestion to the input connection. */
 public final class SuggestionCommitter {
@@ -36,7 +36,7 @@ public final class SuggestionCommitter {
     if (TextUtils.equals(wordToCommit, typedWord) || delayedUpdates) {
       inputConnectionRouter.commitText(wordToCommit, 1);
     } else {
-      AnyApplication.getDeviceSpecific()
+      NskApplicationBase.getDeviceSpecific()
           .commitCorrectionToInputConnection(
               inputConnectionRouter.current(),
               host.getCursorPosition() - typedWord.length(),

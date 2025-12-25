@@ -13,7 +13,7 @@ import java.util.HashSet;
 final class ThemeAttributeLoaderRunner {
 
   void applyThemeAttributes(
-      AnyKeyboardViewBase host, ThemeOverlayCombiner overlayCombiner, KeyboardTheme theme) {
+      KeyboardViewBase host, ThemeOverlayCombiner overlayCombiner, KeyboardTheme theme) {
     HashSet<Integer> doneAttrs = new HashSet<>();
     int[] padding = new int[] {0, 0, 0, 0};
     ThemeAttributeLoader themeAttributeLoader =
@@ -22,10 +22,10 @@ final class ThemeAttributeLoaderRunner {
   }
 
   private static final class HostImpl implements ThemeAttributeLoader.Host {
-    private final AnyKeyboardViewBase host;
+    private final KeyboardViewBase host;
     private final ThemeOverlayCombiner themeOverlayCombiner;
 
-    private HostImpl(AnyKeyboardViewBase host, ThemeOverlayCombiner themeOverlayCombiner) {
+    private HostImpl(KeyboardViewBase host, ThemeOverlayCombiner themeOverlayCombiner) {
       this.host = host;
       this.themeOverlayCombiner = themeOverlayCombiner;
     }

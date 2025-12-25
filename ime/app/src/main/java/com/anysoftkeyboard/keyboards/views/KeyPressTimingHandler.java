@@ -4,8 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import androidx.annotation.NonNull;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import java.lang.ref.WeakReference;
 
 /** Handles repeat and long-press timers for pointer trackers, decoupled from the view. */
@@ -14,25 +14,25 @@ class KeyPressTimingHandler extends Handler {
   private static final int MSG_REPEAT_KEY = 3;
   private static final int MSG_LONG_PRESS_KEY = 4;
 
-  private final WeakReference<AnyKeyboardViewBase> keyboardRef;
+  private final WeakReference<KeyboardViewBase> keyboardRef;
   private boolean inKeyRepeat;
 
-  KeyPressTimingHandler(AnyKeyboardViewBase keyboard) {
+  KeyPressTimingHandler(KeyboardViewBase keyboard) {
     super(Looper.getMainLooper());
     keyboardRef = new WeakReference<>(keyboard);
   }
 
   @Override
   public void handleMessage(@NonNull Message msg) {
-    AnyKeyboardViewBase keyboard = keyboardRef.get();
+    KeyboardViewBase keyboard = keyboardRef.get();
     if (keyboard == null) return;
 
     final PointerTracker tracker = (PointerTracker) msg.obj;
     Keyboard.Key keyForLongPress = tracker.getKey(msg.arg1);
     switch (msg.what) {
       case MSG_REPEAT_KEY -> {
-        if (keyForLongPress instanceof AnyKeyboard.AnyKey
-            && ((AnyKeyboard.AnyKey) keyForLongPress).longPressCode != 0) {
+        if (keyForLongPress instanceof KeyboardKey
+            && ((KeyboardKey) keyForLongPress).longPressCode != 0) {
           keyboard.onLongPress(
               keyboard.getKeyboard().getKeyboardAddOn(), keyForLongPress, false, tracker);
         } else {

@@ -32,7 +32,7 @@ import com.anysoftkeyboard.notification.NotificationIds;
 import com.anysoftkeyboard.permissions.PermissionRequestHelper;
 import com.anysoftkeyboard.prefs.DirectBootAwareSharedPreferences;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.Objects;
 import net.evendanan.pixel.EdgeEffectHacker;
@@ -114,7 +114,7 @@ public class MainSettingsActivity extends AppCompatActivity {
       final String permission = intent.getStringExtra(EXTRA_KEY_ACTION_REQUEST_PERMISSION_ACTIVITY);
       intent.removeExtra(ACTION_REVOKE_PERMISSION_ACTIVITY);
       if (Objects.equals(permission, Manifest.permission.READ_CONTACTS)) {
-        AnyApplication.notifier(this).cancel(NotificationIds.RequestContactsPermission);
+        NskApplicationBase.notifier(this).cancel(NotificationIds.RequestContactsPermission);
         DirectBootAwareSharedPreferences.create(getApplicationContext())
             .edit()
             .putBoolean(getString(R.string.settings_key_use_contacts_dictionary), false)
@@ -128,7 +128,7 @@ public class MainSettingsActivity extends AppCompatActivity {
 
   @AfterPermissionGranted(PermissionRequestHelper.CONTACTS_PERMISSION_REQUEST_CODE)
   public void startContactsPermissionRequest() {
-    AnyApplication.notifier(this).cancel(NotificationIds.RequestContactsPermission);
+    NskApplicationBase.notifier(this).cancel(NotificationIds.RequestContactsPermission);
     PermissionRequestHelper.check(this, PermissionRequestHelper.CONTACTS_PERMISSION_REQUEST_CODE);
   }
 

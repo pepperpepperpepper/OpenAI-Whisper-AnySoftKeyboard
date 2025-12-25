@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.utils.Workarounds;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ final class KeyMembersInitializer {
       Keyboard.Key key = keys.get(keyIndex);
       if (key.mCodes.length > 0) {
         final int primaryCode = key.getPrimaryCode();
-        if (key instanceof AnyKeyboard.AnyKey) {
+        if (key instanceof KeyboardKey keyboardKey) {
           switch (primaryCode) {
             case KeyCodes.DELETE:
             case KeyCodes.FORWARD_DELETE:
@@ -46,7 +46,7 @@ final class KeyMembersInitializer {
             case KeyCodes.CTRL:
             case KeyCodes.SHIFT:
             case KeyCodes.VOICE_INPUT:
-              ((AnyKeyboard.AnyKey) key).setFunctionalKey(true);
+              keyboardKey.setFunctionalKey(true);
               break;
           }
         }
@@ -59,8 +59,7 @@ final class KeyMembersInitializer {
         }
         switch (primaryCode) {
           case KeyCodes.QUICK_TEXT:
-            if (key instanceof AnyKeyboard.AnyKey) {
-              AnyKeyboard.AnyKey anyKey = (AnyKeyboard.AnyKey) key;
+            if (key instanceof KeyboardKey anyKey) {
               if (anyKey.longPressCode == 0
                   && anyKey.popupResId == 0
                   && TextUtils.isEmpty(anyKey.popupCharacters)) {
@@ -74,7 +73,7 @@ final class KeyMembersInitializer {
             break;
           case KeyCodes.MODE_ALPHABET:
             if (KeyboardPrefs.alwaysHideLanguageKey(askContext)
-                || !AnyApplication.getKeyboardFactory(localContext).hasMultipleAlphabets()) {
+                || !NskApplicationBase.getKeyboardFactory(localContext).hasMultipleAlphabets()) {
               // need to hide this key
               foundLanguageKeyIndices.add(keyIndex);
               Logger.d(TAG, "Found a redundant language key at index %d", keyIndex);

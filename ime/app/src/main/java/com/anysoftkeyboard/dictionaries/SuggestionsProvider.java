@@ -7,8 +7,8 @@ import com.anysoftkeyboard.dictionaries.content.ContactsDictionary;
 import com.anysoftkeyboard.nextword.pipeline.NextWordSuggestionsPipeline;
 import com.anysoftkeyboard.nextword.prediction.NextWordPredictionEngines;
 import com.anysoftkeyboard.prefs.RxSharedPrefs;
-import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.BuildConfig;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import io.reactivex.disposables.CompositeDisposable;
 import java.util.Collection;
 import java.util.List;
@@ -40,7 +40,7 @@ public class SuggestionsProvider {
     mDictionariesManager =
         new SuggestionsDictionariesManager(
             mContext, this::createUserDictionaryForLocale, this::createRealContactsDictionary);
-    final RxSharedPrefs rxSharedPrefs = AnyApplication.prefs(mContext);
+    final RxSharedPrefs rxSharedPrefs = NskApplicationBase.prefs(mContext);
     mPredictionEngines =
         new NextWordPredictionEngines(
             mContext, rxSharedPrefs, TAG, BuildConfig.DEBUG, BuildConfig.TESTING_BUILD);

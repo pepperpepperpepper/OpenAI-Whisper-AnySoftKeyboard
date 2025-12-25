@@ -2,7 +2,7 @@ package com.anysoftkeyboard.keyboards.views;
 
 import android.graphics.drawable.Drawable;
 import androidx.annotation.NonNull;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.ThemedKeyboardDimensProvider;
 import java.util.List;
 
@@ -87,7 +87,7 @@ public interface InputViewBinder
    * @param nextSymbolsKeyboard next symbols keyboard's name.
    */
   void setKeyboard(
-      AnyKeyboard currentKeyboard,
+      KeyboardDefinition currentKeyboard,
       CharSequence nextAlphabetKeyboard,
       CharSequence nextSymbolsKeyboard);
 

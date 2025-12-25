@@ -23,7 +23,7 @@ import com.anysoftkeyboard.dictionaries.content.AndroidUserDictionary;
 import com.anysoftkeyboard.dictionaries.sqlite.FallbackUserDictionary;
 import com.anysoftkeyboard.nextword.NextWordDictionary;
 import com.anysoftkeyboard.nextword.NextWordSuggestions;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 
 public class UserDictionary extends EditableDictionary {
@@ -74,7 +74,7 @@ public class UserDictionary extends EditableDictionary {
     BTreeDictionary androidBuiltIn = null;
     try {
       // The only reason I see someone uses this, is for development or debugging.
-      if (AnyApplication.prefs(mContext)
+      if (NskApplicationBase.prefs(mContext)
           .getBoolean(
               R.string.settings_key_always_use_fallback_user_dictionary,
               R.bool.settings_default_always_use_fallback_user_dictionary)

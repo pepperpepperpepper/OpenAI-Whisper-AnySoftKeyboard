@@ -49,7 +49,7 @@ import com.anysoftkeyboard.dictionaries.sqlite.FallbackUserDictionary;
 import com.anysoftkeyboard.rx.GenericOnError;
 import com.anysoftkeyboard.rx.RxSchedulers;
 import com.anysoftkeyboard.ui.settings.MainSettingsActivity;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -172,7 +172,8 @@ public class UserDictionaryEditorFragment extends Fragment
         new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item);
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-    Observable.fromIterable(AnyApplication.getKeyboardFactory(requireContext()).getEnabledAddOns())
+    Observable.fromIterable(
+            NskApplicationBase.getKeyboardFactory(requireContext()).getEnabledAddOns())
         .filter(kbd -> !TextUtils.isEmpty(kbd.getKeyboardLocale()))
         .map(kbd -> new DictionaryLocale(kbd.getKeyboardLocale(), kbd.getName()))
         .distinct()

@@ -7,10 +7,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import com.anysoftkeyboard.addons.DefaultAddOn;
-import com.anysoftkeyboard.keyboards.AnyPopupKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.PopupKeyboard;
 import com.anysoftkeyboard.keyboards.PopupListKeyboard;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardViewWithMiniKeyboard;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewWithMiniKeyboard;
 import com.anysoftkeyboard.keyboards.views.OnKeyboardActionListener;
 import com.anysoftkeyboard.keyboards.views.QuickKeysKeyboardView;
 import com.anysoftkeyboard.quicktextkeys.HistoryQuickTextKey;
@@ -26,7 +27,7 @@ import net.evendanan.pixel.ViewPagerWithDisable;
   @NonNull private final Context mContext;
   @NonNull private final OnKeyboardActionListener mKeyboardActionListener;
   @NonNull private final LayoutInflater mLayoutInflater;
-  @NonNull private final AnyPopupKeyboard[] mPopupKeyboards;
+  @NonNull private final KeyboardDefinition[] mPopupKeyboards;
   @NonNull private final boolean[] mIsAutoFitKeyboards;
   @NonNull private final QuickTextKey[] mAddOns;
   private final DefaultAddOn mDefaultLocalAddOn;
@@ -50,7 +51,7 @@ import net.evendanan.pixel.ViewPagerWithDisable;
     mContext = context;
     mKeyboardActionListener = keyboardActionListener;
     mAddOns = keyAddOns.toArray(new QuickTextKey[0]);
-    mPopupKeyboards = new AnyPopupKeyboard[mAddOns.length];
+    mPopupKeyboards = new KeyboardDefinition[mAddOns.length];
     mIsAutoFitKeyboards = new boolean[mAddOns.length];
     mLayoutInflater = LayoutInflater.from(context);
     mDefaultSkinTonePrefTracker = defaultSkinTonePrefTracker;
@@ -84,11 +85,11 @@ import net.evendanan.pixel.ViewPagerWithDisable;
         new PopupKeyboardShownHandler(mViewPager, scrollViewWithDisable));
     keyboardView.setOnKeyboardActionListener(mKeyboardActionListener);
     QuickTextKey addOn = mAddOns[position];
-    AnyPopupKeyboard keyboard = mPopupKeyboards[position];
+    KeyboardDefinition keyboard = mPopupKeyboards[position];
     if (keyboard == null || position == 0 /*ALWAYS re-create history, in case it has changed*/) {
       if (addOn.isPopupKeyboardUsed()) {
         keyboard =
-            new AnyPopupKeyboard(
+            new PopupKeyboard(
                 addOn,
                 mContext,
                 addOn.getPopupKeyboardResId(),
@@ -151,7 +152,7 @@ import net.evendanan.pixel.ViewPagerWithDisable;
   }
 
   private static class PopupKeyboardShownHandler
-      implements AnyKeyboardViewWithMiniKeyboard.OnPopupShownListener {
+      implements KeyboardViewWithMiniKeyboard.OnPopupShownListener {
     private final ViewPagerWithDisable mViewPager;
     private final ScrollViewWithDisable mScrollViewWithDisable;
 

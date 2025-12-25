@@ -52,7 +52,7 @@ public class ShadowDictionaryAddOnAndBuilder {
   public static void setDictionaryOverrides(
       @NonNull String dictionaryName, @Nullable List<Pair<String, Integer>> words) {
     var builder =
-        AnyApplication.getExternalDictionaryFactory(RuntimeEnvironment.getApplication())
+        NskApplicationBase.getExternalDictionaryFactory(RuntimeEnvironment.getApplication())
             .getAllAddOns()
             .stream()
             .filter(d -> d.getName().equals(dictionaryName))

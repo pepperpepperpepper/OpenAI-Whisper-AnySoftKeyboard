@@ -13,11 +13,11 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardViewWithExtraDraw;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.views.InputViewBinder;
 import com.anysoftkeyboard.keyboards.views.KeyboardViewContainerView;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewWithExtraDraw;
 import com.anysoftkeyboard.keyboards.views.extradraw.TypingExtraDraw;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.Locale;
@@ -45,15 +45,15 @@ class OnKeyEasterEggBaseImpl implements OnKey, OnVisible {
   public void onKey(PublicNotices ime, int primaryCode, Keyboard.Key key) {
     if (mWordTypedHelper.shouldShow(primaryCode)) {
       final InputViewBinder inputView = ime.getInputView();
-      if (inputView instanceof AnyKeyboardViewWithExtraDraw) {
-        final AnyKeyboardViewWithExtraDraw anyKeyboardViewWithExtraDraw =
-            (AnyKeyboardViewWithExtraDraw) inputView;
-        anyKeyboardViewWithExtraDraw.addExtraDraw(
+      if (inputView instanceof KeyboardViewWithExtraDraw) {
+        final KeyboardViewWithExtraDraw keyboardViewWithExtraDraw =
+            (KeyboardViewWithExtraDraw) inputView;
+        keyboardViewWithExtraDraw.addExtraDraw(
             new TypingExtraDraw(
                 mExtraDrawText.giveMeSomeString(),
                 new Point(
-                    anyKeyboardViewWithExtraDraw.getWidth() / 2,
-                    anyKeyboardViewWithExtraDraw.getHeight() / 2),
+                    keyboardViewWithExtraDraw.getWidth() / 2,
+                    keyboardViewWithExtraDraw.getHeight() / 2),
                 120,
                 this::adjustPaint));
         ime.getInputViewContainer().addStripAction(mSuggestionAction, true);
@@ -62,14 +62,14 @@ class OnKeyEasterEggBaseImpl implements OnKey, OnVisible {
   }
 
   @Override
-  public void onVisible(PublicNotices ime, AnyKeyboard keyboard, EditorInfo editorInfo) {}
+  public void onVisible(PublicNotices ime, KeyboardDefinition keyboard, EditorInfo editorInfo) {}
 
   @Override
-  public void onHidden(PublicNotices ime, AnyKeyboard keyboard) {
+  public void onHidden(PublicNotices ime, KeyboardDefinition keyboard) {
     ime.getInputViewContainer().removeStripAction(mSuggestionAction);
   }
 
-  private Paint adjustPaint(Paint paint, AnyKeyboardViewWithExtraDraw ime, Float fraction) {
+  private Paint adjustPaint(Paint paint, KeyboardViewWithExtraDraw ime, Float fraction) {
     Paint newPaint = new Paint(paint);
     ime.setPaintToKeyText(newPaint);
     newPaint.setTextSkewX(0.3f);

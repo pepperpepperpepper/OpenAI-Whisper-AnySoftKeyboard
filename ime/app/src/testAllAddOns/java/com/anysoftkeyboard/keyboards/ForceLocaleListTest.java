@@ -7,7 +7,7 @@ import androidx.test.core.app.ApplicationProvider;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.test.TestUtils;
 import com.anysoftkeyboard.utils.LocaleTools;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.Locale;
 import org.junit.Assert;
@@ -44,7 +44,7 @@ public class ForceLocaleListTest {
 
   @Test
   public void testAllLocalesInKeyboardAddOnsAreValid() throws Exception {
-    AnyApplication.getKeyboardFactory(getApplicationContext())
+    NskApplicationBase.getKeyboardFactory(getApplicationContext())
         .getAllAddOns()
         .forEach(
             builder -> {
@@ -61,7 +61,7 @@ public class ForceLocaleListTest {
 
   @Test
   public void testAllLocalesInDictionaryAddOnsAreValid() throws Exception {
-    AnyApplication.getExternalDictionaryFactory(getApplicationContext())
+    NskApplicationBase.getExternalDictionaryFactory(getApplicationContext())
         .getAllAddOns()
         .forEach(
             builder -> {

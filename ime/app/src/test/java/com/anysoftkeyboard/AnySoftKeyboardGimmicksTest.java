@@ -1,7 +1,7 @@
 package com.anysoftkeyboard;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.anysoftkeyboard.keyboards.ExternalAnyKeyboardTest.SIMPLE_KeyboardDimens;
+import static com.anysoftkeyboard.keyboards.ExternalKeyboardTest.SIMPLE_KeyboardDimens;
 
 import android.content.res.Configuration;
 import android.os.SystemClock;
@@ -10,9 +10,10 @@ import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import androidx.test.core.app.ApplicationProvider;
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
-import com.anysoftkeyboard.keyboards.ExternalAnyKeyboard;
+import com.anysoftkeyboard.keyboards.ExternalKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
 import com.menny.android.anysoftkeyboard.R;
@@ -756,7 +757,7 @@ public class AnySoftKeyboardGimmicksTest extends AnySoftKeyboardBaseTest {
   public void testPrintsParenthesisReversedWithRTLKeyboard() {
     TestInputConnection inputConnection = getCurrentTestInputConnection();
 
-    AnyKeyboard fakeRtlKeyboard =
+    KeyboardDefinition fakeRtlKeyboard =
         Mockito.spy(mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests());
     Mockito.doReturn(false).when(fakeRtlKeyboard).isLeftToRightLanguage();
     mAnySoftKeyboardUnderTest.onAlphabetKeyboardSet(fakeRtlKeyboard);
@@ -819,8 +820,8 @@ public class AnySoftKeyboardGimmicksTest extends AnySoftKeyboardBaseTest {
     Assert.assertEquals("q", inputConnection.getCurrentTextInInputConnection());
 
     // long press should switch to caps-lock
-    AnyKeyboard.AnyKey shiftKey =
-        (AnyKeyboard.AnyKey) mAnySoftKeyboardUnderTest.findKeyWithPrimaryKeyCode(KeyCodes.SHIFT);
+    KeyboardKey shiftKey =
+        (KeyboardKey) mAnySoftKeyboardUnderTest.findKeyWithPrimaryKeyCode(KeyCodes.SHIFT);
     Assert.assertNotNull(shiftKey);
 
     mAnySoftKeyboardUnderTest.onPress(KeyCodes.SHIFT);
@@ -1211,9 +1212,10 @@ public class AnySoftKeyboardGimmicksTest extends AnySoftKeyboardBaseTest {
 
   @Test
   public void testDoNotSwapDoublePunctuationsWhenInFrLocale() {
-    final AnyKeyboard currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
-    ExternalAnyKeyboard keyboard =
-        new ExternalAnyKeyboard(
+    final KeyboardDefinition currentKeyboard =
+        mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    ExternalKeyboard keyboard =
+        new ExternalKeyboard(
             currentKeyboard.getKeyboardAddOn(),
             ApplicationProvider.getApplicationContext(),
             R.xml.qwerty,

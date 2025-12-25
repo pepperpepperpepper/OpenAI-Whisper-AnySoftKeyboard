@@ -4,7 +4,7 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
 import android.text.TextUtils;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.List;
 import java.util.Locale;
@@ -58,7 +58,7 @@ public class LoadedKeyboardsVerificationTest {
 
   @Before
   public void setUp() throws Exception {
-    mKeyboardFactory = AnyApplication.getKeyboardFactory(getApplicationContext());
+    mKeyboardFactory = NskApplicationBase.getKeyboardFactory(getApplicationContext());
   }
 
   @Test
@@ -91,7 +91,7 @@ public class LoadedKeyboardsVerificationTest {
     for (KeyboardAddOnAndBuilder addOn : addOns) {
       for (int mode : modes) {
         final String addOnIdString = "Add-on with ID " + addOn.getId() + " mode " + mode;
-        final AnyKeyboard keyboard = addOn.createKeyboard(mode);
+        final KeyboardDefinition keyboard = addOn.createKeyboard(mode);
         Assert.assertNotNull(addOnIdString, keyboard);
         keyboard.loadKeyboard(sTestKeyboardDimens);
       }
@@ -112,7 +112,7 @@ public class LoadedKeyboardsVerificationTest {
     for (KeyboardAddOnAndBuilder addOn : addOns) {
       for (int mode : modes) {
         final String addOnIdString = "Add-on with ID " + addOn.getId() + " mode " + mode;
-        final AnyKeyboard keyboard = addOn.createKeyboard(mode);
+        final KeyboardDefinition keyboard = addOn.createKeyboard(mode);
         keyboard.loadKeyboard(sTestKeyboardDimens);
         for (Keyboard.Key key : keyboard.getKeys()) {
           var keyId =

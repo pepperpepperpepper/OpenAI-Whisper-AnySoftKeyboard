@@ -1,7 +1,7 @@
 package com.anysoftkeyboard.keyboards.views;
 
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 
 /** Keeps swipe distance/velocity thresholds together and handles recalculation per keyboard. */
 final class SwipeConfiguration {
@@ -23,7 +23,7 @@ final class SwipeConfiguration {
     swipeYDistanceThreshold = threshold;
   }
 
-  void recomputeForKeyboard(@Nullable AnyKeyboard keyboard) {
+  void recomputeForKeyboard(@Nullable KeyboardDefinition keyboard) {
     if (keyboard == null) {
       swipeYDistanceThreshold = 0;
       swipeSpaceXDistanceThreshold = swipeXDistanceThreshold / 2;

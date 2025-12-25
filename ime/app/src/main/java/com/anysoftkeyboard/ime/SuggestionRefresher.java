@@ -5,7 +5,7 @@ import com.anysoftkeyboard.dictionaries.Suggest;
 import com.anysoftkeyboard.dictionaries.WordComposer;
 import java.util.List;
 
-/** Keeps suggestion refresh logic out of {@link AnySoftKeyboardSuggestions}. */
+/** Keeps suggestion refresh logic out of {@link ImeSuggestionsController}. */
 final class SuggestionRefresher {
 
   interface Host {

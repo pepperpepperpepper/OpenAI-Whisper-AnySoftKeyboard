@@ -2,9 +2,9 @@ package com.anysoftkeyboard.ime;
 
 /** Host adapter for {@link SuggestionCommitter} to live outside the service class. */
 final class SuggestionCommitterHost implements SuggestionCommitter.Host {
-  private final AnySoftKeyboardSuggestions host;
+  private final ImeSuggestionsController host;
 
-  SuggestionCommitterHost(AnySoftKeyboardSuggestions host) {
+  SuggestionCommitterHost(ImeSuggestionsController host) {
     this.host = host;
   }
 

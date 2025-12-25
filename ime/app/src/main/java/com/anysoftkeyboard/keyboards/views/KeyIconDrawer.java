@@ -5,7 +5,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.NinePatchDrawable;
 import android.text.TextUtils;
-import com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 
 /** Draws key icons centered on the key surface. */
 final class KeyIconDrawer {
@@ -16,7 +16,7 @@ final class KeyIconDrawer {
 
   CharSequence drawIconIfNeeded(
       Canvas canvas,
-      AnyKey key,
+      KeyboardKey key,
       KeyIconResolver keyIconResolver,
       CharSequence currentLabel,
       Rect keyBackgroundPadding,

@@ -2,7 +2,7 @@ package com.anysoftkeyboard.keyboards.views;
 
 import com.anysoftkeyboard.AnySoftKeyboardPlainTestRunner;
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class MiniKeyboardActionListenerTest {
 
   @Test
   public void testOnKey() {
-    final AnyKeyboard.AnyKey key = Mockito.mock(AnyKeyboard.AnyKey.class);
+    final KeyboardKey key = Mockito.mock(KeyboardKey.class);
     final int[] nearByKeyCodes = {3};
     mUnderTest.onKey(1, key, 2, nearByKeyCodes, true);
     final InOrder inOrder = Mockito.inOrder(mMockParentListener, mMockKeyboardDismissAction);
@@ -45,7 +45,7 @@ public class MiniKeyboardActionListenerTest {
 
   @Test
   public void testOnKeyOnEnter() {
-    final AnyKeyboard.AnyKey key = Mockito.mock(AnyKeyboard.AnyKey.class);
+    final KeyboardKey key = Mockito.mock(KeyboardKey.class);
     final int[] nearByKeyCodes = {3};
     mUnderTest.onKey(KeyCodes.ENTER, key, 2, nearByKeyCodes, true);
     final InOrder inOrder = Mockito.inOrder(mMockParentListener, mMockKeyboardDismissAction);
@@ -63,7 +63,7 @@ public class MiniKeyboardActionListenerTest {
 
   @Test
   public void testOnKeyOnShot() {
-    final AnyKeyboard.AnyKey key = Mockito.mock(AnyKeyboard.AnyKey.class);
+    final KeyboardKey key = Mockito.mock(KeyboardKey.class);
     final int[] nearByKeyCodes = {3};
     mUnderTest.setInOneShot(true);
     mUnderTest.onKey(1, key, 2, nearByKeyCodes, true);
@@ -82,7 +82,7 @@ public class MiniKeyboardActionListenerTest {
 
   @Test
   public void testOnKeyOnShotButDelete() {
-    final AnyKeyboard.AnyKey key = Mockito.mock(AnyKeyboard.AnyKey.class);
+    final KeyboardKey key = Mockito.mock(KeyboardKey.class);
     final int[] nearByKeyCodes = {3};
     mUnderTest.setInOneShot(true);
     mUnderTest.onKey(KeyCodes.DELETE, key, 2, nearByKeyCodes, true);
@@ -100,7 +100,7 @@ public class MiniKeyboardActionListenerTest {
 
   @Test
   public void testOnKeyOnShotButArrowKeys() {
-    final AnyKeyboard.AnyKey key = Mockito.mock(AnyKeyboard.AnyKey.class);
+    final KeyboardKey key = Mockito.mock(KeyboardKey.class);
     final int[] nearByKeyCodes = {3};
     mUnderTest.setInOneShot(true);
     mUnderTest.onKey(KeyCodes.ARROW_DOWN, key, 0, nearByKeyCodes, true);
@@ -133,7 +133,7 @@ public class MiniKeyboardActionListenerTest {
 
   @Test
   public void testOnText() {
-    final AnyKeyboard.AnyKey key = Mockito.mock(AnyKeyboard.AnyKey.class);
+    final KeyboardKey key = Mockito.mock(KeyboardKey.class);
     final String text = "text";
     mUnderTest.onText(key, text);
     final InOrder inOrder = Mockito.inOrder(mMockParentListener, mMockKeyboardDismissAction);
@@ -143,7 +143,7 @@ public class MiniKeyboardActionListenerTest {
 
   @Test
   public void testOnTextOneShot() {
-    final AnyKeyboard.AnyKey key = Mockito.mock(AnyKeyboard.AnyKey.class);
+    final KeyboardKey key = Mockito.mock(KeyboardKey.class);
     final String text = "text";
     mUnderTest.setInOneShot(true);
     mUnderTest.onText(key, text);
@@ -155,7 +155,7 @@ public class MiniKeyboardActionListenerTest {
 
   @Test
   public void testOnTyping() {
-    final AnyKeyboard.AnyKey key = Mockito.mock(AnyKeyboard.AnyKey.class);
+    final KeyboardKey key = Mockito.mock(KeyboardKey.class);
     final String text = "text";
     mUnderTest.onTyping(key, text);
     final InOrder inOrder = Mockito.inOrder(mMockParentListener, mMockKeyboardDismissAction);
@@ -165,7 +165,7 @@ public class MiniKeyboardActionListenerTest {
 
   @Test
   public void testOnTypingOneShot() {
-    final AnyKeyboard.AnyKey key = Mockito.mock(AnyKeyboard.AnyKey.class);
+    final KeyboardKey key = Mockito.mock(KeyboardKey.class);
     final String text = "text";
     mUnderTest.setInOneShot(true);
     mUnderTest.onTyping(key, text);
@@ -246,7 +246,7 @@ public class MiniKeyboardActionListenerTest {
   @Test
   public void testOnGestureTypingInputStart() {
     Assert.assertFalse(
-        mUnderTest.onGestureTypingInputStart(66, 80, Mockito.mock(AnyKeyboard.AnyKey.class), 8888));
+        mUnderTest.onGestureTypingInputStart(66, 80, Mockito.mock(KeyboardKey.class), 8888));
     Mockito.verifyZeroInteractions(mMockParentListener, mMockKeyboardDismissAction);
   }
 
@@ -264,7 +264,7 @@ public class MiniKeyboardActionListenerTest {
 
   @Test
   public void testOnLongPressDone() {
-    final AnyKeyboard.AnyKey key = Mockito.mock(AnyKeyboard.AnyKey.class);
+    final KeyboardKey key = Mockito.mock(KeyboardKey.class);
     mUnderTest.onLongPressDone(key);
     Mockito.verify(mMockParentListener).onLongPressDone(Mockito.same(key));
     Mockito.verifyNoMoreInteractions(mMockParentListener);

@@ -7,8 +7,8 @@ import android.text.style.UnderlineSpan;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
-import com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 
 /**
  * Encapsulates label adjustments for shift/case and function-layer state so the view can delegate
@@ -42,11 +42,11 @@ final class KeyLabelAdjuster {
   }
 
   static CharSequence adjustLabelToShiftState(
-      @NonNull AnyKeyboard keyboard,
+      @NonNull KeyboardDefinition keyboard,
       @NonNull KeyDetector keyDetector,
       int textCaseForceOverrideType,
       int textCaseType,
-      @NonNull AnyKey key) {
+      @NonNull KeyboardKey key) {
     CharSequence label = key.label;
     if (isShiftedAccordingToCaseType(
         textCaseForceOverrideType, textCaseType, keyboard.isShifted())) {
@@ -72,7 +72,9 @@ final class KeyLabelAdjuster {
   }
 
   static CharSequence adjustLabelForFunctionState(
-      @Nullable AnyKeyboard keyboard, @NonNull AnyKey key, @Nullable CharSequence currentLabel) {
+      @Nullable KeyboardDefinition keyboard,
+      @NonNull KeyboardKey key,
+      @Nullable CharSequence currentLabel) {
     if (keyboard == null) {
       return currentLabel;
     }

@@ -15,7 +15,7 @@ import androidx.test.core.app.ApplicationProvider;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.keyboards.Keyboard;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardViewBase;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewBase;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class KeyPreviewsManagerTest {
 
   private Keyboard.Key[] mTestKeys;
   private PreviewPopupTheme mTheme;
-  private AnyKeyboardViewBase mKeyboardView;
+  private KeyboardViewBase mKeyboardView;
   private PositionCalculator mPositionCalculator;
 
   private static PopupWindow getLatestCreatedPopupWindow() {
@@ -48,7 +48,7 @@ public class KeyPreviewsManagerTest {
         .when(mPositionCalculator)
         .calculatePositionForPreview(Mockito.any(), Mockito.any(), Mockito.any());
 
-    mKeyboardView = Mockito.mock(AnyKeyboardViewBase.class);
+    mKeyboardView = Mockito.mock(KeyboardViewBase.class);
     Mockito.doAnswer(
             a -> {
               int[] location = a.getArgument(0);

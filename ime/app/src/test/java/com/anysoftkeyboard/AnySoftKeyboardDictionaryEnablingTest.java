@@ -6,7 +6,7 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import android.view.inputmethod.EditorInfo;
 import com.anysoftkeyboard.dictionaries.ExternalDictionaryFactory;
 import com.anysoftkeyboard.dictionaries.UserDictionary;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.KeyboardFactory;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
@@ -305,7 +305,7 @@ public class AnySoftKeyboardDictionaryEnablingTest extends AnySoftKeyboardBaseTe
 
     Mockito.reset(mAnySoftKeyboardUnderTest.getSuggest());
 
-    AnyKeyboard currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     SharedPrefsHelper.setPrefsValue(
         ExternalDictionaryFactory.getDictionaryOverrideKey(currentKeyboard), "dictionary_sdfsdfsd");
     Mockito.verify(mAnySoftKeyboardUnderTest.getSuggest())
@@ -324,7 +324,7 @@ public class AnySoftKeyboardDictionaryEnablingTest extends AnySoftKeyboardBaseTe
         .setupSuggestionsForKeyboard(Mockito.anyList(), Mockito.any());
     Mockito.verify(mAnySoftKeyboardUnderTest.getSuggest(), Mockito.never()).resetNextWordSentence();
 
-    AnyKeyboard currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition currentKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     SharedPrefsHelper.setPrefsValue(
         /*no prefix*/ currentKeyboard.getKeyboardId() + "_override_dictionary",
         "dictionary_sdfsdfsd");

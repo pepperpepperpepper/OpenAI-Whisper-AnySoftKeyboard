@@ -5,7 +5,7 @@ import androidx.annotation.BoolRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import com.anysoftkeyboard.prefs.RxSharedPrefs;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 import io.reactivex.annotations.CheckReturnValue;
@@ -17,8 +17,8 @@ public class NightMode {
   public static Observable<Boolean> observeNightModeState(
       @NonNull Context context, @StringRes int enablePrefResId, @BoolRes int defaultValueResId) {
     final Observable<Boolean> nightMode =
-        ((AnyApplication) context.getApplicationContext()).getNightModeObservable();
-    final RxSharedPrefs prefs = AnyApplication.prefs(context);
+        ((NskApplicationBase) context.getApplicationContext()).getNightModeObservable();
+    final RxSharedPrefs prefs = NskApplicationBase.prefs(context);
     return Observable.combineLatest(
             prefs
                 .getString(

@@ -1,7 +1,7 @@
 package com.anysoftkeyboard.keyboards;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.anysoftkeyboard.keyboards.ExternalAnyKeyboardTest.SIMPLE_KeyboardDimens;
+import static com.anysoftkeyboard.keyboards.ExternalKeyboardTest.SIMPLE_KeyboardDimens;
 import static com.anysoftkeyboard.keyboards.Keyboard.KEYBOARD_ROW_MODE_NORMAL;
 
 import android.content.Context;
@@ -10,7 +10,7 @@ import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.addons.DefaultAddOn;
 import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.keyboardextensions.KeyboardExtension;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,7 +29,7 @@ public class GenericRowKeyboardTest {
   public void setup() {
     mContext = getApplicationContext();
     mDefaultAddOn = new DefaultAddOn(mContext, mContext);
-    mRowExtension = Mockito.spy(AnyApplication.getBottomRowFactory(mContext).getEnabledAddOn());
+    mRowExtension = Mockito.spy(NskApplicationBase.getBottomRowFactory(mContext).getEnabledAddOn());
   }
 
   @Test

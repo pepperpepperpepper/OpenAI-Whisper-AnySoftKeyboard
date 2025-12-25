@@ -1,4 +1,4 @@
-# Render Helper Extractions (AnyKeyboardViewBase)
+# Render Helper Extractions (KeyboardViewBase)
 
 - ProximityCalculator: computes proximity thresholds.
 - SwipeConfiguration: holds swipe velocity/distance thresholds.

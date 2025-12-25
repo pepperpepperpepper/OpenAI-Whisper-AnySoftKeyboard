@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import com.anysoftkeyboard.dictionaries.DictionaryAddOnAndBuilder;
 import com.anysoftkeyboard.nextword.NextWordDictionary;
 import com.anysoftkeyboard.rx.RxSchedulers;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -22,7 +22,8 @@ final class NextWordDataCleaner {
       @NonNull CompositeDisposable disposables,
       @NonNull Runnable onComplete) {
     disposables.add(
-        Observable.fromIterable(AnyApplication.getExternalDictionaryFactory(context).getAllAddOns())
+        Observable.fromIterable(
+                NskApplicationBase.getExternalDictionaryFactory(context).getAllAddOns())
             .filter(addOn -> addOn.getLanguage() != null && !addOn.getLanguage().isEmpty())
             .distinct(DictionaryAddOnAndBuilder::getLanguage)
             .subscribeOn(RxSchedulers.background())

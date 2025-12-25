@@ -26,18 +26,17 @@ import androidx.annotation.NonNull;
  * NewSoftKeyboard-branded gesture detector implementation.
  *
  * <p>Maintains behavior identical to the legacy {@code AskV8GestureDetector} while allowing the
- * codebase to reference NSK-qualified helper names. The legacy class remains as a thin wrapper for
- * compatibility.
+ * codebase to reference NSK-qualified helper names.
  */
 public class NskV8GestureDetector extends GestureDetector {
   private static final int NOT_A_POINTER_ID = -1;
 
   protected final ScaleGestureDetector mScaleGestureDetector;
-  private final AskOnGestureListener mListener;
+  private final NskOnGestureListener mListener;
 
   private int mSingleFingerEventPointerId = NOT_A_POINTER_ID;
 
-  public NskV8GestureDetector(Context context, AskOnGestureListener listener) {
+  public NskV8GestureDetector(Context context, NskOnGestureListener listener) {
     super(context, listener, null, true /*ignore multi-touch*/);
 
     mListener = listener;

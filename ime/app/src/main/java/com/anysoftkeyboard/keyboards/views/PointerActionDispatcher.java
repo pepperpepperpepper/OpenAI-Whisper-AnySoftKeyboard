@@ -4,10 +4,10 @@ import android.view.MotionEvent;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.base.utils.Logger;
 
-/** Handles pointer up/down/cancel dispatch sequencing, keeping AnyKeyboardViewBase lean. */
+/** Handles pointer up/down/cancel dispatch sequencing, keeping KeyboardViewBase lean. */
 final class PointerActionDispatcher {
 
-  private static final String TAG = AnyKeyboardViewBase.TAG;
+  private static final String TAG = KeyboardViewBase.TAG;
   private final TouchDispatcher touchDispatcher;
 
   PointerActionDispatcher(@NonNull TouchDispatcher touchDispatcher) {

@@ -5,8 +5,8 @@ import android.view.View;
 import android.widget.EditText;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardView;
 import com.anysoftkeyboard.keyboards.views.InputViewBinder;
+import com.anysoftkeyboard.keyboards.views.KeyboardView;
 
 public final class FullscreenExtractViewController {
 
@@ -30,15 +30,15 @@ public final class FullscreenExtractViewController {
       return;
     }
 
-    final AnyKeyboardView anyKeyboardView = (AnyKeyboardView) inputViewBinder;
-    Drawable background = anyKeyboardView.getBackground();
+    final KeyboardView keyboardView = (KeyboardView) inputViewBinder;
+    Drawable background = keyboardView.getBackground();
     if (background == null) {
-      background = anyKeyboardView.getCurrentResourcesHolder().getKeyboardBackground();
+      background = keyboardView.getCurrentResourcesHolder().getKeyboardBackground();
     }
     ViewCompat.setBackground(fullScreenExtractView, background);
     if (fullScreenExtractTextView != null) {
       fullScreenExtractTextView.setTextColor(
-          anyKeyboardView.getCurrentResourcesHolder().getKeyTextColor());
+          keyboardView.getCurrentResourcesHolder().getKeyTextColor());
     }
   }
 }

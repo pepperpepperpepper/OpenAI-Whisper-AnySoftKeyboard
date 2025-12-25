@@ -2,7 +2,7 @@ package com.anysoftkeyboard.ime;
 
 /**
  * Handles the small batch-edit window around multi-tap interactions so the key logic stays focused
- * in {@link AnySoftKeyboard}.
+ * in {@link com.anysoftkeyboard.ImeServiceBase}.
  */
 public final class MultiTapEditCoordinator {
 

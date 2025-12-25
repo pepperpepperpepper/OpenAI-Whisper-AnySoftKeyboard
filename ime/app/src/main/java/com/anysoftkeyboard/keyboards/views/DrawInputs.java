@@ -2,15 +2,15 @@ package com.anysoftkeyboard.keyboards.views;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.KeyDrawableStateProvider;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.overlay.ThemeResourcesHolder;
 import java.util.Locale;
 
-/** Snapshot of per-frame draw inputs to keep {@link AnyKeyboardViewBase#onDraw} slim. */
+/** Snapshot of per-frame draw inputs to keep {@link KeyboardViewBase#onDraw} slim. */
 final class DrawInputs {
-  final AnyKeyboard keyboard;
+  final KeyboardDefinition keyboard;
   final CharSequence keyboardName;
   final boolean drawKeyboardNameText;
   final boolean drawHintText;
@@ -43,7 +43,7 @@ final class DrawInputs {
   final KeyDrawableStateProvider drawableStatesProvider;
 
   DrawInputs(
-      AnyKeyboard keyboard,
+      KeyboardDefinition keyboard,
       CharSequence keyboardName,
       boolean drawKeyboardNameText,
       boolean drawHintText,

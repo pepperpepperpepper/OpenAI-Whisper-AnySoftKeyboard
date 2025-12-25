@@ -3,7 +3,7 @@ package com.anysoftkeyboard.theme;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import io.reactivex.disposables.Disposable;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Assert;
@@ -16,7 +16,7 @@ public class KeyboardThemeFactoryTest {
   @Test
   public void testObserveCurrentThemeFiredWhenPrefChanges() {
     final KeyboardThemeFactory keyboardThemeFactory =
-        AnyApplication.getKeyboardThemeFactory(getApplicationContext());
+        NskApplicationBase.getKeyboardThemeFactory(getApplicationContext());
     AtomicReference<KeyboardTheme> currentTheme = new AtomicReference<>();
     final Disposable disposable =
         KeyboardThemeFactory.observeCurrentTheme(getApplicationContext())

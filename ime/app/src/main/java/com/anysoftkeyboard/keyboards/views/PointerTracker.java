@@ -19,8 +19,8 @@ package com.anysoftkeyboard.keyboards.views;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 
 class PointerTracker {
   static class SharedPointerTrackersData {
@@ -44,7 +44,7 @@ class PointerTracker {
   final int mPointerId;
 
   // Miscellaneous constants
-  private static final int NOT_A_KEY = AnyKeyboardViewBase.NOT_A_KEY;
+  private static final int NOT_A_KEY = KeyboardViewBase.NOT_A_KEY;
 
   private final UIProxy mProxy;
   private final KeyPressTimingHandler mHandler;
@@ -183,7 +183,7 @@ class PointerTracker {
       multiTapHandler.checkMultiTap(keyForMultiTap, keyIndex, eventTime);
     }
     if (mListener != null && isValidKeyIndex(keyIndex)) {
-      AnyKey key = (AnyKey) mKeys[keyIndex];
+      KeyboardKey key = (KeyboardKey) mKeys[keyIndex];
       final int codeAtIndex = key.getCodeAtIndex(0, mKeyDetector.isKeyShifted(key));
 
       if (!mProxy.isAtTwoFingersState()

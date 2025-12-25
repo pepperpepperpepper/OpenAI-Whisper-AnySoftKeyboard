@@ -26,7 +26,7 @@
     <issue id="InlinedApi" severity="informational" />
 
     <issue id="InflateParams" severity="error">
-        <ignore path="src/main/java/com/anysoftkeyboard/ime/AnySoftKeyboardBase.java" />
+        <ignore path="src/main/java/com/anysoftkeyboard/ime/ImeBase.java" />
     </issue>
 
     <issue id="GradleDependency" severity="warning" />

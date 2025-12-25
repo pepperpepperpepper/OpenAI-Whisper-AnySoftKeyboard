@@ -27,7 +27,7 @@ import com.anysoftkeyboard.keyboards.views.preview.NullKeyPreviewsManager;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
 import com.anysoftkeyboard.theme.KeyboardThemeFactory;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Before;
@@ -168,7 +168,7 @@ public class AnySoftKeyboardPressEffectsTest extends AnySoftKeyboardBaseTest {
     Assert.assertEquals(
         AudioManager.FX_KEYPRESS_SPACEBAR, shadowAudioManager.getLastPlaySoundEffectType());
 
-    AnyApplication application = getApplicationContext();
+    NskApplicationBase application = getApplicationContext();
     application.onConfigurationChanged(configurationForNightMode(Configuration.UI_MODE_NIGHT_YES));
 
     mAnySoftKeyboardUnderTest.onPress(KeyCodes.SPACE);
@@ -197,7 +197,7 @@ public class AnySoftKeyboardPressEffectsTest extends AnySoftKeyboardBaseTest {
 
     Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
 
-    AnyApplication application = getApplicationContext();
+    NskApplicationBase application = getApplicationContext();
     application.onConfigurationChanged(configurationForNightMode(Configuration.UI_MODE_NIGHT_YES));
 
     Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
@@ -607,7 +607,7 @@ public class AnySoftKeyboardPressEffectsTest extends AnySoftKeyboardBaseTest {
   @Test
   public void testNewThemeReCreateController() {
     final KeyboardThemeFactory keyboardThemeFactory =
-        AnyApplication.getKeyboardThemeFactory(getApplicationContext());
+        NskApplicationBase.getKeyboardThemeFactory(getApplicationContext());
     final KeyPreviewsController first = getLastKeyPreviewController();
     keyboardThemeFactory.setAddOnEnabled("55d9797c-850c-40a8-9a5d-7467b55bd537", true);
     Assert.assertNotSame(first, getLastKeyPreviewController());

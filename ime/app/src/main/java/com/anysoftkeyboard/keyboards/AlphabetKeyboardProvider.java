@@ -7,19 +7,19 @@ import androidx.annotation.Nullable;
 /** Builds and caches alphabet keyboards. */
 final class AlphabetKeyboardProvider {
 
-  AnyKeyboard getAlphabetKeyboard(
+  KeyboardDefinition getAlphabetKeyboard(
       int index,
       @Nullable EditorInfo editorInfo,
       @NonNull KeyboardAddOnAndBuilder[] creators,
-      @NonNull AnyKeyboard[] cache,
+      @NonNull KeyboardDefinition[] cache,
       @NonNull KeyboardDimens keyboardDimens,
       @NonNull
-          java.util.function.BiFunction<Integer, KeyboardAddOnAndBuilder, AnyKeyboard>
+          java.util.function.BiFunction<Integer, KeyboardAddOnAndBuilder, KeyboardDefinition>
               keyboardFactory,
       @NonNull java.util.function.Function<EditorInfo, Integer> modeResolver) {
     if (cache.length == 0 || index >= cache.length) return null;
 
-    AnyKeyboard keyboard = cache[index];
+    KeyboardDefinition keyboard = cache[index];
     final int mode = modeResolver.apply(editorInfo);
     if (keyboard == null || keyboard.getKeyboardMode() != mode) {
       KeyboardAddOnAndBuilder builder = creators[index];
@@ -34,14 +34,14 @@ final class AlphabetKeyboardProvider {
   void rebuildAlphabetKeyboard(
       int index,
       @Nullable EditorInfo editorInfo,
-      @NonNull AnyKeyboard[] cache,
+      @NonNull KeyboardDefinition[] cache,
       @NonNull KeyboardAddOnAndBuilder[] creators,
       @NonNull KeyboardDimens keyboardDimens,
       @NonNull java.util.function.Function<EditorInfo, Integer> modeResolver) {
     if (creators.length == 0 || index >= creators.length) return;
     KeyboardAddOnAndBuilder builder = creators[index];
     final int mode = modeResolver.apply(editorInfo);
-    AnyKeyboard keyboard = builder.createKeyboard(mode);
+    KeyboardDefinition keyboard = builder.createKeyboard(mode);
     cache[index] = keyboard;
     keyboard.loadKeyboard(keyboardDimens);
   }

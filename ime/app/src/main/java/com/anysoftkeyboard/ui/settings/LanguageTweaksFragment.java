@@ -22,7 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import com.anysoftkeyboard.keyboards.KeyboardAddOnAndBuilder;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.List;
 import net.evendanan.pixel.UiUtils;
@@ -41,7 +41,7 @@ public class LanguageTweaksFragment extends PreferenceFragmentCompat {
     ListPreference listPreference =
         (ListPreference) findPreference(getText(R.string.settings_key_layout_for_internet_fields));
     List<KeyboardAddOnAndBuilder> enabledKeyboards =
-        AnyApplication.getKeyboardFactory(getContext()).getEnabledAddOns();
+        NskApplicationBase.getKeyboardFactory(getContext()).getEnabledAddOns();
     CharSequence[] entries = new CharSequence[enabledKeyboards.size() + 1];
     entries[0] = getString(R.string.no_internet_fields_specific_layout);
     CharSequence[] values = new CharSequence[enabledKeyboards.size() + 1];

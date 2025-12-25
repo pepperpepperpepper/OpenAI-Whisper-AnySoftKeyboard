@@ -9,13 +9,12 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import androidx.core.graphics.drawable.DrawableCompat;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
-import com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.anysoftkeyboard.overlay.ThemeResourcesHolder;
 import java.util.Locale;
 
 /**
- * Renders hint text or hint icons for a key. Extracted from {@link AnyKeyboardViewBase} to keep the
+ * Renders hint text or hint icons for a key. Extracted from {@link KeyboardViewBase} to keep the
  * drawing loop focused on orchestration.
  */
 final class KeyHintRenderer {
@@ -30,7 +29,7 @@ final class KeyHintRenderer {
   void drawHint(
       Canvas canvas,
       Paint paint,
-      AnyKey key,
+      KeyboardKey key,
       ThemeResourcesHolder themeResourcesHolder,
       Rect keyBackgroundPadding,
       int hintAlign,
@@ -95,7 +94,7 @@ final class KeyHintRenderer {
     }
   }
 
-  private String collectHintText(AnyKeyboard.AnyKey key) {
+  private String collectHintText(KeyboardKey key) {
     String hintText = "";
 
     if (key.hintLabel != null && key.hintLabel.length() > 0) {

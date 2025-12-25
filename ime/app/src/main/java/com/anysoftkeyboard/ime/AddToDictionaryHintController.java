@@ -3,7 +3,7 @@ package com.anysoftkeyboard.ime;
 import androidx.annotation.Nullable;
 import com.anysoftkeyboard.dictionaries.Suggest;
 import com.anysoftkeyboard.dictionaries.WordComposer;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.views.CandidateView;
 import java.util.List;
 import java.util.Locale;
@@ -17,7 +17,7 @@ final class AddToDictionaryHintController {
 
     Suggest suggest();
 
-    AnyKeyboard currentAlphabetKeyboard();
+    KeyboardDefinition currentAlphabetKeyboard();
 
     void setSuggestions(List<CharSequence> suggestions, int highlightedIndex);
   }

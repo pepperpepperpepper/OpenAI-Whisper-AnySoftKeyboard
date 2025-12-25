@@ -18,13 +18,9 @@ package com.anysoftkeyboard.devicespecific;
 
 import android.content.Context;
 
-/**
- * API 19+ gesture detector variant matching upstream behavior (quick-scale disabled).
- *
- * <p>The legacy {@code AskV19GestureDetector} remains as a thin wrapper.
- */
+/** API 19+ gesture detector variant matching upstream behavior (quick-scale disabled). */
 public class NskV19GestureDetector extends NskV8GestureDetector {
-  public NskV19GestureDetector(Context context, AskOnGestureListener listener) {
+  public NskV19GestureDetector(Context context, NskOnGestureListener listener) {
     super(context, listener);
     // this behavior is not good for ASK. See
     // https://github.com/AnySoftKeyboard/AnySoftKeyboard/issues/332

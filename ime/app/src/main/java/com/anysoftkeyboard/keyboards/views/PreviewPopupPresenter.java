@@ -4,22 +4,22 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
-import com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.anysoftkeyboard.keyboards.views.preview.KeyPreviewsController;
 import java.util.function.Function;
 
-/** Handles preview popup show/hide logic so {@link AnyKeyboardViewBase} stays slimmer. */
+/** Handles preview popup show/hide logic so {@link KeyboardViewBase} stays slimmer. */
 final class PreviewPopupPresenter {
 
   private final KeyIconResolver keyIconResolver;
   private final KeyPreviewManagerFacade keyPreviewManager;
   private final PreviewThemeConfigurator previewThemeConfigurator;
-  private final AnyKeyboardViewBase hostView;
+  private final KeyboardViewBase hostView;
 
   PreviewPopupPresenter(
-      @NonNull AnyKeyboardViewBase hostView,
+      @NonNull KeyboardViewBase hostView,
       @NonNull KeyIconResolver keyIconResolver,
       @NonNull KeyPreviewManagerFacade keyPreviewManager,
       @NonNull PreviewThemeConfigurator previewThemeConfigurator) {
@@ -35,7 +35,7 @@ final class PreviewPopupPresenter {
 
   void hidePreview(int keyIndex, @Nullable PointerTracker tracker) {
     final Keyboard.Key key = tracker == null ? null : tracker.getKey(keyIndex);
-    if (keyIndex != AnyKeyboardViewBase.NOT_A_KEY && key != null) {
+    if (keyIndex != KeyboardViewBase.NOT_A_KEY && key != null) {
       keyPreviewManager.getController().hidePreviewForKey(key);
     }
   }
@@ -43,20 +43,20 @@ final class PreviewPopupPresenter {
   void showPreview(
       int keyIndex,
       @Nullable PointerTracker tracker,
-      @Nullable AnyKeyboard keyboard,
+      @Nullable KeyboardDefinition keyboard,
       @NonNull Function<Integer, CharSequence> labelGuesser) {
     final boolean hidePreviewOrShowSpaceKeyPreview = (tracker == null);
     final Keyboard.Key key = hidePreviewOrShowSpaceKeyPreview ? null : tracker.getKey(keyIndex);
-    if (keyIndex != AnyKeyboardViewBase.NOT_A_KEY && key != null) {
+    if (keyIndex != KeyboardViewBase.NOT_A_KEY && key != null) {
       Drawable iconToDraw = keyIconResolver.getIconToDrawForKey(key, true);
 
       CharSequence label = tracker.getPreviewText(key);
-      if (keyboard != null && key instanceof AnyKey anyKey) {
+      if (keyboard != null && key instanceof KeyboardKey anyKey) {
         label = KeyLabelAdjuster.adjustLabelForFunctionState(keyboard, anyKey, label);
       }
       if (TextUtils.isEmpty(label)) {
         label = labelGuesser.apply(key.getPrimaryCode());
-        if (keyboard != null && key instanceof AnyKey anyKey) {
+        if (keyboard != null && key instanceof KeyboardKey anyKey) {
           label = KeyLabelAdjuster.adjustLabelForFunctionState(keyboard, anyKey, label);
         }
       }

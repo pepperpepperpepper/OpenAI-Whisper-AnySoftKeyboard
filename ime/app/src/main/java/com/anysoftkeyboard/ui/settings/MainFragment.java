@@ -30,16 +30,16 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.palette.graphics.Palette;
 import com.anysoftkeyboard.base.utils.Logger;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
 import com.anysoftkeyboard.permissions.PermissionRequestHelper;
 import com.anysoftkeyboard.releaseinfo.ChangeLogFragment;
 import com.anysoftkeyboard.rx.RxSchedulers;
 import com.anysoftkeyboard.ui.settings.setup.SetupSupport;
 import com.anysoftkeyboard.ui.settings.setup.SetupWizardActivity;
-import com.menny.android.anysoftkeyboard.AnyApplication;
 import com.menny.android.anysoftkeyboard.BuildConfig;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -59,7 +59,7 @@ public class MainFragment extends Fragment {
 
   private View mNoNotificationPermissionView;
   @NonNull private Disposable mPaletteDisposable = Disposables.empty();
-  private DemoAnyKeyboardView mDemoAnyKeyboardView;
+  private DemoKeyboardView mDemoKeyboardView;
   private GeneralDialogController mDialogController;
   private ViewGroup mAddOnUICardsContainer;
   private AddOnUICardManager mAddOnUICardManager;
@@ -100,11 +100,11 @@ public class MainFragment extends Fragment {
     latestChangeLogCard.addView(latestChangeLogCardContent);
     View testingView = view.findViewById(R.id.testing_build_message);
     testingView.setVisibility(mTestingBuild ? View.VISIBLE : View.GONE);
-    mDemoAnyKeyboardView = view.findViewById(R.id.demo_keyboard_view);
+    mDemoKeyboardView = view.findViewById(R.id.demo_keyboard_view);
     mNoNotificationPermissionView =
         view.findViewById(R.id.no_notifications_permission_click_here_root);
     mNoNotificationPermissionView.setOnClickListener(
-        v -> AnyApplication.notifier(requireContext()).askForNotificationPostPermission(this));
+        v -> NskApplicationBase.notifier(requireContext()).askForNotificationPostPermission(this));
 
     // Initialize add-on UI cards
     mAddOnUICardsContainer = view.findViewById(R.id.addon_ui_cards_container);
@@ -242,14 +242,14 @@ public class MainFragment extends Fragment {
       notConfiguredBox.setVisibility(View.VISIBLE);
     }
 
-    AnyKeyboard defaultKeyboard =
-        AnyApplication.getKeyboardFactory(requireContext())
+    KeyboardDefinition defaultKeyboard =
+        NskApplicationBase.getKeyboardFactory(requireContext())
             .getEnabledAddOn()
             .createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
-    defaultKeyboard.loadKeyboard(mDemoAnyKeyboardView.getThemedKeyboardDimens());
-    mDemoAnyKeyboardView.setKeyboard(defaultKeyboard, null, null);
+    defaultKeyboard.loadKeyboard(mDemoKeyboardView.getThemedKeyboardDimens());
+    mDemoKeyboardView.setKeyboard(defaultKeyboard, null, null);
 
-    mDemoAnyKeyboardView.setOnViewBitmapReadyListener(this::onDemoViewBitmapReady);
+    mDemoKeyboardView.setOnViewBitmapReadyListener(this::onDemoViewBitmapReady);
 
     if (mNotConfiguredAnimation != null) {
       mNotConfiguredAnimation.start();
@@ -315,7 +315,7 @@ public class MainFragment extends Fragment {
   @Override
   public void onDestroyView() {
     super.onDestroyView();
-    mDemoAnyKeyboardView.onViewNotRequired();
+    mDemoKeyboardView.onViewNotRequired();
     mDialogController.dismiss();
   }
 

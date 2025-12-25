@@ -6,12 +6,12 @@ import com.anysoftkeyboard.keyboards.Keyboard;
 /** Host adapter for {@link TextInputDispatcher} to live outside the service class. */
 final class TextInputHost implements TextInputDispatcher.Host {
 
-  private final AnySoftKeyboardSuggestions host;
+  private final ImeSuggestionsController host;
   private final AutoCorrectState autoCorrectState;
   private final PredictionState predictionState;
 
   TextInputHost(
-      AnySoftKeyboardSuggestions host,
+      ImeSuggestionsController host,
       AutoCorrectState autoCorrectState,
       PredictionState predictionState) {
     this.host = host;

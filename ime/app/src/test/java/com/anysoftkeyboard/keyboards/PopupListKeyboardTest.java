@@ -1,7 +1,7 @@
 package com.anysoftkeyboard.keyboards;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.anysoftkeyboard.keyboards.ExternalAnyKeyboardTest.SIMPLE_KeyboardDimens;
+import static com.anysoftkeyboard.keyboards.ExternalKeyboardTest.SIMPLE_KeyboardDimens;
 import static java.util.Arrays.asList;
 
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;

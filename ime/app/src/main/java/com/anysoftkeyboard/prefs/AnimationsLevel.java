@@ -2,7 +2,7 @@ package com.anysoftkeyboard.prefs;
 
 import android.content.Context;
 import com.anysoftkeyboard.android.PowerSaving;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import io.reactivex.Observable;
 
@@ -15,7 +15,7 @@ public enum AnimationsLevel {
     return Observable.combineLatest(
         PowerSaving.observePowerSavingState(
             appContext, R.string.settings_key_power_save_mode_animation_control),
-        AnyApplication.prefs(appContext)
+        NskApplicationBase.prefs(appContext)
             .getString(
                 R.string.settings_key_tweak_animations_level,
                 R.string.settings_default_tweak_animations_level)

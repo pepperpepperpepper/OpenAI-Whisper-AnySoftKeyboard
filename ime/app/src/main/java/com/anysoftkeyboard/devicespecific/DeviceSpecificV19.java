@@ -27,8 +27,8 @@ public class DeviceSpecificV19 extends DeviceSpecificV16 {
   }
 
   @Override
-  public GestureDetector createGestureDetector(Context appContext, AskOnGestureListener listener) {
-    return new AskV19GestureDetector(appContext, listener);
+  public GestureDetector createGestureDetector(Context appContext, NskOnGestureListener listener) {
+    return new NskV19GestureDetector(appContext, listener);
   }
 
   @Override

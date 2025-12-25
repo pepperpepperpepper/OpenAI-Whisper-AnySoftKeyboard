@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.dictionaries.Suggest;
 import com.anysoftkeyboard.dictionaries.WordComposer;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import java.util.List;
 
 /** Handles separator key logic (space/punctuation/newline) and next-word suggestions. */
@@ -69,7 +69,7 @@ final class SeparatorHandler {
     void performUpdateSuggestions();
 
     @NonNull
-    AnyKeyboard currentAlphabetKeyboard();
+    KeyboardDefinition currentAlphabetKeyboard();
 
     boolean isCurrentlyPredicting();
 

@@ -3,9 +3,9 @@ package com.anysoftkeyboard.dictionaries;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
@@ -21,7 +21,7 @@ public class ExternalDictionaryFactoryTest {
 
   @Before
   public void setUp() throws Exception {
-    mFactory = AnyApplication.getExternalDictionaryFactory(getApplicationContext());
+    mFactory = NskApplicationBase.getExternalDictionaryFactory(getApplicationContext());
   }
 
   @Test
@@ -36,7 +36,7 @@ public class ExternalDictionaryFactoryTest {
         ExternalDictionaryFactory.isOverrideDictionaryPrefKey(
             "keyboard_sdfsdf_override_dictionary"));
 
-    AnyKeyboard keyboard = Mockito.mock(AnyKeyboard.class);
+    KeyboardDefinition keyboard = Mockito.mock(KeyboardDefinition.class);
     Mockito.doReturn("some_id").when(keyboard).getKeyboardId();
     final String prefKey = ExternalDictionaryFactory.getDictionaryOverrideKey(keyboard);
     Assert.assertNotNull(prefKey);
@@ -74,7 +74,7 @@ public class ExternalDictionaryFactoryTest {
 
   @Test
   public void testBuildersForKeyboardHappyPath() {
-    AnyKeyboard keyboard = Mockito.mock(AnyKeyboard.class);
+    KeyboardDefinition keyboard = Mockito.mock(KeyboardDefinition.class);
     Mockito.doReturn("en").when(keyboard).getDefaultDictionaryLocale();
     Mockito.doReturn("some_id").when(keyboard).getKeyboardId();
 
@@ -93,7 +93,7 @@ public class ExternalDictionaryFactoryTest {
 
   @Test
   public void testEmptyBuildersForKeyboardIfUnknownLocale() {
-    AnyKeyboard keyboard = Mockito.mock(AnyKeyboard.class);
+    KeyboardDefinition keyboard = Mockito.mock(KeyboardDefinition.class);
     Mockito.doReturn("none").when(keyboard).getDefaultDictionaryLocale();
     Mockito.doReturn("some_id").when(keyboard).getKeyboardId();
 
@@ -105,7 +105,7 @@ public class ExternalDictionaryFactoryTest {
 
   @Test
   public void testOverrideBuildersForKeyboardHappyPath() {
-    AnyKeyboard keyboard = Mockito.mock(AnyKeyboard.class);
+    KeyboardDefinition keyboard = Mockito.mock(KeyboardDefinition.class);
     Mockito.doReturn("none").when(keyboard).getDefaultDictionaryLocale();
     Mockito.doReturn("some_id").when(keyboard).getKeyboardId();
     List<DictionaryAddOnAndBuilder> newBuilders =
@@ -125,7 +125,7 @@ public class ExternalDictionaryFactoryTest {
 
   @Test
   public void testOverrideWhenDictionaryUnknown() {
-    AnyKeyboard keyboard = Mockito.mock(AnyKeyboard.class);
+    KeyboardDefinition keyboard = Mockito.mock(KeyboardDefinition.class);
     Mockito.doReturn("none").when(keyboard).getDefaultDictionaryLocale();
     Mockito.doReturn("some_id").when(keyboard).getKeyboardId();
 

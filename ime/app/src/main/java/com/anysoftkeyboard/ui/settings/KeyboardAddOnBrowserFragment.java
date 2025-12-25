@@ -20,11 +20,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import com.anysoftkeyboard.addons.AddOnsFactory;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
 import com.anysoftkeyboard.keyboards.KeyboardAddOnAndBuilder;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 
 public class KeyboardAddOnBrowserFragment
@@ -43,7 +43,7 @@ public class KeyboardAddOnBrowserFragment
   @NonNull
   @Override
   protected AddOnsFactory<KeyboardAddOnAndBuilder> getAddOnFactory() {
-    return AnyApplication.getKeyboardFactory(getContext());
+    return NskApplicationBase.getKeyboardFactory(getContext());
   }
 
   @Nullable
@@ -59,8 +59,8 @@ public class KeyboardAddOnBrowserFragment
 
   @Override
   protected void applyAddOnToDemoKeyboardView(
-      @NonNull KeyboardAddOnAndBuilder addOn, @NonNull DemoAnyKeyboardView demoKeyboardView) {
-    AnyKeyboard defaultKeyboard = addOn.createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
+      @NonNull KeyboardAddOnAndBuilder addOn, @NonNull DemoKeyboardView demoKeyboardView) {
+    KeyboardDefinition defaultKeyboard = addOn.createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
     defaultKeyboard.loadKeyboard(demoKeyboardView.getThemedKeyboardDimens());
     demoKeyboardView.setKeyboard(defaultKeyboard, null, null);
   }

@@ -258,13 +258,12 @@ public class NextWordSuggestionsUiAutomatorTest {
         mDevice.wait(
             Until.findObject(
                 By.res(resId("AnyKeyboardMainView"))
-                    .clazz("com.anysoftkeyboard.keyboards.views.AnyKeyboardView")),
+                    .clazz("com.anysoftkeyboard.keyboards.views.KeyboardView")),
             1500);
     if (keyboard == null) {
       keyboard =
           mDevice.wait(
-              Until.findObject(By.clazz("com.anysoftkeyboard.keyboards.views.AnyKeyboardView")),
-              1500);
+              Until.findObject(By.clazz("com.anysoftkeyboard.keyboards.views.KeyboardView")), 1500);
     }
     if (keyboard != null) {
       return keyboard.getVisibleBounds();

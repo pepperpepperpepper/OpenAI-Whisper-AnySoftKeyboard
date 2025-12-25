@@ -7,7 +7,7 @@ import java.util.Locale;
 
 /**
  * Small stateless helpers that operate on the current selection/cursor to keep {@link
- * com.anysoftkeyboard.AnySoftKeyboard} slimmer.
+ * com.anysoftkeyboard.ImeServiceBase} slimmer.
  */
 public final class SelectionEditHelper {
 

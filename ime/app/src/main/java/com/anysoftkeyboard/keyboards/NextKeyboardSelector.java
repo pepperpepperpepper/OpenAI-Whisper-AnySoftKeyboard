@@ -15,7 +15,7 @@ final class NextKeyboardSelector {
 
   private NextKeyboardSelector() {}
 
-  static AnyKeyboard nextKeyboard(
+  static KeyboardDefinition nextKeyboard(
       NextKeyboardType type,
       boolean alphabetMode,
       int alphabetKeyboardsCount,
@@ -23,10 +23,10 @@ final class NextKeyboardSelector {
       IntConsumer setLastSelectedAlphabetIndex,
       IntSupplier lastSelectedSymbolsIndex,
       IntConsumer setLastSelectedSymbolsIndex,
-      BooleanFunction<AnyKeyboard> nextAlphabetKeyboard,
-      Supplier<AnyKeyboard> nextSymbolsKeyboard,
-      IntFunction<AnyKeyboard> scrollSymbolsKeyboard,
-      IntFunction<AnyKeyboard> scrollAlphabetKeyboard) {
+      BooleanFunction<KeyboardDefinition> nextAlphabetKeyboard,
+      Supplier<KeyboardDefinition> nextSymbolsKeyboard,
+      IntFunction<KeyboardDefinition> scrollSymbolsKeyboard,
+      IntFunction<KeyboardDefinition> scrollAlphabetKeyboard) {
     switch (type) {
       case Alphabet:
       case AlphabetSupportsPhysical:

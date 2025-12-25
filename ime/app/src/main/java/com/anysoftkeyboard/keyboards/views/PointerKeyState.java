@@ -2,7 +2,7 @@ package com.anysoftkeyboard.keyboards.views;
 
 final class PointerKeyState {
 
-  private static final int NOT_A_KEY = AnyKeyboardViewBase.NOT_A_KEY;
+  private static final int NOT_A_KEY = KeyboardViewBase.NOT_A_KEY;
 
   private final KeyDetector keyDetector;
 

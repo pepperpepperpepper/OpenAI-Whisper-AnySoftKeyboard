@@ -9,15 +9,15 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 
 public class UserInterfaceSettingsFragment extends Fragment implements View.OnClickListener {
 
-  private DemoAnyKeyboardView mDemoAnyKeyboardView;
+  private DemoKeyboardView mDemoKeyboardView;
 
   @Override
   public View onCreateView(
@@ -31,7 +31,7 @@ public class UserInterfaceSettingsFragment extends Fragment implements View.OnCl
     view.findViewById(R.id.settings_tile_themes).setOnClickListener(this);
     view.findViewById(R.id.settings_tile_effects).setOnClickListener(this);
     view.findViewById(R.id.settings_tile_even_more).setOnClickListener(this);
-    mDemoAnyKeyboardView = view.findViewById(R.id.demo_keyboard_view);
+    mDemoKeyboardView = view.findViewById(R.id.demo_keyboard_view);
     if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
       view.findViewById(R.id.demo_keyboard_view_background).setVisibility(View.GONE);
     }
@@ -42,12 +42,12 @@ public class UserInterfaceSettingsFragment extends Fragment implements View.OnCl
     super.onStart();
     requireActivity().setTitle(R.string.ui_root_tile);
 
-    AnyKeyboard defaultKeyboard =
-        AnyApplication.getKeyboardFactory(requireContext())
+    KeyboardDefinition defaultKeyboard =
+        NskApplicationBase.getKeyboardFactory(requireContext())
             .getEnabledAddOn()
             .createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
-    defaultKeyboard.loadKeyboard(mDemoAnyKeyboardView.getThemedKeyboardDimens());
-    mDemoAnyKeyboardView.setKeyboard(defaultKeyboard, null, null);
+    defaultKeyboard.loadKeyboard(mDemoKeyboardView.getThemedKeyboardDimens());
+    mDemoKeyboardView.setKeyboard(defaultKeyboard, null, null);
   }
 
   @Override

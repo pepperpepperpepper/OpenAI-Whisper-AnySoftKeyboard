@@ -23,7 +23,7 @@ import org.robolectric.shadows.ShadowToast;
 @RunWith(AnySoftKeyboardRobolectricTestRunner.class)
 public class AnySoftKeyboardMediaInsertionTest extends AnySoftKeyboardBaseTest {
 
-  private AnySoftKeyboardMediaInsertion mPackageScope;
+  private ImeMediaInsertion mPackageScope;
   private RemoteInsertion mRemoteInsertion;
 
   @Before
@@ -86,7 +86,7 @@ public class AnySoftKeyboardMediaInsertionTest extends AnySoftKeyboardBaseTest {
     Mockito.verify(mRemoteInsertion)
         .startMediaRequest(
             Mockito.eq(new String[] {"image/gif"}),
-            Mockito.eq(AnySoftKeyboardMediaInsertion.getIdForInsertionRequest(info)),
+            Mockito.eq(ImeMediaInsertion.getIdForInsertionRequest(info)),
             Mockito.any());
   }
 
@@ -107,7 +107,7 @@ public class AnySoftKeyboardMediaInsertionTest extends AnySoftKeyboardBaseTest {
     argumentCaptor
         .getValue()
         .onMediaRequestDone(
-            1 + AnySoftKeyboardMediaInsertion.getIdForInsertionRequest(info),
+            1 + ImeMediaInsertion.getIdForInsertionRequest(info),
             new InputContentInfoCompat(
                 Uri.EMPTY,
                 new ClipDescription("", EditorInfoCompat.getContentMimeTypes(info)),
@@ -136,7 +136,7 @@ public class AnySoftKeyboardMediaInsertionTest extends AnySoftKeyboardBaseTest {
     argumentCaptor
         .getValue()
         .onMediaRequestDone(
-            AnySoftKeyboardMediaInsertion.getIdForInsertionRequest(info),
+            ImeMediaInsertion.getIdForInsertionRequest(info),
             new InputContentInfoCompat(
                 Uri.EMPTY,
                 new ClipDescription("", EditorInfoCompat.getContentMimeTypes(info)),
@@ -182,7 +182,7 @@ public class AnySoftKeyboardMediaInsertionTest extends AnySoftKeyboardBaseTest {
     argumentCaptor
         .getValue()
         .onMediaRequestDone(
-            AnySoftKeyboardMediaInsertion.getIdForInsertionRequest(info),
+            ImeMediaInsertion.getIdForInsertionRequest(info),
             new InputContentInfoCompat(
                 Uri.EMPTY,
                 new ClipDescription("", EditorInfoCompat.getContentMimeTypes(info)),
@@ -207,7 +207,7 @@ public class AnySoftKeyboardMediaInsertionTest extends AnySoftKeyboardBaseTest {
 
     argumentCaptor
         .getValue()
-        .onMediaRequestCancelled(AnySoftKeyboardMediaInsertion.getIdForInsertionRequest(info));
+        .onMediaRequestCancelled(ImeMediaInsertion.getIdForInsertionRequest(info));
 
     Assert.assertNull(mAnySoftKeyboardUnderTest.getCommitedInputContentInfo());
   }

@@ -8,9 +8,9 @@ import androidx.core.util.Pair;
 import com.anysoftkeyboard.dictionaries.DictionaryBackgroundLoader;
 import com.anysoftkeyboard.dictionaries.InMemoryDictionary;
 import com.anysoftkeyboard.dictionaries.KeyCodesProvider;
-import com.anysoftkeyboard.ime.AnySoftKeyboardKeyboardTagsSearcher;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.ime.ImeKeyboardTagsSearcher;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import io.reactivex.disposables.Disposable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,8 +43,8 @@ public class TagsExtractorImpl implements TagsExtractor {
   private final ArrayMap<String, List<CharSequence>> mTagsForOutputs = new ArrayMap<>();
 
   @NonNull
-  private final AnySoftKeyboardKeyboardTagsSearcher.TagsSuggestionList mTagSuggestionsList =
-      new AnySoftKeyboardKeyboardTagsSearcher.TagsSuggestionList();
+  private final ImeKeyboardTagsSearcher.TagsSuggestionList mTagSuggestionsList =
+      new ImeKeyboardTagsSearcher.TagsSuggestionList();
 
   @NonNull @VisibleForTesting final InMemoryDictionary mTagsDictionary;
   private final MyCodesProvider mWordComposer = new MyCodesProvider();
@@ -62,7 +62,7 @@ public class TagsExtractorImpl implements TagsExtractor {
     mQuickKeyHistoryRecords = quickKeyHistoryRecords;
     for (List<Keyboard.Key> keys : listsOfKeys) {
       for (Keyboard.Key key : keys) {
-        AnyKeyboard.AnyKey anyKey = (AnyKeyboard.AnyKey) key;
+        KeyboardKey anyKey = (KeyboardKey) key;
         for (String tagFromKey : anyKey.getKeyTags()) {
           String tag = tagFromKey.toLowerCase(Locale.US);
           if (!mTagsForOutputs.containsKey(tag)) {

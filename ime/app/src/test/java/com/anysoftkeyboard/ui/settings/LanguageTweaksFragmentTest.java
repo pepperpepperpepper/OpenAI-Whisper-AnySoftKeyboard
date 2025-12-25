@@ -8,7 +8,7 @@ import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.RobolectricFragmentTestCase;
 import com.anysoftkeyboard.keyboards.KeyboardAddOnAndBuilder;
 import com.anysoftkeyboard.keyboards.KeyboardFactory;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class LanguageTweaksFragmentTest
   @Test
   public void testShowEnabledKeyboardsPlusNoneEntries() {
     final KeyboardFactory keyboardFactory =
-        AnyApplication.getKeyboardFactory(getApplicationContext());
+        NskApplicationBase.getKeyboardFactory(getApplicationContext());
 
     AddOnTestUtils.ensureKeyboardAtIndexEnabled(0, true);
     AddOnTestUtils.ensureKeyboardAtIndexEnabled(1, true);

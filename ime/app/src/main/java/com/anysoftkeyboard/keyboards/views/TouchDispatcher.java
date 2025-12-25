@@ -7,19 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Small façade over touch handling to peel logic out of AnyKeyboardViewBase. It delegates to
+ * Small façade over touch handling to peel logic out of KeyboardViewBase. It delegates to
  * PointerTracker while keeping the view thin.
  */
 class TouchDispatcher {
 
   private static final String TAG = "TouchDispatcher";
 
-  private final AnyKeyboardViewBase hostView;
+  private final KeyboardViewBase hostView;
   private final List<PointerTracker> activePointers = new ArrayList<>();
   private boolean touchesAreDisabledTillLastFingerIsUp = false;
   private final TwoFingerStateTracker twoFingerStateTracker;
 
-  TouchDispatcher(@NonNull AnyKeyboardViewBase hostView, long twoFingerLingerMs) {
+  TouchDispatcher(@NonNull KeyboardViewBase hostView, long twoFingerLingerMs) {
     this.hostView = hostView;
     this.twoFingerStateTracker = new TwoFingerStateTracker(twoFingerLingerMs);
   }

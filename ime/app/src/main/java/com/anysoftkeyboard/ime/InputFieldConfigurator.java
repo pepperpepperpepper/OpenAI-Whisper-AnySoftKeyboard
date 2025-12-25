@@ -4,7 +4,7 @@ import android.view.inputmethod.EditorInfo;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.keyboards.KeyboardSwitcher;
 
-/** Extracted input field configuration logic from {@link AnySoftKeyboardSuggestions}. */
+/** Extracted input field configuration logic from {@link ImeSuggestionsController}. */
 final class InputFieldConfigurator {
 
   static final class Result {

@@ -3,11 +3,11 @@ package com.anysoftkeyboard.ime;
 import android.os.IBinder;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 
 /**
  * Handles showing/hiding the IME status icon based on the current keyboard and flags. Extracted
- * from {@link com.anysoftkeyboard.AnySoftKeyboard} to reduce lifecycle clutter.
+ * from {@link com.anysoftkeyboard.ImeServiceBase} to reduce lifecycle clutter.
  */
 public final class StatusIconController {
 
@@ -18,7 +18,9 @@ public final class StatusIconController {
   }
 
   public void showIfNeeded(
-      boolean shouldShow, @Nullable IBinder imeToken, @Nullable AnyKeyboard alphabetKeyboard) {
+      boolean shouldShow,
+      @Nullable IBinder imeToken,
+      @Nullable KeyboardDefinition alphabetKeyboard) {
     if (!shouldShow || imeToken == null || alphabetKeyboard == null) return;
     imm.showStatusIcon(
         imeToken,

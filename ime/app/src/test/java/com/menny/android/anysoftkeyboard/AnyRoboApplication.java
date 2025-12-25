@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.robolectric.Shadows;
 import wtf.uhoh.newsoftkeyboard.NewSoftKeyboardService;
 
-public class AnyRoboApplication extends AnyApplication {
+public class AnyRoboApplication extends NskApplicationBase {
   private ExternalDictionaryFactory mDictionaryFactory;
   private QuickTextKeyFactory mQuickKeyFactory;
   private KeyboardExtensionFactory mToolsKeyboardFactory;

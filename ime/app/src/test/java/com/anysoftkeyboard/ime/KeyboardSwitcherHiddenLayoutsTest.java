@@ -7,8 +7,8 @@ import com.anysoftkeyboard.AnySoftKeyboardBaseTest;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.TestableAnySoftKeyboard.TestableKeyboardSwitcher;
 import com.anysoftkeyboard.addons.AddOn;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.KeyboardAddOnAndBuilder;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.KeyboardFactory;
 import com.menny.android.anysoftkeyboard.R;
 import java.lang.reflect.Field;
@@ -31,7 +31,7 @@ public class KeyboardSwitcherHiddenLayoutsTest extends AnySoftKeyboardBaseTest {
   @Test
   public void testHiddenSymbolsAccessibleByDirectIdOnly() {
     mKeyboardFactory =
-        com.menny.android.anysoftkeyboard.AnyApplication.getKeyboardFactory(
+        com.menny.android.anysoftkeyboard.NskApplicationBase.getKeyboardFactory(
             getApplicationContext());
 
     mKeyboardFactory.getAllAddOns();
@@ -78,15 +78,16 @@ public class KeyboardSwitcherHiddenLayoutsTest extends AnySoftKeyboardBaseTest {
 
     final EditorInfo editorInfo = mAnySoftKeyboardUnderTest.getCurrentInputEditorInfo();
 
-    AnyKeyboard mainKeyboard = switcher.showAlphabetKeyboardById(editorInfo, ROZOFF_MAIN_ID);
+    KeyboardDefinition mainKeyboard = switcher.showAlphabetKeyboardById(editorInfo, ROZOFF_MAIN_ID);
     Assert.assertNotNull(mainKeyboard);
     Assert.assertEquals(ROZOFF_MAIN_ID, mainKeyboard.getKeyboardAddOn().getId());
 
-    AnyKeyboard symbolsKeyboard = switcher.showAlphabetKeyboardById(editorInfo, ROZOFF_SYMBOLS_ID);
+    KeyboardDefinition symbolsKeyboard =
+        switcher.showAlphabetKeyboardById(editorInfo, ROZOFF_SYMBOLS_ID);
     Assert.assertNotNull(symbolsKeyboard);
     Assert.assertEquals(ROZOFF_SYMBOLS_ID, symbolsKeyboard.getKeyboardAddOn().getId());
 
-    AnyKeyboard extendedKeyboard =
+    KeyboardDefinition extendedKeyboard =
         switcher.showAlphabetKeyboardById(editorInfo, ROZOFF_SYMBOLS_EXT_ID);
     Assert.assertNotNull(extendedKeyboard);
     Assert.assertEquals(ROZOFF_SYMBOLS_EXT_ID, extendedKeyboard.getKeyboardAddOn().getId());
@@ -104,7 +105,7 @@ public class KeyboardSwitcherHiddenLayoutsTest extends AnySoftKeyboardBaseTest {
         "direct show must not add hidden keyboard to cycle");
 
     // Switching back to the main layout should still work via direct id.
-    AnyKeyboard restoredMainKeyboard =
+    KeyboardDefinition restoredMainKeyboard =
         switcher.showAlphabetKeyboardById(editorInfo, ROZOFF_MAIN_ID);
     Assert.assertNotNull(restoredMainKeyboard);
     Assert.assertEquals(ROZOFF_MAIN_ID, restoredMainKeyboard.getKeyboardAddOn().getId());

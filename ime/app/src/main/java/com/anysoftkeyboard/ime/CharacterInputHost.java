@@ -7,13 +7,13 @@ import com.anysoftkeyboard.keyboards.views.CandidateView;
 /** Host adapter for {@link CharacterInputHandler} to live outside the service class. */
 final class CharacterInputHost implements CharacterInputHandler.Host {
 
-  private final AnySoftKeyboardSuggestions host;
+  private final ImeSuggestionsController host;
   private final AutoCorrectState autoCorrectState;
   private final PredictionState predictionState;
   private final ShiftStateTracker shiftStateTracker;
 
   CharacterInputHost(
-      AnySoftKeyboardSuggestions host,
+      ImeSuggestionsController host,
       AutoCorrectState autoCorrectState,
       PredictionState predictionState,
       ShiftStateTracker shiftStateTracker) {

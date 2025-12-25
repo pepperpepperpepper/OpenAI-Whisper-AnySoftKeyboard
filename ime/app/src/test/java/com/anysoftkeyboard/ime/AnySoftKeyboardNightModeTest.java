@@ -13,7 +13,7 @@ import com.anysoftkeyboard.overlay.OverlayData;
 import com.anysoftkeyboard.overlay.OverlyDataCreator;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
 import com.anysoftkeyboard.ui.settings.MainSettingsActivity;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class AnySoftKeyboardNightModeTest extends AnySoftKeyboardBaseTest {
   @Test
   public void testIconShownWhenTriggered() throws Exception {
     SharedPrefsHelper.setPrefsValue(R.string.settings_key_night_mode, "follow_system");
-    AnyApplication application = getApplicationContext();
+    NskApplicationBase application = getApplicationContext();
     // initial watermark
     ViewTestUtils.assertCurrentWatermarkDoesNotHaveDrawable(
         mAnySoftKeyboardUnderTest.getInputView(), R.drawable.ic_watermark_night_mode);
@@ -58,7 +58,7 @@ public class AnySoftKeyboardNightModeTest extends AnySoftKeyboardBaseTest {
   public void testIconShownWhenNever() throws Exception {
     Mockito.reset(mAnySoftKeyboardUnderTest.getInputView());
     SharedPrefsHelper.setPrefsValue(R.string.settings_key_night_mode, "never");
-    AnyApplication application = getApplicationContext();
+    NskApplicationBase application = getApplicationContext();
     ViewTestUtils.assertZeroWatermarkInteractions(mAnySoftKeyboardUnderTest.getInputView());
 
     application.onConfigurationChanged(configurationForNightMode(Configuration.UI_MODE_NIGHT_YES));
@@ -68,15 +68,14 @@ public class AnySoftKeyboardNightModeTest extends AnySoftKeyboardBaseTest {
 
   @Test
   public void testSetNightModeOverlay() {
-    AnyApplication application = getApplicationContext();
+    NskApplicationBase application = getApplicationContext();
     SharedPrefsHelper.setPrefsValue(R.string.settings_key_night_mode, "follow_system");
     SharedPrefsHelper.setPrefsValue(R.string.settings_key_night_mode_theme_control, true);
 
     final OverlyDataCreator originalOverlayDataCreator =
         mAnySoftKeyboardUnderTest.getOriginalOverlayDataCreator();
 
-    Assert.assertTrue(
-        originalOverlayDataCreator instanceof AnySoftKeyboardThemeOverlay.ToggleOverlayCreator);
+    Assert.assertTrue(originalOverlayDataCreator instanceof ImeThemeOverlay.ToggleOverlayCreator);
 
     final OverlayData normal =
         originalOverlayDataCreator.createOverlayData(

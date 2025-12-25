@@ -259,8 +259,7 @@ public class AnySoftKeyboardPowerSavingTest extends AnySoftKeyboardBaseTest {
     final OverlyDataCreator originalOverlayDataCreator =
         mAnySoftKeyboardUnderTest.getOriginalOverlayDataCreator();
 
-    Assert.assertTrue(
-        originalOverlayDataCreator instanceof AnySoftKeyboardThemeOverlay.ToggleOverlayCreator);
+    Assert.assertTrue(originalOverlayDataCreator instanceof ImeThemeOverlay.ToggleOverlayCreator);
 
     final OverlayData normal =
         originalOverlayDataCreator.createOverlayData(

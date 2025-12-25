@@ -5,7 +5,7 @@ import android.content.res.XmlResourceParser;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.addons.AddOn;
 
-final class VoiceKey extends AnyKeyboard.AnyKey {
+final class VoiceKey extends KeyboardKey {
 
   private boolean voiceActive = false;
 

@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 
 /**
  * Tracks cursor/selection and candidate span positions for the active input session. Extracted from
- * AnySoftKeyboardBase to reduce monolith size.
+ * ImeBase to reduce monolith size.
  */
 final class EditorStateTracker {
 

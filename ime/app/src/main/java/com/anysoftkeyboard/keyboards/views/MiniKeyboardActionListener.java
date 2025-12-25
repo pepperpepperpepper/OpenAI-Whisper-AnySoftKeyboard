@@ -2,8 +2,8 @@ package com.anysoftkeyboard.keyboards.views;
 
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 
 public final class MiniKeyboardActionListener implements OnKeyboardActionListener {
 
@@ -99,7 +99,7 @@ public final class MiniKeyboardActionListener implements OnKeyboardActionListene
   }
 
   @Override
-  public boolean onGestureTypingInputStart(int x, int y, AnyKeyboard.AnyKey key, long eventTime) {
+  public boolean onGestureTypingInputStart(int x, int y, KeyboardKey key, long eventTime) {
     // no gesture in mini-keyboard
     return false;
   }

@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.test.core.app.ApplicationProvider;
 import com.anysoftkeyboard.keyboards.Keyboard;
 import com.anysoftkeyboard.keyboards.KeyboardDimens;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
 import com.anysoftkeyboard.ui.settings.MainSettingsActivity;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
@@ -83,12 +83,11 @@ public class WizardPageWelcomeFragmentTest
   @Test
   public void testDemoRotate() {
     WizardPageWelcomeFragment fragment = startFragment();
-    DemoAnyKeyboardView demoAnyKeyboardView =
-        fragment.getView().findViewById(R.id.demo_keyboard_view);
+    DemoKeyboardView demoKeyboardView = fragment.getView().findViewById(R.id.demo_keyboard_view);
     int timesDemoChanged = 0;
     final int runsToMake = 10;
     for (int tests = 0; tests < runsToMake; tests++) {
-      final long startDemoDescription = describeDemoKeyboard(demoAnyKeyboardView);
+      final long startDemoDescription = describeDemoKeyboard(demoKeyboardView);
       final long startTime = Robolectric.getForegroundThreadScheduler().getCurrentTime();
 
       Assert.assertTrue(Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable());
@@ -96,7 +95,7 @@ public class WizardPageWelcomeFragmentTest
       Assert.assertNotEquals(
           startTime, Robolectric.getForegroundThreadScheduler().getCurrentTime());
 
-      if (startDemoDescription != describeDemoKeyboard(demoAnyKeyboardView)) {
+      if (startDemoDescription != describeDemoKeyboard(demoKeyboardView)) {
         timesDemoChanged++;
       }
     }
@@ -105,13 +104,13 @@ public class WizardPageWelcomeFragmentTest
     Assert.assertTrue(timesDemoChanged > runsToMake / 2);
   }
 
-  private long describeDemoKeyboard(DemoAnyKeyboardView demoAnyKeyboardView) {
+  private long describeDemoKeyboard(DemoKeyboardView demoKeyboardView) {
     long description = 0;
-    for (Keyboard.Key key : demoAnyKeyboardView.getKeyboard().getKeys()) {
+    for (Keyboard.Key key : demoKeyboardView.getKeyboard().getKeys()) {
       description += key.getPrimaryCode();
     }
 
-    KeyboardDimens themedKeyboardDimens = demoAnyKeyboardView.getThemedKeyboardDimens();
+    KeyboardDimens themedKeyboardDimens = demoKeyboardView.getThemedKeyboardDimens();
     description += themedKeyboardDimens.getKeyboardMaxWidth();
     description += themedKeyboardDimens.getLargeKeyHeight();
     description += themedKeyboardDimens.getNormalKeyHeight();

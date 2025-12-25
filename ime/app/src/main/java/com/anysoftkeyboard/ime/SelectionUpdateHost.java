@@ -3,14 +3,14 @@ package com.anysoftkeyboard.ime;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.dictionaries.WordComposer;
 
-/** Bridges SelectionUpdateProcessor.Host calls out of AnySoftKeyboardSuggestions. */
+/** Bridges SelectionUpdateProcessor.Host calls out of {@link ImeSuggestionsController}. */
 final class SelectionUpdateHost implements SelectionUpdateProcessor.Host {
-  private final AnySoftKeyboardSuggestions host;
+  private final ImeSuggestionsController host;
   private final int oldCandidateStart;
   private final int oldCandidateEnd;
 
   SelectionUpdateHost(
-      @NonNull AnySoftKeyboardSuggestions host, int oldCandidateStart, int oldCandidateEnd) {
+      @NonNull ImeSuggestionsController host, int oldCandidateStart, int oldCandidateEnd) {
     this.host = host;
     this.oldCandidateStart = oldCandidateStart;
     this.oldCandidateEnd = oldCandidateEnd;
@@ -93,6 +93,6 @@ final class SelectionUpdateHost implements SelectionUpdateProcessor.Host {
 
   @Override
   public String logTag() {
-    return AnySoftKeyboardSuggestions.TAG;
+    return ImeSuggestionsController.TAG;
   }
 }

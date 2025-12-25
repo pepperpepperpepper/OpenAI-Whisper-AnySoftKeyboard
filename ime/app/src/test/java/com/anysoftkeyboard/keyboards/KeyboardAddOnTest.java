@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.text.TextUtils;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ public class KeyboardAddOnTest {
   @Test
   public void testGetKeyboardDefaultEnabled() throws Exception {
     List<KeyboardAddOnAndBuilder> enabledKeyboards =
-        AnyApplication.getKeyboardFactory(getApplicationContext()).getEnabledAddOns();
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getEnabledAddOns();
     // checking that ASK English is enabled
     boolean askEnglishEnabled = false;
     for (KeyboardAddOnAndBuilder addOnAndBuilder : enabledKeyboards) {
@@ -42,7 +42,7 @@ public class KeyboardAddOnTest {
   @Test
   public void testGetEnabledDefaultFromAllKeyboards() throws Exception {
     List<KeyboardAddOnAndBuilder> allAvailableKeyboards =
-        AnyApplication.getKeyboardFactory(getApplicationContext()).getAllAddOns();
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getAllAddOns();
 
     Map<String, Boolean> keyboardsEnabled = new HashMap<>();
     for (KeyboardAddOnAndBuilder addOnAndBuilder : allAvailableKeyboards) {
@@ -60,7 +60,7 @@ public class KeyboardAddOnTest {
 
   private KeyboardAddOnAndBuilder getKeyboardFromFactory(String id) {
     List<KeyboardAddOnAndBuilder> keyboards =
-        AnyApplication.getKeyboardFactory(getApplicationContext()).getAllAddOns();
+        NskApplicationBase.getKeyboardFactory(getApplicationContext()).getAllAddOns();
 
     for (KeyboardAddOnAndBuilder addOnAndBuilder : keyboards) {
       if (addOnAndBuilder.getId().equals(id)) {

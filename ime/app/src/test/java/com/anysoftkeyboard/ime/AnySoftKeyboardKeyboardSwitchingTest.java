@@ -15,15 +15,15 @@ import com.anysoftkeyboard.AnySoftKeyboardBaseTest;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.TestableAnySoftKeyboard;
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.GenericKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.KeyboardFactory;
 import com.anysoftkeyboard.keyboards.KeyboardSwitcher;
 import com.anysoftkeyboard.test.GeneralDialogTestUtil;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
 import com.anysoftkeyboard.ui.settings.MainSettingsActivity;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Test;
@@ -65,13 +65,15 @@ public class AnySoftKeyboardKeyboardSwitchingTest extends AnySoftKeyboardBaseTes
   public void testCreateOrUseCacheKeyboard() {
     mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.MODE_SYMBOLS);
     verifyCreatedGenericKeyboard("symbols_keyboard", KeyboardSwitcher.INPUT_MODE_TEXT);
-    final AnyKeyboard symbolsKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    final KeyboardDefinition symbolsKeyboard =
+        mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.MODE_SYMBOLS);
     verifyCreatedGenericKeyboard("alt_symbols_keyboard", KeyboardSwitcher.INPUT_MODE_TEXT);
-    final AnyKeyboard altSymbolsKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    final KeyboardDefinition altSymbolsKeyboard =
+        mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.MODE_SYMBOLS);
     verifyCreatedGenericKeyboard("alt_numbers_symbols_keyboard", KeyboardSwitcher.INPUT_MODE_TEXT);
-    final AnyKeyboard altNumbersSymbolsKeyboard =
+    final KeyboardDefinition altNumbersSymbolsKeyboard =
         mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     Assert.assertNotSame(symbolsKeyboard, altSymbolsKeyboard);
     Assert.assertNotSame(altSymbolsKeyboard, altNumbersSymbolsKeyboard);
@@ -153,13 +155,15 @@ public class AnySoftKeyboardKeyboardSwitchingTest extends AnySoftKeyboardBaseTes
     SharedPrefsHelper.setPrefsValue("settings_key_use_16_keys_symbols_keyboards", true);
     mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.MODE_SYMBOLS);
     verifyCreatedGenericKeyboard("symbols_keyboard", KeyboardSwitcher.INPUT_MODE_TEXT);
-    final AnyKeyboard symbolsKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    final KeyboardDefinition symbolsKeyboard =
+        mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.MODE_SYMBOLS);
     verifyCreatedGenericKeyboard("alt_symbols_keyboard", KeyboardSwitcher.INPUT_MODE_TEXT);
-    final AnyKeyboard altSymbolsKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    final KeyboardDefinition altSymbolsKeyboard =
+        mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.MODE_SYMBOLS);
     verifyCreatedGenericKeyboard("alt_numbers_symbols_keyboard", KeyboardSwitcher.INPUT_MODE_TEXT);
-    final AnyKeyboard altNumbersSymbolsKeyboard =
+    final KeyboardDefinition altNumbersSymbolsKeyboard =
         mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     // all newly created
     Assert.assertNotSame(symbolsKeyboard, altSymbolsKeyboard);
@@ -221,9 +225,9 @@ public class AnySoftKeyboardKeyboardSwitchingTest extends AnySoftKeyboardBaseTes
 
   @Test
   public void testOnKeyboardSetLoadsDictionary() {
-    AnyKeyboard alphabetKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition alphabetKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.KEYBOARD_MODE_CHANGE);
-    AnyKeyboard symbolsKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition symbolsKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
 
     Mockito.reset(mAnySoftKeyboardUnderTest.getSuggest());
     mAnySoftKeyboardUnderTest.onSymbolsKeyboardSet(symbolsKeyboard);
@@ -274,7 +278,7 @@ public class AnySoftKeyboardKeyboardSwitchingTest extends AnySoftKeyboardBaseTes
     mAnySoftKeyboardUnderTest.onStartInput(editorInfo, true);
     mAnySoftKeyboardUnderTest.onStartInputView(editorInfo, true);
 
-    final AnyKeyboard phoneKeyboardInstance =
+    final KeyboardDefinition phoneKeyboardInstance =
         mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     Assert.assertEquals(
         getApplicationContext().getString(R.string.symbols_phone_keyboard),
@@ -308,7 +312,7 @@ public class AnySoftKeyboardKeyboardSwitchingTest extends AnySoftKeyboardBaseTes
     Resources resources = getApplicationContext().getResources();
     // default value should be first keyboard
     final KeyboardFactory keyboardFactory =
-        AnyApplication.getKeyboardFactory(getApplicationContext());
+        NskApplicationBase.getKeyboardFactory(getApplicationContext());
     Assert.assertEquals(
         resources.getString(R.string.settings_default_keyboard_id),
         keyboardFactory.getEnabledIds().get(0));
@@ -377,7 +381,7 @@ public class AnySoftKeyboardKeyboardSwitchingTest extends AnySoftKeyboardBaseTes
   @Test
   public void testShowPreviousKeyboardIfInternetKeyboardPrefIdIsInvalid() {
     final KeyboardFactory keyboardFactory =
-        AnyApplication.getKeyboardFactory(getApplicationContext());
+        NskApplicationBase.getKeyboardFactory(getApplicationContext());
 
     AddOnTestUtils.ensureKeyboardAtIndexEnabled(0, true);
     AddOnTestUtils.ensureKeyboardAtIndexEnabled(1, true);

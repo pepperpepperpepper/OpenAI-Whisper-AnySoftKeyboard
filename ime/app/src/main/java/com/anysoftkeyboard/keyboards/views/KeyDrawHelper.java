@@ -5,12 +5,12 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 
 /**
- * Renders keys for {@link AnyKeyboardViewBase}. Keeps the heavy draw loop out of the view class
- * while delegating to existing helpers for icons, labels, hints, and colors.
+ * Renders keys for {@link KeyboardViewBase}. Keeps the heavy draw loop out of the view class while
+ * delegating to existing helpers for icons, labels, hints, and colors.
  */
 final class KeyDrawHelper {
 
@@ -57,7 +57,7 @@ final class KeyDrawHelper {
   void drawKeys(@NonNull Canvas canvas, Rect dirtyRect, DrawInputs inputs) {
 
     for (Keyboard.Key keyBase : inputs.keys) {
-      final AnyKeyboard.AnyKey key = (AnyKeyboard.AnyKey) keyBase;
+      final KeyboardKey key = (KeyboardKey) keyBase;
       final boolean keyIsSpace = key.getPrimaryCode() == KeyCodes.SPACE;
 
       if (inputs.drawSingleKey && (inputs.invalidKey != key)) {

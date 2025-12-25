@@ -2,7 +2,7 @@ package com.anysoftkeyboard.ime;
 
 /**
  * Handles output-side separator behaviors such as double-space-to-period and punctuation/space
- * swapping. Extracted from {@link AnySoftKeyboardSuggestions#handleSeparator(int)} to reduce
+ * swapping. Extracted from {@link ImeSuggestionsController#handleSeparator(int)} to reduce
  * monolithic code.
  */
 final class SeparatorOutputHandler {

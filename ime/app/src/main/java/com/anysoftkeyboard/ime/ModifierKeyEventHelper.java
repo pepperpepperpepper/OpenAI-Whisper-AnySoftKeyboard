@@ -5,10 +5,11 @@ import androidx.annotation.Nullable;
 import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 
 /**
  * Helper for handling modifier-based key combinations (Fn/Alt/Ctrl style) to keep {@link
- * com.anysoftkeyboard.AnySoftKeyboard} slimmer. This class is a thin, testable utility with no
+ * com.anysoftkeyboard.ImeServiceBase} slimmer. This class is a thin, testable utility with no
  * state; it performs the ASCII-to-KeyEvent mapping and dispatches the resulting key events through
  * the provided callbacks/InputConnection.
  */
@@ -25,8 +26,8 @@ public final class ModifierKeyEventHelper {
   public static boolean handleFunctionCombination(
       int primaryCode, @Nullable Keyboard.Key key, IntConsumer sendDownUpKeyEvents) {
     int sourceCode = primaryCode;
-    if (key instanceof com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey anyKey) {
-      sourceCode = anyKey.getCodeAtIndex(0, false);
+    if (key instanceof KeyboardKey keyboardKey) {
+      sourceCode = keyboardKey.getCodeAtIndex(0, false);
     } else if (key != null) {
       sourceCode = key.getPrimaryCode();
     }

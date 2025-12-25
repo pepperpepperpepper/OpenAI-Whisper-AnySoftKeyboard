@@ -7,14 +7,14 @@ import com.anysoftkeyboard.api.KeyCodes;
 import com.anysoftkeyboard.dictionaries.DictionaryAddOnAndBuilder;
 import com.anysoftkeyboard.dictionaries.DictionaryBackgroundLoader;
 import com.anysoftkeyboard.dictionaries.Suggest;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import java.util.List;
 import java.util.function.Function;
 
 /**
  * Single owner for when/how we load dictionaries for the current keyboard in {@link
- * AnySoftKeyboardSuggestions}.
+ * ImeSuggestionsController}.
  *
  * <p>This exists to avoid having multiple tiny gate/state/helper files for one owned concept.
  */
@@ -34,11 +34,11 @@ final class KeyboardDictionariesLoader {
       @NonNull Context context,
       @NonNull PredictionState predictionState,
       boolean shouldLoadDictionariesForGestureTyping,
-      @Nullable AnyKeyboard currentAlphabetKeyboard,
+      @Nullable KeyboardDefinition currentAlphabetKeyboard,
       boolean inAlphabetKeyboardMode,
       @NonNull SentenceSeparators sentenceSeparators,
       @NonNull Suggest suggest,
-      @NonNull Function<AnyKeyboard, DictionaryBackgroundLoader.Listener> listenerProvider) {
+      @NonNull Function<KeyboardDefinition, DictionaryBackgroundLoader.Listener> listenerProvider) {
     if (loaded) return true;
 
     if (!(predictionState.predictionOn || shouldLoadDictionariesForGestureTyping)) {
@@ -55,7 +55,7 @@ final class KeyboardDictionariesLoader {
     sentenceSeparators.add(KeyCodes.ENTER);
 
     final List<DictionaryAddOnAndBuilder> buildersForKeyboard =
-        AnyApplication.getExternalDictionaryFactory(context)
+        NskApplicationBase.getExternalDictionaryFactory(context)
             .getBuildersForKeyboard(currentAlphabetKeyboard);
 
     suggest.setupSuggestionsForKeyboard(

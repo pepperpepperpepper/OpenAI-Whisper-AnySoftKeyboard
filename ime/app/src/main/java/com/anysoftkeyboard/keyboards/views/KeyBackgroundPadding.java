@@ -2,7 +2,7 @@ package com.anysoftkeyboard.keyboards.views;
 
 import android.graphics.Rect;
 
-/** Holds key background padding data to keep AnyKeyboardViewBase slimmer. */
+/** Holds key background padding data to keep KeyboardViewBase slimmer. */
 final class KeyBackgroundPadding {
   private final Rect padding = new Rect(0, 0, 0, 0);
 

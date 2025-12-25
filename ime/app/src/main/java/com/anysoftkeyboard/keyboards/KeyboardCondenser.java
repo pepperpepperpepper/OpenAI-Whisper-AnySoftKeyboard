@@ -43,11 +43,11 @@ public class KeyboardCondenser {
   private CondenseType mKeyboardCondenseType = CondenseType.None;
   private List<KeySize> mKeySizesMap =
       null; // it is usually not used, so I'll create an instance when first needed.
-  private final AnyKeyboard mKeyboard;
+  private final KeyboardDefinition mKeyboard;
   private final float mCondensingFullFactor;
   private final float mCondensingEdgeFactor;
 
-  public KeyboardCondenser(Context askContext, AnyKeyboard keyboard) {
+  public KeyboardCondenser(Context askContext, KeyboardDefinition keyboard) {
     mKeyboard = keyboard;
     mCondensingFullFactor =
         ((float) askContext.getResources().getInteger(R.integer.condensing_precentage)) / 100f;

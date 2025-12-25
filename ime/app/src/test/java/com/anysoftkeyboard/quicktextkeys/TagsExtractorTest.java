@@ -1,15 +1,15 @@
 package com.anysoftkeyboard.quicktextkeys;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.anysoftkeyboard.ime.AnySoftKeyboardKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER;
+import static com.anysoftkeyboard.ime.ImeKeyboardTagsSearcher.MAGNIFYING_GLASS_CHARACTER;
 import static java.util.Arrays.asList;
 
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.dictionaries.KeyCodesProvider;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,10 +30,10 @@ public class TagsExtractorTest {
   @Before
   public void setup() {
     List<Keyboard.Key> keysForTest = new ArrayList<>();
-    keysForTest.add(Mockito.mock(AnyKeyboard.AnyKey.class));
-    keysForTest.add(Mockito.mock(AnyKeyboard.AnyKey.class));
-    keysForTest.add(Mockito.mock(AnyKeyboard.AnyKey.class));
-    keysForTest.add(Mockito.mock(AnyKeyboard.AnyKey.class));
+    keysForTest.add(Mockito.mock(KeyboardKey.class));
+    keysForTest.add(Mockito.mock(KeyboardKey.class));
+    keysForTest.add(Mockito.mock(KeyboardKey.class));
+    keysForTest.add(Mockito.mock(KeyboardKey.class));
 
     keysForTest.get(0).text = "HAPPY";
     keysForTest.get(1).text = "ROSE";
@@ -41,23 +41,21 @@ public class TagsExtractorTest {
     keysForTest.get(3).text = "SHRUG";
 
     Mockito.doReturn(Arrays.asList("face", "happy"))
-        .when((AnyKeyboard.AnyKey) keysForTest.get(0))
+        .when((KeyboardKey) keysForTest.get(0))
         .getKeyTags();
     Mockito.doReturn(Arrays.asList("flower", "rose"))
-        .when((AnyKeyboard.AnyKey) keysForTest.get(1))
+        .when((KeyboardKey) keysForTest.get(1))
         .getKeyTags();
-    Mockito.doReturn(Arrays.asList("plane"))
-        .when((AnyKeyboard.AnyKey) keysForTest.get(2))
-        .getKeyTags();
+    Mockito.doReturn(Arrays.asList("plane")).when((KeyboardKey) keysForTest.get(2)).getKeyTags();
     Mockito.doReturn(Arrays.asList("face", "shrug"))
-        .when((AnyKeyboard.AnyKey) keysForTest.get(3))
+        .when((KeyboardKey) keysForTest.get(3))
         .getKeyTags();
 
     List<Keyboard.Key> keysForTest2 = new ArrayList<>();
-    keysForTest2.add(Mockito.mock(AnyKeyboard.AnyKey.class));
-    keysForTest2.add(Mockito.mock(AnyKeyboard.AnyKey.class));
-    keysForTest2.add(Mockito.mock(AnyKeyboard.AnyKey.class));
-    keysForTest2.add(Mockito.mock(AnyKeyboard.AnyKey.class));
+    keysForTest2.add(Mockito.mock(KeyboardKey.class));
+    keysForTest2.add(Mockito.mock(KeyboardKey.class));
+    keysForTest2.add(Mockito.mock(KeyboardKey.class));
+    keysForTest2.add(Mockito.mock(KeyboardKey.class));
 
     keysForTest2.get(0).text = "CAR";
     keysForTest2.get(1).text = "HAPPY";
@@ -65,19 +63,17 @@ public class TagsExtractorTest {
     keysForTest2.get(3).text = "FACE";
 
     Mockito.doReturn(Arrays.asList("car", "vehicle"))
-        .when((AnyKeyboard.AnyKey) keysForTest2.get(0))
+        .when((KeyboardKey) keysForTest2.get(0))
         .getKeyTags();
     Mockito.doReturn(Arrays.asList("person", "face", "happy"))
-        .when((AnyKeyboard.AnyKey) keysForTest2.get(1))
+        .when((KeyboardKey) keysForTest2.get(1))
         .getKeyTags();
     Mockito.doReturn(Arrays.asList("tree", "palm"))
-        .when((AnyKeyboard.AnyKey) keysForTest2.get(2))
+        .when((KeyboardKey) keysForTest2.get(2))
         .getKeyTags();
-    Mockito.doReturn(Arrays.asList("face"))
-        .when((AnyKeyboard.AnyKey) keysForTest2.get(3))
-        .getKeyTags();
+    Mockito.doReturn(Arrays.asList("face")).when((KeyboardKey) keysForTest2.get(3)).getKeyTags();
     mQuickKeyHistoryRecords =
-        new QuickKeyHistoryRecords(AnyApplication.prefs(getApplicationContext()));
+        new QuickKeyHistoryRecords(NskApplicationBase.prefs(getApplicationContext()));
     mUnderTest =
         new TagsExtractorImpl(
             getApplicationContext(), asList(keysForTest, keysForTest2), mQuickKeyHistoryRecords);

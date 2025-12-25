@@ -5,17 +5,17 @@ import java.lang.ref.WeakReference;
 
 /** Debug-only tiny API to help instrumentation seed IME context. */
 public final class ImeTestApi {
-  private static volatile WeakReference<AnySoftKeyboardSuggestions> sService =
+  private static volatile WeakReference<ImeSuggestionsController> sService =
       new WeakReference<>(null);
 
   private ImeTestApi() {}
 
-  static void setService(AnySoftKeyboardSuggestions svc) {
+  static void setService(ImeSuggestionsController svc) {
     sService = new WeakReference<>(svc);
   }
 
   public static boolean commitText(String text) {
-    final AnySoftKeyboardSuggestions svc = sService.get();
+    final ImeSuggestionsController svc = sService.get();
     if (svc == null) return false;
     final InputConnection ic = svc.getCurrentInputConnection();
     if (ic == null) return false;
@@ -30,7 +30,7 @@ public final class ImeTestApi {
    * of suggestions shown.
    */
   public static int forceNextWordFromCursor() {
-    final AnySoftKeyboardSuggestions svc = sService.get();
+    final ImeSuggestionsController svc = sService.get();
     if (svc == null) return 0;
     final InputConnection ic = svc.getCurrentInputConnection();
     if (ic == null) return 0;

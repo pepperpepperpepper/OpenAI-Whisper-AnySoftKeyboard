@@ -11,7 +11,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethod;
 import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.views.CandidateView;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
 import com.menny.android.anysoftkeyboard.InputMethodManagerShadow;
@@ -79,7 +79,8 @@ public abstract class AnySoftKeyboardBaseTest {
     Assert.assertNotNull(getMockCandidateView());
 
     // simulating the first OS subtype reporting
-    AnyKeyboard currentAlphabetKeyboard = mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
+    KeyboardDefinition currentAlphabetKeyboard =
+        mAnySoftKeyboardUnderTest.getCurrentKeyboardForTests();
     Assert.assertNotNull(currentAlphabetKeyboard);
     // reporting the first keyboard. This is required to simulate the selection of the first
     // keyboard

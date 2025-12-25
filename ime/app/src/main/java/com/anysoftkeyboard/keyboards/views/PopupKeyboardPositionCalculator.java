@@ -2,8 +2,8 @@ package com.anysoftkeyboard.keyboards.views;
 
 import android.graphics.Point;
 import android.view.View;
-import com.anysoftkeyboard.keyboards.AnyPopupKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.PopupKeyboard;
 import com.anysoftkeyboard.keyboards.views.preview.PreviewPopupTheme;
 
 public class PopupKeyboardPositionCalculator {
@@ -11,7 +11,7 @@ public class PopupKeyboardPositionCalculator {
   public static Point calculatePositionForPopupKeyboard(
       Keyboard.Key key,
       View keyboardView,
-      AnyKeyboardViewBase popupKeyboardView,
+      KeyboardViewBase popupKeyboardView,
       PreviewPopupTheme theme,
       int[] windowOffset) {
     Point point = new Point(key.x + windowOffset[0], key.y + windowOffset[1]);
@@ -41,7 +41,7 @@ public class PopupKeyboardPositionCalculator {
       shouldMirrorKeys = false;
     }
 
-    if (shouldMirrorKeys) ((AnyPopupKeyboard) popupKeyboardView.getKeyboard()).mirrorKeys();
+    if (shouldMirrorKeys) ((PopupKeyboard) popupKeyboardView.getKeyboard()).mirrorKeys();
 
     return point;
   }

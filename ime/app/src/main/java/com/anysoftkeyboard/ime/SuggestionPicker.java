@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import com.anysoftkeyboard.dictionaries.Suggest;
 import com.anysoftkeyboard.dictionaries.SuggestImpl;
 import com.anysoftkeyboard.dictionaries.WordComposer;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.views.CandidateView;
 
 /** Encapsulates manual pick handling from the suggestions strip. */
@@ -28,7 +28,7 @@ public final class SuggestionPicker {
     boolean tryCommitCompletion(
         int index, InputConnectionRouter inputConnectionRouter, CandidateView candidateView);
 
-    AnyKeyboard getCurrentAlphabetKeyboard();
+    KeyboardDefinition getCurrentAlphabetKeyboard();
 
     void clearSuggestions();
 

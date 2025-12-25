@@ -3,20 +3,20 @@ package com.anysoftkeyboard.ime;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.dictionaries.Suggest;
 import com.anysoftkeyboard.dictionaries.WordComposer;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import java.util.List;
 
-/** Keeps {@link SeparatorHandler.Host} plumbing out of {@link AnySoftKeyboardSuggestions}. */
+/** Keeps {@link SeparatorHandler.Host} plumbing out of {@link ImeSuggestionsController}. */
 final class SeparatorHandlerHost implements SeparatorHandler.Host {
 
-  private final AnySoftKeyboardSuggestions service;
+  private final ImeSuggestionsController service;
   private final SpaceTimeTracker spaceTimeTracker;
   private final SeparatorOutputHandler separatorOutputHandler;
   private final SentenceSeparators sentenceSeparators;
   private final PredictionState predictionState;
 
   SeparatorHandlerHost(
-      @NonNull AnySoftKeyboardSuggestions service,
+      @NonNull ImeSuggestionsController service,
       @NonNull SpaceTimeTracker spaceTimeTracker,
       @NonNull SeparatorOutputHandler separatorOutputHandler,
       @NonNull SentenceSeparators sentenceSeparators,
@@ -35,7 +35,7 @@ final class SeparatorHandlerHost implements SeparatorHandler.Host {
 
   @NonNull
   @Override
-  public AnyKeyboard currentAlphabetKeyboard() {
+  public KeyboardDefinition currentAlphabetKeyboard() {
     return service.getCurrentAlphabetKeyboard();
   }
 

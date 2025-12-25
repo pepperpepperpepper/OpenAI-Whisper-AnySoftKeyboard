@@ -9,13 +9,13 @@ import androidx.annotation.NonNull;
 import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.addons.AddOnsFactory;
 import com.anysoftkeyboard.keyboardextensions.KeyboardExtension;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
 import com.anysoftkeyboard.keyboards.KeyboardAddOnAndBuilder;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
 import com.anysoftkeyboard.prefs.DirectBootAwareSharedPreferences;
 import com.anysoftkeyboard.ui.settings.MainSettingsActivity;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.List;
 import java.util.Random;
@@ -25,7 +25,7 @@ public class WizardPageWelcomeFragment extends WizardPageBaseFragment
   private static final String STARTED_PREF_KEY = "setup_wizard_STARTED_SETUP_PREF_KEY";
   public static final int DELAY_MILLIS_BEFORE_RESETTING_KEYBOARD = 1000;
 
-  private DemoAnyKeyboardView mDemoAnyKeyboardView;
+  private DemoKeyboardView mDemoKeyboardView;
 
   private Runnable mPerformDemoKeyboardChange;
 
@@ -41,7 +41,7 @@ public class WizardPageWelcomeFragment extends WizardPageBaseFragment
     view.findViewById(R.id.setup_wizard_welcome_privacy_action).setOnClickListener(this);
     view.findViewById(R.id.skip_setup_wizard).setOnClickListener(this);
 
-    mDemoAnyKeyboardView = view.findViewById(R.id.demo_keyboard_view);
+    mDemoKeyboardView = view.findViewById(R.id.demo_keyboard_view);
   }
 
   @Override
@@ -77,7 +77,7 @@ public class WizardPageWelcomeFragment extends WizardPageBaseFragment
   @Override
   public void onStart() {
     super.onStart();
-    mPerformDemoKeyboardChange = new ChangeDemoKeyboardRunnable(getContext(), mDemoAnyKeyboardView);
+    mPerformDemoKeyboardChange = new ChangeDemoKeyboardRunnable(getContext(), mDemoKeyboardView);
     mPerformDemoKeyboardChange.run();
     SetupSupport.popupViewAnimationWithIds(getView(), R.id.go_to_start_setup);
   }
@@ -85,13 +85,13 @@ public class WizardPageWelcomeFragment extends WizardPageBaseFragment
   @Override
   public void onStop() {
     super.onStop();
-    mDemoAnyKeyboardView.removeCallbacks(mPerformDemoKeyboardChange);
+    mDemoKeyboardView.removeCallbacks(mPerformDemoKeyboardChange);
   }
 
   @Override
   public void onDestroyView() {
     super.onDestroyView();
-    mDemoAnyKeyboardView.onViewNotRequired();
+    mDemoKeyboardView.onViewNotRequired();
   }
 
   private static class ChangeDemoKeyboardRunnable implements Runnable {
@@ -99,29 +99,31 @@ public class WizardPageWelcomeFragment extends WizardPageBaseFragment
     private final Random mRandom = new Random();
 
     private final Context mContext;
-    private final DemoAnyKeyboardView mDemoAnyKeyboardView;
+    private final DemoKeyboardView mDemoKeyboardView;
 
     private final KeyboardAddOnAndBuilder mKeyboardBuilder;
 
-    public ChangeDemoKeyboardRunnable(Context context, DemoAnyKeyboardView demoAnyKeyboardView) {
+    public ChangeDemoKeyboardRunnable(Context context, DemoKeyboardView demoKeyboardView) {
       mContext = context;
-      mDemoAnyKeyboardView = demoAnyKeyboardView;
-      mKeyboardBuilder = AnyApplication.getKeyboardFactory(mContext).getEnabledAddOn();
+      mDemoKeyboardView = demoKeyboardView;
+      mKeyboardBuilder = NskApplicationBase.getKeyboardFactory(mContext).getEnabledAddOn();
     }
 
     @Override
     public void run() {
-      mDemoAnyKeyboardView.setKeyboardTheme(
-          getRandomAddOn(AnyApplication.getKeyboardThemeFactory(mContext)));
+      mDemoKeyboardView.setKeyboardTheme(
+          getRandomAddOn(NskApplicationBase.getKeyboardThemeFactory(mContext)));
 
-      KeyboardExtension bottomRow = getRandomAddOn(AnyApplication.getBottomRowFactory(mContext));
-      KeyboardExtension topRow = getRandomAddOn(AnyApplication.getTopRowFactory(mContext));
+      KeyboardExtension bottomRow =
+          getRandomAddOn(NskApplicationBase.getBottomRowFactory(mContext));
+      KeyboardExtension topRow = getRandomAddOn(NskApplicationBase.getTopRowFactory(mContext));
 
-      AnyKeyboard keyboard = mKeyboardBuilder.createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
-      keyboard.loadKeyboard(mDemoAnyKeyboardView.getThemedKeyboardDimens(), topRow, bottomRow);
-      mDemoAnyKeyboardView.setKeyboard(keyboard, null, null);
+      KeyboardDefinition keyboard =
+          mKeyboardBuilder.createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
+      keyboard.loadKeyboard(mDemoKeyboardView.getThemedKeyboardDimens(), topRow, bottomRow);
+      mDemoKeyboardView.setKeyboard(keyboard, null, null);
 
-      mDemoAnyKeyboardView.postDelayed(this, DELAY_MILLIS_BEFORE_RESETTING_KEYBOARD);
+      mDemoKeyboardView.postDelayed(this, DELAY_MILLIS_BEFORE_RESETTING_KEYBOARD);
     }
 
     private <T extends AddOn> T getRandomAddOn(AddOnsFactory<T> factory) {

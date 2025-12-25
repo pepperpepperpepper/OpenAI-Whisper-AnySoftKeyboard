@@ -8,7 +8,7 @@ import com.anysoftkeyboard.dictionaries.WordComposer;
 /**
  * Rebuilds the composing word around the cursor so suggestions can restart after cursor moves.
  *
- * <p>Extracted from {@link AnySoftKeyboardSuggestions#performRestartWordSuggestion()} to keep that
+ * <p>Extracted from {@link ImeSuggestionsController#performRestartWordSuggestion()} to keep that
  * class smaller and more focused.
  */
 final class WordRestartHelper {

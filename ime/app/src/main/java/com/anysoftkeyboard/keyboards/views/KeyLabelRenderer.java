@@ -8,10 +8,10 @@ import android.text.Layout.Alignment;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.anysoftkeyboard.utils.EmojiUtils;
 
-/** Handles drawing of key labels (main text) to keep {@link AnyKeyboardViewBase#onDraw} smaller. */
+/** Handles drawing of key labels (main text) to keep {@link KeyboardViewBase#onDraw} smaller. */
 final class KeyLabelRenderer {
 
   interface KeyTextPaintSetter {
@@ -33,7 +33,7 @@ final class KeyLabelRenderer {
       Canvas canvas,
       Paint paint,
       CharSequence label,
-      AnyKey key,
+      KeyboardKey key,
       Rect keyBackgroundPadding,
       boolean keyIsSpace,
       float keyboardNameTextSize,

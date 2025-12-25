@@ -8,7 +8,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.anysoftkeyboard.base.utils.Logger;
 import com.anysoftkeyboard.dictionaries.DictionaryAddOnAndBuilder;
 import com.anysoftkeyboard.dictionaries.ExternalDictionaryFactory;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +23,7 @@ public final class DictionaryOverrideDialog {
   private DictionaryOverrideDialog() {}
 
   public interface Host {
-    AnyKeyboard getCurrentAlphabetKeyboard();
+    KeyboardDefinition getCurrentAlphabetKeyboard();
 
     ExternalDictionaryFactory getExternalDictionaryFactory();
 
@@ -38,7 +38,7 @@ public final class DictionaryOverrideDialog {
   }
 
   public static void show(Host host) {
-    final AnyKeyboard keyboard = host.getCurrentAlphabetKeyboard();
+    final KeyboardDefinition keyboard = host.getCurrentAlphabetKeyboard();
     if (keyboard == null) {
       Logger.w(TAG, "No current alphabet keyboard; skip override dialog");
       return;

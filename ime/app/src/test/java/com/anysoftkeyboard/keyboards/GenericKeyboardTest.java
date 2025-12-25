@@ -1,14 +1,14 @@
 package com.anysoftkeyboard.keyboards;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static com.anysoftkeyboard.keyboards.ExternalAnyKeyboardTest.SIMPLE_KeyboardDimens;
+import static com.anysoftkeyboard.keyboards.ExternalKeyboardTest.SIMPLE_KeyboardDimens;
 
 import android.content.Context;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
 import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.addons.DefaultAddOn;
 import com.anysoftkeyboard.keyboardextensions.KeyboardExtension;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,8 +27,8 @@ public class GenericKeyboardTest {
   public void setup() {
     mContext = getApplicationContext();
     mDefaultAddOn = new DefaultAddOn(mContext, mContext);
-    mTopRow = AnyApplication.getTopRowFactory(mContext).getEnabledAddOn();
-    mBottomRow = AnyApplication.getBottomRowFactory(mContext).getEnabledAddOn();
+    mTopRow = NskApplicationBase.getTopRowFactory(mContext).getEnabledAddOn();
+    mBottomRow = NskApplicationBase.getBottomRowFactory(mContext).getEnabledAddOn();
   }
 
   @Test

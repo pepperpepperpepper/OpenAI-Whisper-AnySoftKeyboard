@@ -5,9 +5,9 @@ import android.view.inputmethod.EditorInfo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.anysoftkeyboard.debug.ImeStateTracker;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardViewBase;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 import com.anysoftkeyboard.keyboards.views.InputViewBinder;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewBase;
 import com.anysoftkeyboard.keyboards.views.KeyboardViewContainerView;
 import com.anysoftkeyboard.ui.dev.DevStripActionProvider;
 import com.google.android.voiceime.VoiceImeController;
@@ -17,10 +17,10 @@ public final class InputViewLifecycleHandler {
 
   public interface Host {
     @Nullable
-    AnyKeyboard getCurrentAlphabetKeyboard();
+    KeyboardDefinition getCurrentAlphabetKeyboard();
 
     @Nullable
-    AnyKeyboard getCurrentKeyboard();
+    KeyboardDefinition getCurrentKeyboard();
 
     @NonNull
     InputViewBinder getInputView();
@@ -56,7 +56,7 @@ public final class InputViewLifecycleHandler {
       @NonNull EditorInfo attribute,
       boolean restarting,
       @Nullable DevStripActionProvider devToolsAction) {
-    AnyKeyboard keyboardForDebug = host.getCurrentAlphabetKeyboard();
+    KeyboardDefinition keyboardForDebug = host.getCurrentAlphabetKeyboard();
     if (keyboardForDebug == null) {
       keyboardForDebug = host.getCurrentKeyboard();
     }
@@ -73,8 +73,8 @@ public final class InputViewLifecycleHandler {
     if (BuildConfig.DEBUG) {
       Log.d(logTag, "onStartInputView using inputView binder=" + inputView.getClass().getName());
     }
-    if (inputView instanceof AnyKeyboardViewBase) {
-      ImeStateTracker.reportKeyboardView((AnyKeyboardViewBase) inputView);
+    if (inputView instanceof KeyboardViewBase) {
+      ImeStateTracker.reportKeyboardView((KeyboardViewBase) inputView);
     } else {
       ImeStateTracker.reportKeyboardView(null);
     }

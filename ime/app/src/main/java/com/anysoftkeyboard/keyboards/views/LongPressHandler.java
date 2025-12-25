@@ -7,10 +7,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import com.anysoftkeyboard.addons.AddOn;
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.AnyKeyboard.AnyKey;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 
-/** Handles long-press behavior to keep AnyKeyboardViewBase slimmer. */
+/** Handles long-press behavior to keep KeyboardViewBase slimmer. */
 final class LongPressHandler {
 
   private LongPressHandler() {}
@@ -29,7 +29,7 @@ final class LongPressHandler {
       boolean isSticky,
       @NonNull PointerTracker tracker,
       @NonNull OnKeyboardActionListener keyboardActionListener) {
-    if (!(key instanceof AnyKey anyKey)) {
+    if (!(key instanceof KeyboardKey anyKey)) {
       return false;
     }
 

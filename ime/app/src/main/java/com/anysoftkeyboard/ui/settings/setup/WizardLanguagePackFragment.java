@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.anysoftkeyboard.addons.ui.AddOnStoreSearchController;
 import com.anysoftkeyboard.prefs.DirectBootAwareSharedPreferences;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 
 public class WizardLanguagePackFragment extends WizardPageBaseFragment {
@@ -24,7 +24,7 @@ public class WizardLanguagePackFragment extends WizardPageBaseFragment {
     return (mSharedPrefs == null ? DirectBootAwareSharedPreferences.create(context) : mSharedPrefs)
             .getBoolean(SKIPPED_PREF_KEY, false)
         || SetupSupport.hasLanguagePackForCurrentLocale(
-            AnyApplication.getKeyboardFactory(context).getAllAddOns());
+            NskApplicationBase.getKeyboardFactory(context).getAllAddOns());
   }
 
   @Override

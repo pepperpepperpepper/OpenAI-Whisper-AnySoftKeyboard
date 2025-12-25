@@ -30,11 +30,11 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import com.anysoftkeyboard.addons.AddOnsFactory;
 import com.anysoftkeyboard.keyboardextensions.KeyboardExtension;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.Keyboard;
-import com.anysoftkeyboard.keyboards.views.DemoAnyKeyboardView;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.views.DemoKeyboardView;
 import com.anysoftkeyboard.prefs.DirectBootAwareSharedPreferences;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import net.evendanan.pixel.GeneralDialogController;
 import net.evendanan.pixel.UiUtils;
@@ -107,7 +107,7 @@ public class AdditionalUiSettingsFragment extends PreferenceFragmentCompat
     topRowSelector.setSummary(
         getString(
             R.string.top_generic_row_summary,
-            AnyApplication.getTopRowFactory(requireContext()).getEnabledAddOn().getName()));
+            NskApplicationBase.getTopRowFactory(requireContext()).getEnabledAddOn().getName()));
 
     final Preference extensionSelector = findPreference("settings_key_ext_kbd_extension_key");
     if (extensionSelector != null) {
@@ -115,7 +115,7 @@ public class AdditionalUiSettingsFragment extends PreferenceFragmentCompat
       extensionSelector.setSummary(
           getString(
               R.string.extension_generic_keyboard_summary,
-              AnyApplication.getKeyboardExtensionFactory(requireContext())
+              NskApplicationBase.getKeyboardExtensionFactory(requireContext())
                   .getEnabledAddOn()
                   .getName()));
     }
@@ -125,7 +125,7 @@ public class AdditionalUiSettingsFragment extends PreferenceFragmentCompat
     topBottomSelector.setSummary(
         getString(
             R.string.bottom_generic_row_summary,
-            AnyApplication.getBottomRowFactory(requireContext()).getEnabledAddOn().getName()));
+            NskApplicationBase.getBottomRowFactory(requireContext()).getEnabledAddOn().getName()));
 
     final Preference supportedRowModes = findPreference("settings_key_supported_row_modes");
     supportedRowModes.setOnPreferenceClickListener(this);
@@ -190,9 +190,9 @@ public class AdditionalUiSettingsFragment extends PreferenceFragmentCompat
 
     @Override
     protected final void applyAddOnToDemoKeyboardView(
-        @NonNull KeyboardExtension addOn, @NonNull DemoAnyKeyboardView demoKeyboardView) {
-      AnyKeyboard defaultKeyboard =
-          AnyApplication.getKeyboardFactory(requireContext())
+        @NonNull KeyboardExtension addOn, @NonNull DemoKeyboardView demoKeyboardView) {
+      KeyboardDefinition defaultKeyboard =
+          NskApplicationBase.getKeyboardFactory(requireContext())
               .getEnabledAddOn()
               .createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
       loadKeyboardWithAddOn(demoKeyboardView, defaultKeyboard, addOn);
@@ -200,8 +200,8 @@ public class AdditionalUiSettingsFragment extends PreferenceFragmentCompat
     }
 
     protected abstract void loadKeyboardWithAddOn(
-        @NonNull DemoAnyKeyboardView demoKeyboardView,
-        AnyKeyboard defaultKeyboard,
+        @NonNull DemoKeyboardView demoKeyboardView,
+        KeyboardDefinition defaultKeyboard,
         KeyboardExtension addOn);
   }
 
@@ -214,18 +214,18 @@ public class AdditionalUiSettingsFragment extends PreferenceFragmentCompat
     @NonNull
     @Override
     protected AddOnsFactory<KeyboardExtension> getAddOnFactory() {
-      return AnyApplication.getTopRowFactory(requireContext());
+      return NskApplicationBase.getTopRowFactory(requireContext());
     }
 
     @Override
     protected void loadKeyboardWithAddOn(
-        @NonNull DemoAnyKeyboardView demoKeyboardView,
-        AnyKeyboard defaultKeyboard,
+        @NonNull DemoKeyboardView demoKeyboardView,
+        KeyboardDefinition defaultKeyboard,
         KeyboardExtension addOn) {
       defaultKeyboard.loadKeyboard(
           demoKeyboardView.getThemedKeyboardDimens(),
           addOn,
-          AnyApplication.getBottomRowFactory(requireContext()).getEnabledAddOn());
+          NskApplicationBase.getBottomRowFactory(requireContext()).getEnabledAddOn());
     }
   }
 
@@ -255,20 +255,20 @@ public class AdditionalUiSettingsFragment extends PreferenceFragmentCompat
     @NonNull
     @Override
     protected AddOnsFactory<KeyboardExtension> getAddOnFactory() {
-      return AnyApplication.getKeyboardExtensionFactory(requireContext());
+      return NskApplicationBase.getKeyboardExtensionFactory(requireContext());
     }
 
     @Override
     protected void applyAddOnToDemoKeyboardView(
-        @NonNull KeyboardExtension addOn, @NonNull DemoAnyKeyboardView demoKeyboardView) {
-      AnyKeyboard defaultKeyboard =
-          AnyApplication.getKeyboardFactory(requireContext())
+        @NonNull KeyboardExtension addOn, @NonNull DemoKeyboardView demoKeyboardView) {
+      KeyboardDefinition defaultKeyboard =
+          NskApplicationBase.getKeyboardFactory(requireContext())
               .getEnabledAddOn()
               .createKeyboard(Keyboard.KEYBOARD_ROW_MODE_NORMAL);
       defaultKeyboard.loadKeyboard(
           demoKeyboardView.getThemedKeyboardDimens(),
-          AnyApplication.getTopRowFactory(requireContext()).getEnabledAddOn(),
-          AnyApplication.getBottomRowFactory(requireContext()).getEnabledAddOn());
+          NskApplicationBase.getTopRowFactory(requireContext()).getEnabledAddOn(),
+          NskApplicationBase.getBottomRowFactory(requireContext()).getEnabledAddOn());
       demoKeyboardView.setKeyboard(defaultKeyboard, null, null);
     }
   }
@@ -282,17 +282,17 @@ public class AdditionalUiSettingsFragment extends PreferenceFragmentCompat
     @NonNull
     @Override
     protected AddOnsFactory<KeyboardExtension> getAddOnFactory() {
-      return AnyApplication.getBottomRowFactory(requireContext());
+      return NskApplicationBase.getBottomRowFactory(requireContext());
     }
 
     @Override
     protected void loadKeyboardWithAddOn(
-        @NonNull DemoAnyKeyboardView demoKeyboardView,
-        AnyKeyboard defaultKeyboard,
+        @NonNull DemoKeyboardView demoKeyboardView,
+        KeyboardDefinition defaultKeyboard,
         KeyboardExtension addOn) {
       defaultKeyboard.loadKeyboard(
           demoKeyboardView.getThemedKeyboardDimens(),
-          AnyApplication.getTopRowFactory(requireContext()).getEnabledAddOn(),
+          NskApplicationBase.getTopRowFactory(requireContext()).getEnabledAddOn(),
           addOn);
     }
 

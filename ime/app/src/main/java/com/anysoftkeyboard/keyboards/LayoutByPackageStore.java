@@ -2,7 +2,7 @@ package com.anysoftkeyboard.keyboards;
 
 import android.content.Context;
 import androidx.collection.ArrayMap;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.HashSet;
 import java.util.Locale;
@@ -22,14 +22,14 @@ final class LayoutByPackageStore {
       persisted.add(String.format(Locale.US, "%s -> %s", entry.getKey(), entry.getValue()));
     }
 
-    AnyApplication.prefs(context)
+    NskApplicationBase.prefs(context)
         .getStringSet(R.string.settings_key_persistent_layout_per_package_id_mapping)
         .set(persisted);
   }
 
   static void load(Context context, ArrayMap<String, CharSequence> mapping) {
     Set<String> persisted =
-        AnyApplication.prefs(context)
+        NskApplicationBase.prefs(context)
             .getStringSet(R.string.settings_key_persistent_layout_per_package_id_mapping)
             .get();
     for (String pair : persisted) {

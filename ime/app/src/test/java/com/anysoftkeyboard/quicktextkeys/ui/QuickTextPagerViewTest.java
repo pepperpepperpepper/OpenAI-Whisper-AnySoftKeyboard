@@ -15,7 +15,7 @@ import com.anysoftkeyboard.quicktextkeys.QuickTextKeyFactory;
 import com.anysoftkeyboard.remote.MediaType;
 import com.anysoftkeyboard.rx.TestRxSchedulers;
 import com.anysoftkeyboard.theme.KeyboardTheme;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.Collections;
 import net.evendanan.pixel.ViewPagerWithDisable;
@@ -36,13 +36,13 @@ public class QuickTextPagerViewTest {
   @Before
   public void setup() {
     Context context = getApplicationContext();
-    mKeyboardTheme = AnyApplication.getKeyboardThemeFactory(context).getEnabledAddOn();
+    mKeyboardTheme = NskApplicationBase.getKeyboardThemeFactory(context).getEnabledAddOn();
     mUnderTest =
         (QuickTextPagerView)
             LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.quick_text_popup_root_view, null, false);
     mUnderTest.setQuickKeyHistoryRecords(
-        new QuickKeyHistoryRecords(AnyApplication.prefs(getApplicationContext())));
+        new QuickKeyHistoryRecords(NskApplicationBase.prefs(getApplicationContext())));
     mUnderTest.setEmojiVariantsPrefTrackers(
         Mockito.mock(DefaultSkinTonePrefTracker.class),
         Mockito.mock(DefaultGenderPrefTracker.class));
@@ -163,7 +163,7 @@ public class QuickTextPagerViewTest {
   @Test
   public void testPassesOnlyEnabledAddOns() throws Exception {
     final QuickTextKeyFactory quickTextKeyFactory =
-        AnyApplication.getQuickTextKeyFactory(getApplicationContext());
+        NskApplicationBase.getQuickTextKeyFactory(getApplicationContext());
 
     Assert.assertEquals(17, quickTextKeyFactory.getAllAddOns().size());
     Assert.assertEquals(17, quickTextKeyFactory.getEnabledAddOns().size());

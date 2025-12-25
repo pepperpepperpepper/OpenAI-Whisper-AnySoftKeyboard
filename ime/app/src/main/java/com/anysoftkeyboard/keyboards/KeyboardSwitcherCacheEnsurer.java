@@ -2,7 +2,7 @@ package com.anysoftkeyboard.keyboards;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import java.util.List;
 
 /** Ensures KeyboardSwitcher caches are built (enabled keyboards + symbols array). */
@@ -14,15 +14,15 @@ final class KeyboardSwitcherCacheEnsurer {
       @NonNull Context context,
       @NonNull KeyboardSwitchedListener keyboardSwitchedListener,
       @NonNull KeyboardAddOnAndBuilder[] alphabetKeyboardsCreators,
-      @NonNull AnyKeyboard[] alphabetKeyboards,
-      @NonNull AnyKeyboard[] symbolsKeyboardsArray,
+      @NonNull KeyboardDefinition[] alphabetKeyboards,
+      @NonNull KeyboardDefinition[] symbolsKeyboardsArray,
       @NonNull String internetInputLayoutId,
       int internetInputLayoutIndex,
       int lastSelectedKeyboardIndex,
       int lastSelectedSymbolsKeyboard) {
     KeyboardAddOnAndBuilder[] updatedAlphabetCreators = alphabetKeyboardsCreators;
-    AnyKeyboard[] updatedAlphabetKeyboards = alphabetKeyboards;
-    AnyKeyboard[] updatedSymbolsKeyboardsArray = symbolsKeyboardsArray;
+    KeyboardDefinition[] updatedAlphabetKeyboards = alphabetKeyboards;
+    KeyboardDefinition[] updatedSymbolsKeyboardsArray = symbolsKeyboardsArray;
     int updatedInternetInputLayoutIndex = internetInputLayoutIndex;
     int updatedLastSelectedKeyboardIndex = lastSelectedKeyboardIndex;
     int updatedLastSelectedSymbolsKeyboard = lastSelectedSymbolsKeyboard;
@@ -32,17 +32,18 @@ final class KeyboardSwitcherCacheEnsurer {
         || updatedAlphabetCreators.length == 0) {
       if (updatedAlphabetKeyboards.length == 0 || updatedAlphabetCreators.length == 0) {
         final List<KeyboardAddOnAndBuilder> enabledKeyboardBuilders =
-            AnyApplication.getKeyboardFactory(context).getEnabledAddOns();
+            NskApplicationBase.getKeyboardFactory(context).getEnabledAddOns();
         updatedAlphabetCreators = enabledKeyboardBuilders.toArray(new KeyboardAddOnAndBuilder[0]);
         updatedInternetInputLayoutIndex =
             InternetLayoutLocator.findIndex(internetInputLayoutId, updatedAlphabetCreators);
-        updatedAlphabetKeyboards = new AnyKeyboard[updatedAlphabetCreators.length];
+        updatedAlphabetKeyboards = new KeyboardDefinition[updatedAlphabetCreators.length];
         updatedLastSelectedKeyboardIndex = 0;
         keyboardSwitchedListener.onAvailableKeyboardsChanged(enabledKeyboardBuilders);
       }
 
       if (updatedSymbolsKeyboardsArray.length == 0) {
-        updatedSymbolsKeyboardsArray = new AnyKeyboard[KeyboardSwitcher.SYMBOLS_KEYBOARDS_COUNT];
+        updatedSymbolsKeyboardsArray =
+            new KeyboardDefinition[KeyboardSwitcher.SYMBOLS_KEYBOARDS_COUNT];
         if (updatedLastSelectedSymbolsKeyboard >= updatedSymbolsKeyboardsArray.length) {
           updatedLastSelectedSymbolsKeyboard = 0;
         }
@@ -60,16 +61,16 @@ final class KeyboardSwitcherCacheEnsurer {
 
   static final class Result {
     private final KeyboardAddOnAndBuilder[] alphabetKeyboardsCreators;
-    private final AnyKeyboard[] alphabetKeyboards;
-    private final AnyKeyboard[] symbolsKeyboardsArray;
+    private final KeyboardDefinition[] alphabetKeyboards;
+    private final KeyboardDefinition[] symbolsKeyboardsArray;
     private final int internetInputLayoutIndex;
     private final int lastSelectedKeyboardIndex;
     private final int lastSelectedSymbolsKeyboard;
 
     private Result(
         KeyboardAddOnAndBuilder[] alphabetKeyboardsCreators,
-        AnyKeyboard[] alphabetKeyboards,
-        AnyKeyboard[] symbolsKeyboardsArray,
+        KeyboardDefinition[] alphabetKeyboards,
+        KeyboardDefinition[] symbolsKeyboardsArray,
         int internetInputLayoutIndex,
         int lastSelectedKeyboardIndex,
         int lastSelectedSymbolsKeyboard) {
@@ -85,11 +86,11 @@ final class KeyboardSwitcherCacheEnsurer {
       return alphabetKeyboardsCreators;
     }
 
-    AnyKeyboard[] alphabetKeyboards() {
+    KeyboardDefinition[] alphabetKeyboards() {
       return alphabetKeyboards;
     }
 
-    AnyKeyboard[] symbolsKeyboardsArray() {
+    KeyboardDefinition[] symbolsKeyboardsArray() {
       return symbolsKeyboardsArray;
     }
 

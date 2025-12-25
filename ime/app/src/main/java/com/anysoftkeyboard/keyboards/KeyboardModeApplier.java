@@ -31,11 +31,11 @@ final class KeyboardModeApplier {
   }
 
   static final class Result {
-    @NonNull final AnyKeyboard keyboard;
+    @NonNull final KeyboardDefinition keyboard;
     final boolean resubmitToView;
     @NonNull final State state;
 
-    Result(@NonNull AnyKeyboard keyboard, boolean resubmitToView, @NonNull State state) {
+    Result(@NonNull KeyboardDefinition keyboard, boolean resubmitToView, @NonNull State state) {
       this.keyboard = keyboard;
       this.resubmitToView = resubmitToView;
       this.state = state;
@@ -53,15 +53,15 @@ final class KeyboardModeApplier {
       boolean persistLayoutForPackageId,
       @NonNull KeyboardAddOnAndBuilder[] alphabetKeyboardsCreators,
       @NonNull ArrayMap<String, CharSequence> alphabetKeyboardIndexByPackageId,
-      @NonNull IntFunction<AnyKeyboard> symbolsKeyboardProvider,
-      @NonNull BiFunction<Integer, EditorInfo, AnyKeyboard> alphabetKeyboardProvider,
-      @NonNull Supplier<AnyKeyboard> currentKeyboardSupplier) {
+      @NonNull IntFunction<KeyboardDefinition> symbolsKeyboardProvider,
+      @NonNull BiFunction<Integer, EditorInfo, KeyboardDefinition> alphabetKeyboardProvider,
+      @NonNull Supplier<KeyboardDefinition> currentKeyboardSupplier) {
 
     boolean alphabetMode = previousState.alphabetMode;
     boolean keyboardLocked = previousState.keyboardLocked;
     int lastSelectedKeyboardIndex = previousState.lastSelectedKeyboardIndex;
     boolean resubmitToView = true;
-    AnyKeyboard keyboard;
+    KeyboardDefinition keyboard;
 
     switch (inputModeId) {
       case KeyboardSwitcher.INPUT_MODE_DATETIME:

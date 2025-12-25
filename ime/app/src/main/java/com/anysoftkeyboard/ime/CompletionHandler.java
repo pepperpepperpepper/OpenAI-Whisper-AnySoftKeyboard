@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Encapsulates completion (IME suggestions provided by the editor) handling so {@link
- * AnySoftKeyboardSuggestions} can stay smaller.
+ * ImeSuggestionsController} can stay smaller.
  */
 final class CompletionHandler {
 

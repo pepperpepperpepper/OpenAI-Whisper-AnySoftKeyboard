@@ -7,7 +7,7 @@ import android.content.Context;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +23,12 @@ public class NeuralPipelineInvocationInstrumentedTest {
   public void testProviderInvokesNeuralWithTwoTokenContext() {
     final Context context = ApplicationProvider.getApplicationContext();
     // Force engine + next-word mode via prefs so provider picks it up quickly.
-    AnyApplication.prefs(context)
+    NskApplicationBase.prefs(context)
         .getString(
             R.string.settings_key_prediction_engine_mode,
             R.string.settings_default_prediction_engine_mode)
         .set("neural");
-    AnyApplication.prefs(context)
+    NskApplicationBase.prefs(context)
         .getString(
             R.string.settings_key_next_word_dictionary_type,
             R.string.settings_default_next_words_dictionary_type)

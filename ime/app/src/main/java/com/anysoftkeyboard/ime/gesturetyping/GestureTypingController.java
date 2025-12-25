@@ -14,7 +14,8 @@ import com.anysoftkeyboard.dictionaries.DictionaryBackgroundLoader;
 import com.anysoftkeyboard.dictionaries.WordComposer;
 import com.anysoftkeyboard.gesturetyping.GestureTypingDetector;
 import com.anysoftkeyboard.ime.InputConnectionRouter;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
+import com.anysoftkeyboard.keyboards.KeyboardKey;
 import com.anysoftkeyboard.keyboards.views.InputViewBinder;
 import com.anysoftkeyboard.keyboards.views.KeyboardViewContainerView;
 import com.anysoftkeyboard.prefs.RxSharedPrefs;
@@ -47,10 +48,10 @@ public final class GestureTypingController {
     void setupInputViewWatermark();
 
     @Nullable
-    AnyKeyboard currentAlphabetKeyboard();
+    KeyboardDefinition currentAlphabetKeyboard();
 
     @Nullable
-    AnyKeyboard currentKeyboard();
+    KeyboardDefinition currentKeyboard();
 
     @Nullable
     InputViewBinder inputView();
@@ -124,7 +125,8 @@ public final class GestureTypingController {
                   if (!gestureTypingEnabled) {
                     destroyAllDetectors(host);
                   } else {
-                    final AnyKeyboard currentAlphabetKeyboard = host.currentAlphabetKeyboard();
+                    final KeyboardDefinition currentAlphabetKeyboard =
+                        host.currentAlphabetKeyboard();
                     if (currentAlphabetKeyboard != null) {
                       setupGestureDetector(host, currentAlphabetKeyboard);
                     }
@@ -185,7 +187,7 @@ public final class GestureTypingController {
 
   @Nullable
   public DictionaryBackgroundLoader.Listener maybeGetDictionaryLoadedListener(
-      @NonNull AnyKeyboard currentAlphabetKeyboard) {
+      @NonNull KeyboardDefinition currentAlphabetKeyboard) {
     if (gestureTypingEnabled && !detectorReady) {
       return new WordListDictionaryListener(currentAlphabetKeyboard, this::onDictionariesLoaded);
     } else {
@@ -193,7 +195,7 @@ public final class GestureTypingController {
     }
   }
 
-  public void onAlphabetKeyboardSet(@NonNull Host host, @NonNull AnyKeyboard keyboard) {
+  public void onAlphabetKeyboardSet(@NonNull Host host, @NonNull KeyboardDefinition keyboard) {
     if (gestureTypingEnabled) {
       setupGestureDetector(host, keyboard);
     }
@@ -207,7 +209,7 @@ public final class GestureTypingController {
   }
 
   public boolean onGestureTypingInputStart(
-      @NonNull Host host, int x, int y, @NonNull AnyKeyboard.AnyKey key, long eventTime) {
+      @NonNull Host host, int x, int y, @NonNull KeyboardKey key, long eventTime) {
     final GestureTypingDetector detector = currentGestureDetector;
     if (gestureTypingEnabled && detector != null && isValidGestureTypingStart(key)) {
       gestureShifted = host.shiftKeyState().isActive();
@@ -250,7 +252,7 @@ public final class GestureTypingController {
     final boolean isShifted = gestureShifted;
     final boolean isCapsLocked = host.shiftKeyState().isLocked();
 
-    final AnyKeyboard alphabetKeyboard = host.currentAlphabetKeyboard();
+    final KeyboardDefinition alphabetKeyboard = host.currentAlphabetKeyboard();
     final Locale locale =
         alphabetKeyboard != null ? alphabetKeyboard.getLocale() : Locale.getDefault();
     GestureCandidatesCaser.applyCasing(gestureTypingPossibilities, isShifted, isCapsLocked, locale);
@@ -337,7 +339,7 @@ public final class GestureTypingController {
   }
 
   private void onDictionariesLoaded(
-      AnyKeyboard keyboard, List<char[][]> newWords, List<int[]> wordFrequencies) {
+      KeyboardDefinition keyboard, List<char[][]> newWords, List<int[]> wordFrequencies) {
     if (gestureTypingEnabled && currentGestureDetector != null) {
       final String key = getKeyForDetector(keyboard);
       final GestureTypingDetector detector = gestureTypingDetectors.get(key);
@@ -359,7 +361,7 @@ public final class GestureTypingController {
     host.setupInputViewWatermark();
   }
 
-  private void setupGestureDetector(@NonNull Host host, @NonNull AnyKeyboard keyboard) {
+  private void setupGestureDetector(@NonNull Host host, @NonNull KeyboardDefinition keyboard) {
     detectorStateSubscription.dispose();
     if (!gestureTypingEnabled) return;
 
@@ -414,7 +416,7 @@ public final class GestureTypingController {
 
     shiftKeyState.setActiveState(false);
 
-    final AnyKeyboard currentKeyboard = host.currentKeyboard();
+    final KeyboardDefinition currentKeyboard = host.currentKeyboard();
     if (currentKeyboard != null) {
       currentKeyboard.setShifted(false);
       currentKeyboard.setShiftLocked(false);
@@ -426,7 +428,7 @@ public final class GestureTypingController {
     }
   }
 
-  private static boolean isValidGestureTypingStart(AnyKeyboard.AnyKey key) {
+  private static boolean isValidGestureTypingStart(KeyboardKey key) {
     if (key.isFunctional()) {
       return false;
     } else {
@@ -458,7 +460,7 @@ public final class GestureTypingController {
   }
 
   @VisibleForTesting
-  public static String getKeyForDetector(@NonNull AnyKeyboard keyboard) {
+  public static String getKeyForDetector(@NonNull KeyboardDefinition keyboard) {
     return String.format(
         Locale.US,
         "%s,%d,%d",

@@ -1,6 +1,6 @@
 package com.anysoftkeyboard.keyboards.views;
 
-/** Holds key text shadow configuration to keep AnyKeyboardViewBase slimmer. */
+/** Holds key text shadow configuration to keep KeyboardViewBase slimmer. */
 final class KeyShadowStyle {
   private int color;
   private int radius;

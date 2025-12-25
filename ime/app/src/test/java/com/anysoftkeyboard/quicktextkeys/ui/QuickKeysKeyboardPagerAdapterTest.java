@@ -6,11 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.anysoftkeyboard.AnySoftKeyboardRobolectricTestRunner;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardViewWithMiniKeyboard;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewWithMiniKeyboard;
 import com.anysoftkeyboard.keyboards.views.OnKeyboardActionListener;
 import com.anysoftkeyboard.keyboards.views.QuickKeysKeyboardView;
 import com.anysoftkeyboard.quicktextkeys.QuickTextKey;
-import com.menny.android.anysoftkeyboard.AnyApplication;
+import com.menny.android.anysoftkeyboard.NskApplicationBase;
 import com.menny.android.anysoftkeyboard.R;
 import java.util.List;
 import net.evendanan.pixel.ScrollViewWithDisable;
@@ -40,7 +40,7 @@ public class QuickKeysKeyboardPagerAdapterTest {
   public void setup() {
     mViewPager = Mockito.mock(ViewPagerWithDisable.class);
     mOrderedEnabledQuickKeys =
-        AnyApplication.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOns();
+        NskApplicationBase.getQuickTextKeyFactory(getApplicationContext()).getEnabledAddOns();
     mKeyboardListener = Mockito.mock(OnKeyboardActionListener.class);
     mSkinTonePrefTracker = Mockito.mock(DefaultSkinTonePrefTracker.class);
     mGenderTracker = Mockito.mock(DefaultGenderPrefTracker.class);
@@ -52,7 +52,7 @@ public class QuickKeysKeyboardPagerAdapterTest {
             mKeyboardListener,
             mSkinTonePrefTracker,
             mGenderTracker,
-            AnyApplication.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn(),
+            NskApplicationBase.getKeyboardThemeFactory(getApplicationContext()).getEnabledAddOn(),
             11);
   }
 
@@ -138,14 +138,14 @@ public class QuickKeysKeyboardPagerAdapterTest {
   }
 
   @Test
-  @Config(shadows = ShadowAnyKeyboardViewWithMiniKeyboard.class)
+  @Config(shadows = ShadowKeyboardViewWithMiniKeyboard.class)
   public void testPopupListenerDisable() throws Exception {
     ViewGroup container = new LinearLayout(getApplicationContext());
     Object instance0 = mUnderTest.instantiateItem(container, 0);
     final QuickKeysKeyboardView keyboardView0 =
         ((View) instance0).findViewById(R.id.keys_container);
 
-    ShadowAnyKeyboardViewWithMiniKeyboard shadow = Shadow.extract(keyboardView0);
+    ShadowKeyboardViewWithMiniKeyboard shadow = Shadow.extract(keyboardView0);
     Assert.assertNotNull(shadow.mPopupShownListener);
 
     Mockito.verify(mViewPager, Mockito.never()).setEnabled(Mockito.anyBoolean());
@@ -163,16 +163,16 @@ public class QuickKeysKeyboardPagerAdapterTest {
     Mockito.verifyNoMoreInteractions(mViewPager);
   }
 
-  @Implements(AnyKeyboardViewWithMiniKeyboard.class)
-  public static class ShadowAnyKeyboardViewWithMiniKeyboard extends ShadowView {
+  @Implements(KeyboardViewWithMiniKeyboard.class)
+  public static class ShadowKeyboardViewWithMiniKeyboard extends ShadowView {
 
-    private AnyKeyboardViewWithMiniKeyboard.OnPopupShownListener mPopupShownListener;
+    private KeyboardViewWithMiniKeyboard.OnPopupShownListener mPopupShownListener;
 
-    public ShadowAnyKeyboardViewWithMiniKeyboard() {}
+    public ShadowKeyboardViewWithMiniKeyboard() {}
 
     @Implementation
     public void setOnPopupShownListener(
-        AnyKeyboardViewWithMiniKeyboard.OnPopupShownListener listener) {
+        KeyboardViewWithMiniKeyboard.OnPopupShownListener listener) {
       mPopupShownListener = listener;
     }
   }

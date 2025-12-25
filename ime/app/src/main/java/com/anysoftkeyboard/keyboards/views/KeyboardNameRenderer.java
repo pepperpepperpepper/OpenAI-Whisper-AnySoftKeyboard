@@ -6,7 +6,7 @@ import android.graphics.Typeface;
 import android.text.TextUtils;
 
 /**
- * Small helper to keep keyboard-name rendering details out of {@link AnyKeyboardViewBase}.
+ * Small helper to keep keyboard-name rendering details out of {@link KeyboardViewBase}.
  *
  * <p>It decides when to substitute the keyboard name as the space-key label and prepares the
  * paint/metrics for drawing it.

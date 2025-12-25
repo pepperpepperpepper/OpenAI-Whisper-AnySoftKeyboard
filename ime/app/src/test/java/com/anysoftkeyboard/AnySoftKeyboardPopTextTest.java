@@ -1,7 +1,7 @@
 package com.anysoftkeyboard;
 
 import com.anysoftkeyboard.api.KeyCodes;
-import com.anysoftkeyboard.keyboards.views.AnyKeyboardViewWithExtraDraw;
+import com.anysoftkeyboard.keyboards.views.KeyboardViewWithExtraDraw;
 import com.anysoftkeyboard.keyboards.views.extradraw.ExtraDraw;
 import com.anysoftkeyboard.keyboards.views.extradraw.PopTextExtraDraw;
 import com.anysoftkeyboard.test.SharedPrefsHelper;
@@ -52,7 +52,7 @@ public class AnySoftKeyboardPopTextTest extends AnySoftKeyboardBaseTest {
     Assert.assertEquals("he'll ", inputConnection.getCurrentTextInInputConnection());
 
     ArgumentCaptor<ExtraDraw> popTextCaptor = ArgumentCaptor.forClass(ExtraDraw.class);
-    Mockito.verify(((AnyKeyboardViewWithExtraDraw) mAnySoftKeyboardUnderTest.getInputView()))
+    Mockito.verify(((KeyboardViewWithExtraDraw) mAnySoftKeyboardUnderTest.getInputView()))
         .addExtraDraw(popTextCaptor.capture());
     Assert.assertTrue(popTextCaptor.getValue() instanceof PopTextExtraDraw.PopOut);
     PopTextExtraDraw popTextExtraDraw = (PopTextExtraDraw) popTextCaptor.getValue();
@@ -62,7 +62,7 @@ public class AnySoftKeyboardPopTextTest extends AnySoftKeyboardBaseTest {
     mAnySoftKeyboardUnderTest.simulateKeyPress(KeyCodes.DELETE);
 
     popTextCaptor = ArgumentCaptor.forClass(ExtraDraw.class);
-    Mockito.verify(((AnyKeyboardViewWithExtraDraw) mAnySoftKeyboardUnderTest.getInputView()))
+    Mockito.verify(((KeyboardViewWithExtraDraw) mAnySoftKeyboardUnderTest.getInputView()))
         .addExtraDraw(popTextCaptor.capture());
     Assert.assertTrue(popTextCaptor.getValue() instanceof PopTextExtraDraw.PopIn);
     Assert.assertEquals(
@@ -83,7 +83,7 @@ public class AnySoftKeyboardPopTextTest extends AnySoftKeyboardBaseTest {
 
     ArgumentCaptor<ExtraDraw> popTextCaptor = ArgumentCaptor.forClass(ExtraDraw.class);
     Mockito.verify(
-            ((AnyKeyboardViewWithExtraDraw) mAnySoftKeyboardUnderTest.getInputView()),
+            ((KeyboardViewWithExtraDraw) mAnySoftKeyboardUnderTest.getInputView()),
             Mockito.times(4))
         .addExtraDraw(popTextCaptor.capture());
 
@@ -210,14 +210,13 @@ public class AnySoftKeyboardPopTextTest extends AnySoftKeyboardBaseTest {
 
   private void verifyNothingAddedInteractions() {
     Mockito.verify(
-            ((AnyKeyboardViewWithExtraDraw) mAnySoftKeyboardUnderTest.getInputView()),
-            Mockito.never())
+            ((KeyboardViewWithExtraDraw) mAnySoftKeyboardUnderTest.getInputView()), Mockito.never())
         .addExtraDraw(Mockito.any());
   }
 
   private void verifyPopText(String text) {
     ArgumentCaptor<ExtraDraw> popTextCaptor = ArgumentCaptor.forClass(ExtraDraw.class);
-    Mockito.verify(((AnyKeyboardViewWithExtraDraw) mAnySoftKeyboardUnderTest.getInputView()))
+    Mockito.verify(((KeyboardViewWithExtraDraw) mAnySoftKeyboardUnderTest.getInputView()))
         .addExtraDraw(popTextCaptor.capture());
     Assert.assertTrue(popTextCaptor.getValue() instanceof PopTextExtraDraw.PopOut);
     Assert.assertEquals(

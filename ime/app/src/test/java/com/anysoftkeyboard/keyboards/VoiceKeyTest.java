@@ -27,8 +27,8 @@ public class VoiceKeyTest {
 
   @Test
   public void testVoiceKeyCreationAndState() throws Exception {
-    ExternalAnyKeyboard keyboard =
-        new ExternalAnyKeyboard(
+    ExternalKeyboard keyboard =
+        new ExternalKeyboard(
             mDefaultAddOn,
             mContext,
             R.xml.keyboard_with_codes_as_letters,
@@ -41,7 +41,7 @@ public class VoiceKeyTest {
             "",
             Keyboard.KEYBOARD_ROW_MODE_NORMAL);
 
-    keyboard.loadKeyboard(ExternalAnyKeyboardTest.SIMPLE_KeyboardDimens);
+    keyboard.loadKeyboard(ExternalKeyboardTest.SIMPLE_KeyboardDimens);
 
     // Find voice key (code -4)
     Keyboard.Key voiceKey = null;
@@ -82,8 +82,8 @@ public class VoiceKeyTest {
 
   @Test
   public void testVoiceKeyDrawableState() throws Exception {
-    ExternalAnyKeyboard keyboard =
-        new ExternalAnyKeyboard(
+    ExternalKeyboard keyboard =
+        new ExternalKeyboard(
             mDefaultAddOn,
             mContext,
             R.xml.keyboard_with_codes_as_letters,
@@ -96,7 +96,7 @@ public class VoiceKeyTest {
             "",
             Keyboard.KEYBOARD_ROW_MODE_NORMAL);
 
-    keyboard.loadKeyboard(ExternalAnyKeyboardTest.SIMPLE_KeyboardDimens);
+    keyboard.loadKeyboard(ExternalKeyboardTest.SIMPLE_KeyboardDimens);
 
     // Find voice key (code -4)
     Keyboard.Key voiceKey = null;
@@ -143,8 +143,8 @@ public class VoiceKeyTest {
 
   @Test
   public void testVoiceKeySearchFallback() throws Exception {
-    ExternalAnyKeyboard keyboard =
-        new ExternalAnyKeyboard(
+    ExternalKeyboard keyboard =
+        new ExternalKeyboard(
             mDefaultAddOn,
             mContext,
             R.xml.keyboard_with_codes_as_letters,
@@ -157,7 +157,7 @@ public class VoiceKeyTest {
             "",
             Keyboard.KEYBOARD_ROW_MODE_NORMAL);
 
-    keyboard.loadKeyboard(ExternalAnyKeyboardTest.SIMPLE_KeyboardDimens);
+    keyboard.loadKeyboard(ExternalKeyboardTest.SIMPLE_KeyboardDimens);
 
     // Test that setVoice still works even if mVoiceKey reference is null
     // by relying on the search functionality

@@ -17,7 +17,7 @@ import com.menny.android.anysoftkeyboard.R;
 /**
  * Action shown on the suggestion strip to cancel prediction and collapse the strip.
  *
- * <p>Extracted from {@link AnySoftKeyboardSuggestions} to reduce that class size and keep the
+ * <p>Extracted from {@link ImeSuggestionsController} to reduce that class size and keep the
  * animation logic contained.
  */
 final class CancelSuggestionsAction implements KeyboardViewContainerView.StripActionProvider {

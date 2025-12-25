@@ -4,9 +4,9 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.anysoftkeyboard.keyboards.AnyKeyboard;
 import com.anysoftkeyboard.keyboards.KeyDrawableStateProvider;
 import com.anysoftkeyboard.keyboards.Keyboard;
+import com.anysoftkeyboard.keyboards.KeyboardDefinition;
 
 final class KeyboardDrawCoordinator {
 
@@ -40,7 +40,7 @@ final class KeyboardDrawCoordinator {
 
   void draw(
       @NonNull Canvas canvas,
-      @Nullable AnyKeyboard keyboard,
+      @Nullable KeyboardDefinition keyboard,
       @Nullable Keyboard.Key[] keys,
       @Nullable KeyDrawableStateProvider drawableStateProvider,
       CharSequence keyboardName,

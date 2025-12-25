@@ -37,7 +37,7 @@ import org.robolectric.Shadows;
 public class TestInputConnection extends BaseInputConnection {
   private static final int DELAYED_SELECTION_UPDATE_MSG_ID = 88;
 
-  @NonNull private final AnySoftKeyboard mIme;
+  @NonNull private final ImeServiceBase mIme;
   @NonNull private final UnderlineSpan mCurrentComposingSpan = new UnderlineSpan();
   private final SpannableStringBuilder mInputText = new SpannableStringBuilder();
   private final Handler mDelayer;
@@ -53,7 +53,7 @@ public class TestInputConnection extends BaseInputConnection {
   private boolean mRealCapsMode = false;
   private final List<KeyEvent> mKeyEvents = new ArrayList<>();
 
-  public TestInputConnection(@NonNull AnySoftKeyboard ime) {
+  public TestInputConnection(@NonNull ImeServiceBase ime) {
     super(new TextView(ime.getApplicationContext()), false);
     mIme = ime;
     mDelayer =
