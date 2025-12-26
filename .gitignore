@@ -56,3 +56,6 @@ tmp/
 
 # local fdroid secrets
 fdroid/.env
+
+# local fdroid publish backups
+backups/
