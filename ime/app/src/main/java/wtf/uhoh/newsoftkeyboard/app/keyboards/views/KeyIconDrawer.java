@@ -17,17 +17,25 @@ final class KeyIconDrawer {
   CharSequence drawIconIfNeeded(
       Canvas canvas,
       KeyboardKey key,
+      int[] drawableState,
       KeyIconResolver keyIconResolver,
       CharSequence currentLabel,
       Rect keyBackgroundPadding,
       KeyLabelGuesser keyLabelGuesser) {
     CharSequence label = currentLabel;
-    if (!TextUtils.isEmpty(label)) {
-      return label;
+    final Drawable keyIcon = key.icon;
+
+    Drawable iconToDraw = null;
+    if (keyIcon != null) {
+      // Per-key icons from the XML layout take precedence over labels.
+      iconToDraw = keyIcon;
+    } else if (TextUtils.isEmpty(label)) {
+      // Only use per-key-code themed icons when there is no explicit label.
+      iconToDraw = keyIconResolver.getIconToDrawForKey(key, false);
     }
 
-    Drawable iconToDraw = keyIconResolver.getIconToDrawForKey(key, false);
     if (iconToDraw != null) {
+      iconToDraw.setState(drawableState);
       final boolean is9Patch = iconToDraw.getCurrent() instanceof NinePatchDrawable;
 
       final int drawableWidth = is9Patch ? key.width : iconToDraw.getIntrinsicWidth();
@@ -43,7 +51,11 @@ final class KeyIconDrawer {
       iconToDraw.draw(canvas);
       canvas.translate(-drawableX, -drawableY);
 
-      // we drew an icon, keep label empty
+      // We drew an icon, do not draw a label on top of it.
+      return null;
+    }
+
+    if (!TextUtils.isEmpty(label)) {
       return label;
     }
 

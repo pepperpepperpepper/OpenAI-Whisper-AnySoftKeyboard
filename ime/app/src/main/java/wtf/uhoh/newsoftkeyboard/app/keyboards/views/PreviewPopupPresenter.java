@@ -48,7 +48,13 @@ final class PreviewPopupPresenter {
     final boolean hidePreviewOrShowSpaceKeyPreview = (tracker == null);
     final Keyboard.Key key = hidePreviewOrShowSpaceKeyPreview ? null : tracker.getKey(keyIndex);
     if (keyIndex != KeyboardViewBase.NOT_A_KEY && key != null) {
-      Drawable iconToDraw = keyIconResolver.getIconToDrawForKey(key, true);
+      Drawable iconToDraw = null;
+      if (key instanceof KeyboardKey anyKey) {
+        iconToDraw = anyKey.iconPreview != null ? anyKey.iconPreview : anyKey.icon;
+      }
+      if (iconToDraw == null) {
+        iconToDraw = keyIconResolver.getIconToDrawForKey(key, true);
+      }
 
       CharSequence label = tracker.getPreviewText(key);
       if (keyboard != null && key instanceof KeyboardKey anyKey) {

@@ -102,7 +102,13 @@ final class KeyDrawHelper {
 
       label =
           keyIconDrawer.drawIconIfNeeded(
-              canvas, key, keyIconResolver, label, keyBackgroundPadding, keyLabelGuesser);
+              canvas,
+              key,
+              drawableState,
+              keyIconResolver,
+              label,
+              keyBackgroundPadding,
+              keyLabelGuesser);
 
       label =
           keyboardNameRenderer.applyKeyboardNameIfNeeded(
