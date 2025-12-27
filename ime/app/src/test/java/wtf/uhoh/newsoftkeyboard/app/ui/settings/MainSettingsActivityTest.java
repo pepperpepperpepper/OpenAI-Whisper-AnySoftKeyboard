@@ -17,7 +17,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,47 +54,50 @@ public class MainSettingsActivityTest {
   }
 
   @Test
-  public void testBottomNavClicks() {
+  public void testSettingsHomeNavigation() {
     try (var activityController = ActivityScenario.launch(MainSettingsActivity.class)) {
       activityController.moveToState(Lifecycle.State.RESUMED);
 
       activityController.onActivity(
           activity -> {
-            BottomNavigationView bottomNav = activity.findViewById(R.id.bottom_navigation);
-            Assert.assertEquals(R.id.mainFragment, bottomNav.getSelectedItemId());
             Assert.assertTrue(
                 RobolectricFragmentTestCase.getCurrentFragmentFromActivity(activity)
-                    instanceof MainFragment);
+                    instanceof SettingsHomeFragment);
 
-            bottomNav.setSelectedItemId(R.id.languageSettingsFragment);
+            androidx.navigation.Navigation.findNavController(activity, R.id.nav_host_fragment)
+                .navigate(R.id.keyboardsAndLanguagePacksFragment);
             TestRxSchedulers.drainAllTasks();
             Assert.assertTrue(
                 RobolectricFragmentTestCase.getCurrentFragmentFromActivity(activity)
-                    instanceof LanguageSettingsFragment);
+                    instanceof KeyboardsAndLanguagePacksFragment);
 
-            bottomNav.setSelectedItemId(R.id.userInterfaceSettingsFragment);
+            androidx.navigation.Navigation.findNavController(activity, R.id.nav_host_fragment)
+                .navigate(R.id.typingSettingsFragment);
             TestRxSchedulers.drainAllTasks();
             Assert.assertTrue(
                 RobolectricFragmentTestCase.getCurrentFragmentFromActivity(activity)
-                    instanceof UserInterfaceSettingsFragment);
+                    instanceof TypingSettingsFragment);
 
-            bottomNav.setSelectedItemId(R.id.quickTextKeysBrowseFragment);
+            androidx.navigation.Navigation.findNavController(activity, R.id.nav_host_fragment)
+                .navigate(R.id.lookAndFeelSettingsFragment);
             TestRxSchedulers.drainAllTasks();
             Assert.assertTrue(
                 RobolectricFragmentTestCase.getCurrentFragmentFromActivity(activity)
-                    instanceof QuickTextKeysBrowseFragment);
+                    instanceof LookAndFeelSettingsFragment);
 
-            bottomNav.setSelectedItemId(R.id.gesturesSettingsFragment);
+            androidx.navigation.Navigation.findNavController(activity, R.id.nav_host_fragment)
+                .navigate(R.id.gesturesAndQuickKeysSettingsFragment);
             TestRxSchedulers.drainAllTasks();
             Assert.assertTrue(
                 RobolectricFragmentTestCase.getCurrentFragmentFromActivity(activity)
-                    instanceof GesturesSettingsFragment);
+                    instanceof GesturesAndQuickKeysSettingsFragment);
 
-            bottomNav.setSelectedItemId(R.id.mainFragment);
+            androidx.navigation.Navigation.findNavController(activity, R.id.nav_host_fragment)
+                .navigate(R.id.settingsHomeFragment);
             TestRxSchedulers.drainAllTasks();
             Assert.assertTrue(
                 RobolectricFragmentTestCase.getCurrentFragmentFromActivity(activity)
-                    instanceof MainFragment);
+                    instanceof SettingsHomeFragment);
           });
     }
   }
@@ -147,8 +149,6 @@ public class MainSettingsActivityTest {
 
             Assert.assertNotNull(fragment);
             Assert.assertTrue(fragment instanceof GesturesSettingsFragment);
-            BottomNavigationView bottomNav = activity.findViewById(R.id.bottom_navigation);
-            Assert.assertEquals(R.id.gesturesSettingsFragment, bottomNav.getSelectedItemId());
           });
     }
   }
@@ -166,8 +166,6 @@ public class MainSettingsActivityTest {
 
             Assert.assertNotNull(fragment);
             Assert.assertTrue(fragment instanceof QuickTextKeysBrowseFragment);
-            BottomNavigationView bottomNav = activity.findViewById(R.id.bottom_navigation);
-            Assert.assertEquals(R.id.quickTextKeysBrowseFragment, bottomNav.getSelectedItemId());
           });
     }
   }

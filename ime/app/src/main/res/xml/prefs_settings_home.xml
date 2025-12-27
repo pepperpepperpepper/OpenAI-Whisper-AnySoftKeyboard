@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/settings_home_title">
+
+    <Preference
+        android:key="nav:search"
+        android:title="@string/settings_search_title"
+        android:summary="@string/settings_search_summary"
+        app:iconSpaceReserved="false" />
+
+    <androidx.preference.PreferenceCategory
+        android:key="setup_permissions_group"
+        android:title="@string/settings_setup_permissions_title">
+
+        <Preference
+            android:key="nav:setup_wizard"
+            android:title="@string/settings_setup_wizard_title"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:enable_keyboard"
+            android:title="@string/settings_enable_keyboard_title"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:set_default_keyboard"
+            android:title="@string/settings_set_default_keyboard_title"
+            app:iconSpaceReserved="false" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="settings_categories_group"
+        android:title="@string/settings_categories_title">
+
+        <Preference
+            android:key="nav:category_keyboards_language_packs"
+            android:title="@string/settings_category_keyboards_language_packs"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:category_typing"
+            android:title="@string/settings_category_typing"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:category_look_and_feel"
+            android:title="@string/settings_category_look_and_feel"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:category_gestures_quick_keys"
+            android:title="@string/settings_category_gestures_quick_keys"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:category_clipboard"
+            android:title="@string/settings_category_clipboard"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:category_voice"
+            android:title="@string/settings_category_voice"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:category_troubleshooting_backup"
+            android:title="@string/settings_category_troubleshooting_backup"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:category_settings_ui_launcher"
+            android:title="@string/settings_category_settings_ui_launcher"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:category_help_about"
+            android:title="@string/settings_category_help_about"
+            app:iconSpaceReserved="false" />
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>
+

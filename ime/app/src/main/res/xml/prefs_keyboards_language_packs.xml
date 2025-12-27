@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/settings_category_keyboards_language_packs">
+
+    <androidx.preference.PreferenceCategory
+        android:key="language_packs_section"
+        android:title="@string/settings_language_packs_section_title">
+
+        <Preference
+            android:key="nav:language_packs_manager"
+            android:title="@string/settings_install_language_packs_title"
+            android:summary="@string/settings_install_language_packs_summary"
+            app:iconSpaceReserved="false" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="keyboard_addons_section"
+        android:title="@string/settings_keyboard_addons_section_title">
+
+        <Preference
+            android:key="nav:keyboards_manager"
+            android:title="@string/settings_manage_keyboards_title"
+            android:summary="@string/language_keyboards_settings_tile"
+            app:iconSpaceReserved="false" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="switching_section"
+        android:title="@string/settings_switching_language_key_section_title">
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_switch_to_alphabet_on_space"
+            android:key="@string/settings_key_switch_keyboard_on_space"
+            android:persistent="true"
+            android:summaryOff="@string/switch_keyboard_on_space_off_summary"
+            android:summaryOn="@string/switch_keyboard_on_space_on_summary"
+            android:title="@string/switch_keyboard_on_space" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_lang_key_shows_popup"
+            android:key="@string/settings_key_lang_key_shows_popup"
+            android:persistent="true"
+            android:summaryOff="@string/lang_key_shows_popup_off_summary"
+            android:summaryOn="@string/lang_key_shows_popup_on_summary"
+            android:title="@string/lang_key_shows_popup" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_always_hide_language_key"
+            android:key="@string/settings_key_always_hide_language_key"
+            android:persistent="true"
+            android:summaryOff="@string/always_hide_language_key_off_summary"
+            android:summaryOn="@string/always_hide_language_key_on_summary"
+            android:title="@string/always_hide_language_key" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_persistent_layout_per_package_id"
+            android:key="@string/settings_key_persistent_layout_per_package_id"
+            android:persistent="true"
+            android:summaryOff="@string/persistent_layout_per_package_id_off_summary"
+            android:summaryOn="@string/persistent_layout_per_package_id_on_summary"
+            android:title="@string/persistent_layout_per_package_id_title" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="hardware_keyboard_section"
+        android:title="@string/settings_hardware_keyboard_section_title">
+
+        <Preference
+            android:key="info:hardware_keyboard_gate"
+            android:title="@string/settings_hardware_keyboard_gate_title"
+            android:summary="@string/settings_hardware_keyboard_gate_summary"
+            app:iconSpaceReserved="false" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:key="use_keyrepeat"
+            android:persistent="true"
+            android:summaryOff="@string/use_keyrepeat_off_summary"
+            android:summaryOn="@string/use_keyrepeat_on_summary"
+            android:title="@string/use_keyrepeat" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_hide_soft_when_physical"
+            android:key="@string/settings_key_hide_soft_when_physical"
+            android:persistent="true"
+            android:summaryOff="@string/hide_soft_when_physical_off_summary"
+            android:summaryOn="@string/hide_soft_when_physical_on_summary"
+            android:title="@string/hide_soft_when_physical" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_enable_alt_space_language_shortcut"
+            android:key="@string/settings_key_enable_alt_space_language_shortcut"
+            android:persistent="true"
+            android:summaryOff="@string/enable_alt_space_language_shortcut_off_summary"
+            android:summaryOn="@string/enable_alt_space_language_shortcut_on_summary"
+            android:title="@string/enable_alt_space_language_shortcut" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_enable_shift_space_language_shortcut"
+            android:key="@string/settings_key_enable_shift_space_language_shortcut"
+            android:persistent="true"
+            android:summaryOff="@string/enable_shift_space_language_shortcut_off_summary"
+            android:summaryOn="@string/enable_shift_space_language_shortcut_on_summary"
+            android:title="@string/enable_shift_space_language_shortcut" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_use_volume_key_for_left_right"
+            android:key="@string/settings_key_use_volume_key_for_left_right"
+            android:persistent="true"
+            android:summaryOff="@string/volume_key_for_left_right_support_off_summary"
+            android:summaryOn="@string/volume_key_for_left_right_support_on_summary"
+            android:title="@string/volume_key_for_left_right_support" />
+    </androidx.preference.PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
+

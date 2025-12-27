@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/settings_category_clipboard">
+
+    <androidx.preference.PreferenceCategory
+        android:key="clipboard_group"
+        android:title="@string/settings_category_clipboard">
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_os_clipboard_sync"
+            android:key="@string/settings_key_os_clipboard_sync"
+            android:persistent="true"
+            android:summaryOff="@string/settings_os_clipboard_sync_summary_off"
+            android:summaryOn="@string/settings_os_clipboard_sync_summary_on"
+            android:title="@string/settings_os_clipboard_sync" />
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>
+

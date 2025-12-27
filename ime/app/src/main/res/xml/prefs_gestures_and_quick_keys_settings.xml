@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/settings_category_gestures_quick_keys">
+
+    <androidx.preference.PreferenceCategory
+        android:key="gesture_typing_group"
+        android:title="@string/gesture_typing_settings">
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_gesture_typing"
+            android:key="@string/settings_key_gesture_typing"
+            android:persistent="true"
+            android:summary="@string/gesture_typing_summary"
+            android:title="@string/gesture_typing_action" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="swipe_tweak_group"
+        android:title="@string/settings_gestures_swipe_pinch_title">
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/swipe_action_value_shift"
+            android:dialogTitle="@string/swipe_up_action_title"
+            android:entries="@array/swipe_action_types_names"
+            android:entryValues="@array/swipe_action_types_values"
+            android:key="@string/settings_key_swipe_up_action"
+            android:summary="@string/swipe_up_action_summary"
+            android:title="@string/swipe_up_action" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/swipe_action_value_hide"
+            android:dialogTitle="@string/swipe_down_action_title"
+            android:entries="@array/swipe_action_types_names"
+            android:entryValues="@array/swipe_action_types_values"
+            android:key="@string/settings_key_swipe_down_action"
+            android:summary="@string/swipe_down_action_summary"
+            android:title="@string/swipe_down_action" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/swipe_action_value_next_symbols"
+            android:dialogTitle="@string/swipe_left_action_title"
+            android:entries="@array/swipe_action_types_names"
+            android:entryValues="@array/swipe_action_types_values"
+            android:key="@string/settings_key_swipe_left_action"
+            android:summary="@string/swipe_left_action_summary"
+            android:title="@string/swipe_left_action" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/swipe_action_value_next_alphabet"
+            android:dialogTitle="@string/swipe_right_action_title"
+            android:entries="@array/swipe_action_types_names"
+            android:entryValues="@array/swipe_action_types_values"
+            android:key="@string/settings_key_swipe_right_action"
+            android:summary="@string/swipe_right_action_summary"
+            android:title="@string/swipe_right_action" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/swipe_action_value_next_symbols"
+            android:dialogTitle="@string/swipe_left_space_bar_action_title"
+            android:entries="@array/swipe_action_types_names"
+            android:entryValues="@array/swipe_action_types_values"
+            android:key="@string/settings_key_swipe_left_space_bar_action"
+            android:summary="@string/swipe_left_space_bar_action_summary"
+            android:title="@string/swipe_left_space_bar_action" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/swipe_action_value_next_alphabet"
+            android:dialogTitle="@string/swipe_right_space_bar_action_title"
+            android:entries="@array/swipe_action_types_names"
+            android:entryValues="@array/swipe_action_types_values"
+            android:key="@string/settings_key_swipe_right_space_bar_action"
+            android:summary="@string/swipe_right_space_bar_action_summary"
+            android:title="@string/swipe_right_space_bar_action" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/swipe_action_value_next_symbols"
+            android:dialogTitle="@string/swipe_left_two_fingers_action"
+            android:entries="@array/swipe_action_types_names"
+            android:entryValues="@array/swipe_action_types_values"
+            android:key="@string/settings_key_swipe_left_two_fingers_action"
+            android:summary="@string/swipe_left_two_fingers_action_summary"
+            android:title="@string/swipe_left_two_fingers_action" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/swipe_action_value_next_alphabet"
+            android:dialogTitle="@string/swipe_right_two_fingers_action_title"
+            android:entries="@array/swipe_action_types_names"
+            android:entryValues="@array/swipe_action_types_values"
+            android:key="@string/settings_key_swipe_right_two_fingers_action"
+            android:summary="@string/swipe_right_two_fingers_action_summary"
+            android:title="@string/swipe_right_two_fingers_action" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/swipe_action_value_utility_keyboard"
+            android:dialogTitle="@string/swipe_up_from_spacebar_action_title"
+            android:entries="@array/swipe_action_types_names"
+            android:entryValues="@array/swipe_action_types_values"
+            android:key="@string/settings_key_swipe_up_from_spacebar_action"
+            android:summary="@string/swipe_up_from_spacebar_action_summary"
+            android:title="@string/swipe_up_from_spacebar_action" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/swipe_action_value_merge_layout"
+            android:dialogTitle="@string/pinch_gesture_action_title"
+            android:entries="@array/swipe_action_types_names"
+            android:entryValues="@array/swipe_action_types_values"
+            android:key="@string/settings_key_pinch_gesture_action"
+            android:summary="@string/pinch_gesture_action_summary"
+            android:title="@string/pinch_gesture_action" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/swipe_action_value_split_layout"
+            android:dialogTitle="@string/separate_gesture_action_title"
+            android:entries="@array/swipe_action_types_names"
+            android:entryValues="@array/swipe_action_types_values"
+            android:key="@string/settings_key_separate_gesture_action"
+            android:summary="@string/separate_gesture_action_summary"
+            android:title="@string/separate_gesture_action" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_swipe_velocity_threshold"
+            android:dialogTitle="@string/settings_swipe_velocity_threshold_title"
+            android:entries="@array/settings_key_swipe_velocity_threshold_names"
+            android:entryValues="@array/settings_key_swipe_velocity_threshold_values"
+            android:key="@string/settings_key_swipe_velocity_threshold"
+            android:summary="@string/settings_swipe_velocity_threshold_summary"
+            android:title="@string/settings_swipe_velocity_threshold_title" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_swipe_distance_threshold"
+            android:dialogTitle="@string/settings_swipe_distance_threshold_title"
+            android:entries="@array/settings_key_swipe_distance_threshold_names"
+            android:entryValues="@array/settings_key_swipe_distance_threshold_values"
+            android:key="@string/settings_key_swipe_distance_threshold"
+            android:summary="@string/settings_swipe_distance_threshold_summary"
+            android:title="@string/settings_swipe_distance_threshold_title" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="quick_keys_group"
+        android:title="@string/settings_quick_keys_emoji_title">
+
+        <Preference
+            android:key="nav:quick_keys_manager"
+            android:title="@string/settings_manage_quick_keys_title"
+            android:summary="@string/search_market_for_quick_key_addons"
+            app:iconSpaceReserved="false" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_one_shot_quick_text_popup"
+            android:key="@string/settings_key_one_shot_quick_text_popup"
+            android:persistent="true"
+            android:summaryOff="@string/one_shot_quick_text_popup_off_summary"
+            android:summaryOn="@string/one_shot_quick_text_popup_on_summary"
+            android:title="@string/one_shot_quick_text_popup" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_search_quick_text_tags"
+            android:key="@string/settings_key_search_quick_text_tags"
+            android:persistent="true"
+            android:summaryOff="@string/quick_text_tags_search_off_summary"
+            android:summaryOn="@string/quick_text_tags_search_on_summary"
+            android:title="@string/quick_text_tags_search" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_initial_quick_text_tab"
+            android:dialogTitle="@string/initial_quick_text_tab_title"
+            android:entries="@array/settings_key_initial_quick_text_tab_names"
+            android:entryValues="@array/settings_key_initial_quick_text_tab_values"
+            android:key="@string/settings_key_initial_quick_text_tab"
+            android:summary="@string/initial_quick_text_tab_summary"
+            android:title="@string/initial_quick_text_tab_title" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_emoji_gender"
+            android:dialogTitle="@string/emoji_default_gender_title"
+            android:entries="@array/settings_key_default_emoji_gender_names"
+            android:entryValues="@array/settings_key_default_emoji_gender_values"
+            android:key="@string/settings_key_default_emoji_gender"
+            android:summary="@string/emoji_default_gender_summary"
+            android:title="@string/emoji_default_gender_title" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_emoji_skin_tone"
+            android:dialogTitle="@string/emoji_default_skin_tone_title"
+            android:entries="@array/settings_key_default_emoji_skin_tone_names"
+            android:entryValues="@array/settings_key_default_emoji_skin_tone_values"
+            android:key="@string/settings_key_default_emoji_skin_tone"
+            android:summary="@string/emoji_default_skin_tone_summary"
+            android:title="@string/emoji_default_skin_tone_title" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_do_not_flip_quick_keys_functionality"
+            android:key="@string/settings_key_do_not_flip_quick_key_codes_functionality"
+            android:persistent="true"
+            android:summaryOff="@string/emoticon_long_press_opens_popup_off_summary"
+            android:summaryOn="@string/emoticon_long_press_opens_popup_on_summary"
+            android:title="@string/emoticon_long_press_opens_popup" />
+
+        <EditTextPreference
+            android:autoText="false"
+            android:capitalize="none"
+            android:defaultValue=""
+            android:dialogTitle="@string/default_smiley_text"
+            android:key="@string/settings_key_emoticon_default_text"
+            android:lines="1"
+            android:persistent="true"
+            android:singleLine="true"
+            android:title="@string/default_smiley_text" />
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>
+

@@ -2,7 +2,62 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/settings_main"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/settingsHomeFragment">
+
+    <fragment
+        android:id="@+id/settingsHomeFragment"
+        android:name="wtf.uhoh.newsoftkeyboard.app.ui.settings.SettingsHomeFragment"
+        android:label="@string/settings_home_title" />
+
+    <fragment
+        android:id="@+id/settingsSearchFragment"
+        android:name="wtf.uhoh.newsoftkeyboard.app.ui.settings.SettingsSearchFragment"
+        android:label="@string/settings_search_title" />
+
+    <fragment
+        android:id="@+id/keyboardsAndLanguagePacksFragment"
+        android:name="wtf.uhoh.newsoftkeyboard.app.ui.settings.KeyboardsAndLanguagePacksFragment"
+        android:label="@string/settings_category_keyboards_language_packs" />
+
+    <fragment
+        android:id="@+id/typingSettingsFragment"
+        android:name="wtf.uhoh.newsoftkeyboard.app.ui.settings.TypingSettingsFragment"
+        android:label="@string/settings_category_typing" />
+
+    <fragment
+        android:id="@+id/lookAndFeelSettingsFragment"
+        android:name="wtf.uhoh.newsoftkeyboard.app.ui.settings.LookAndFeelSettingsFragment"
+        android:label="@string/settings_category_look_and_feel" />
+
+    <fragment
+        android:id="@+id/gesturesAndQuickKeysSettingsFragment"
+        android:name="wtf.uhoh.newsoftkeyboard.app.ui.settings.GesturesAndQuickKeysSettingsFragment"
+        android:label="@string/settings_category_gestures_quick_keys" />
+
+    <fragment
+        android:id="@+id/clipboardSettingsFragment"
+        android:name="wtf.uhoh.newsoftkeyboard.app.ui.settings.ClipboardSettingsFragment"
+        android:label="@string/settings_category_clipboard" />
+
+    <fragment
+        android:id="@+id/voiceSettingsFragment"
+        android:name="wtf.uhoh.newsoftkeyboard.app.ui.settings.VoiceSettingsFragment"
+        android:label="@string/settings_category_voice" />
+
+    <fragment
+        android:id="@+id/troubleshootingAndBackupSettingsFragment"
+        android:name="wtf.uhoh.newsoftkeyboard.app.ui.settings.TroubleshootingAndBackupSettingsFragment"
+        android:label="@string/settings_category_troubleshooting_backup" />
+
+    <fragment
+        android:id="@+id/settingsUiAndLauncherFragment"
+        android:name="wtf.uhoh.newsoftkeyboard.app.ui.settings.SettingsUiAndLauncherFragment"
+        android:label="@string/settings_category_settings_ui_launcher" />
+
+    <fragment
+        android:id="@+id/helpAndAboutFragment"
+        android:name="wtf.uhoh.newsoftkeyboard.app.ui.settings.HelpAndAboutFragment"
+        android:label="@string/settings_category_help_about" />
 
     <fragment
         android:id="@+id/mainFragment"

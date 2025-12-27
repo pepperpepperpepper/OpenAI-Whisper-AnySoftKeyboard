@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/settings_category_troubleshooting_backup">
+
+    <androidx.preference.PreferenceCategory
+        android:key="backup_restore_group"
+        android:title="@string/settings_backup_restore_section_title">
+
+        <Preference
+            android:key="nav:backup_prefs"
+            android:title="@string/word_editor_action_backup_words"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:restore_prefs"
+            android:title="@string/word_editor_action_restore_words"
+            app:iconSpaceReserved="false" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="troubleshooting_compat_group"
+        android:title="@string/settings_troubleshooting_compatibility_section_title">
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_workaround_disable_rtl_fix"
+            android:key="@string/settings_key_workaround_disable_rtl_fix"
+            android:persistent="true"
+            android:summaryOff="@string/workaround_disable_rtl_fix_summary_off"
+            android:summaryOn="@string/workaround_disable_rtl_fix_summary_on"
+            android:title="@string/workaround_disable_rtl_fix" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_allow_suggestions_restart"
+            android:key="@string/settings_key_allow_suggestions_restart"
+            android:persistent="true"
+            android:summaryOff=""
+            android:summaryOn="@string/allow_suggestions_restart_summary"
+            android:title="@string/allow_suggestions_restart" />
+
+        <androidx.preference.CheckBoxPreference
+            android:key="@string/settings_key_always_use_fallback_user_dictionary"
+            android:title="@string/always_use_fallback_user_dictionary"
+            android:persistent="true"
+            android:defaultValue="@bool/settings_default_always_use_fallback_user_dictionary"
+            android:summaryOn="@string/always_use_fallback_user_dictionary_on_summary"
+            android:summaryOff="@string/always_use_fallback_user_dictionary_off_summary" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="performance_battery_group"
+        android:title="@string/settings_performance_battery_section_title">
+
+        <Preference
+            android:key="nav:power_saving_settings"
+            android:title="@string/power_save_mode_screen"
+            app:iconSpaceReserved="false" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="developer_diagnostics_group"
+        android:title="@string/settings_developer_diagnostics_section_title">
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_show_chewbacca"
+            android:key="@string/settings_key_show_chewbacca"
+            android:persistent="true"
+            android:summaryOff="@string/show_crash_notification_off_summary"
+            android:summaryOn="@string/show_crash_notification_on_summary"
+            android:title="@string/show_crash_notification" />
+
+        <Preference
+            android:key="nav:developer_tools"
+            android:title="@string/click_for_developer_features"
+            android:summary="@string/click_for_developer_features_summary"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:logcat_viewer"
+            android:title="@string/settings_logcat_viewer_title"
+            app:iconSpaceReserved="false" />
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>
