@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/settings_category_look_and_feel">
+
+    <androidx.preference.PreferenceCategory
+        android:key="look_theme"
+        android:title="@string/settings_look_and_feel_theme_title">
+
+        <Preference
+            android:key="nav:theme_selector"
+            android:title="@string/keyboard_theme_list_title"
+            android:summary="@string/ui_theme_settings_tile"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:night_mode_settings"
+            android:title="@string/night_mode_screen"
+            app:iconSpaceReserved="false" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_apply_remote_app_colors"
+            android:key="@string/settings_key_apply_remote_app_colors"
+            android:persistent="true"
+            android:summaryOff="@string/apply_overlay_summary_off"
+            android:summaryOn="@string/apply_overlay_summary_on"
+            android:title="@string/apply_remote_app_colors_to_theme" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_theme_case_type_override"
+            android:dialogTitle="@string/theme_case_type_override_dialog_title"
+            android:entries="@array/settings_key_theme_case_type_override_names"
+            android:entryValues="@array/settings_key_theme_case_type_override_values"
+            android:key="@string/settings_key_theme_case_type_override"
+            android:persistent="true"
+            android:summary="@string/theme_case_type_override_summary"
+            android:title="@string/theme_case_type_override_title" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="look_key_text_hints"
+        android:title="@string/settings_look_and_feel_key_text_hints_title">
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_show_hint_text_value"
+            android:key="@string/settings_key_show_hint_text_key"
+            android:persistent="true"
+            android:summaryOff="@string/show_hint_text_off_summary"
+            android:summaryOn="@string/show_hint_text_on_summary"
+            android:title="@string/show_hint_text" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_show_keyboard_name_text_value"
+            android:key="@string/settings_key_show_keyboard_name_text_key"
+            android:persistent="true"
+            android:summaryOff="@string/show_keyboard_name_off_summary"
+            android:summaryOn="@string/show_keyboard_name_on_summary"
+            android:title="@string/show_keyboard_name_text" />
+
+        <androidx.preference.ListPreference
+            android:title="@string/settings_hint_size"
+            android:entries="@array/settings_key_hint_size_names"
+            android:entryValues="@array/settings_key_hint_size_values"
+            android:defaultValue="@string/settings_key_hint_size_default"
+            android:dialogTitle="@string/settings_hint_size"
+            android:key="@string/settings_key_hint_size"
+            android:summary="@string/settings_key_hint_size_summary"
+            android:persistent="true"
+            android:singleLine="true" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_use_custom_hint_align_value"
+            android:dependency="@string/settings_key_show_hint_text_key"
+            android:key="@string/settings_key_use_custom_hint_align_key"
+            android:persistent="true"
+            android:summaryOff="@string/use_custom_hint_align_off_summary"
+            android:summaryOn="@string/use_custom_hint_align_on_summary"
+            android:title="@string/use_custom_hint_align" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_custom_hint_align_value"
+            android:dependency="@string/settings_key_use_custom_hint_align_key"
+            android:dialogTitle="@string/settings_custom_hint_align_dialog_title"
+            android:entries="@array/custom_hint_align_types"
+            android:entryValues="@array/custom_hint_align_values"
+            android:key="@string/settings_key_custom_hint_align_key"
+            android:summary="@string/custom_hint_align_summary"
+            android:title="@string/custom_hint_align" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_custom_hint_valign_value"
+            android:dependency="@string/settings_key_use_custom_hint_align_key"
+            android:dialogTitle="@string/settings_custom_hint_valign_dialog_title"
+            android:entries="@array/custom_hint_valign_types"
+            android:entryValues="@array/custom_hint_valign_values"
+            android:key="@string/settings_key_custom_hint_valign_key"
+            android:summary="@string/custom_hint_valign_summary"
+            android:title="@string/custom_hint_valign" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="look_layout_size"
+        android:title="@string/settings_look_and_feel_layout_size_title">
+
+        <net.evendanan.pixel.SlidePreference
+            android:defaultValue="@integer/settings_default_zoom_percent_in_portrait"
+            android:key="@string/settings_key_zoom_percent_in_portrait"
+            android:persistent="true"
+            android:title="@string/zoom_factor_keys_in_portrait"
+            app:slideMaximum="@integer/settings_custom_zoom_factor_portrait_slide_max"
+            app:valueStringTemplate="@string/keys_zoom_factor_template"
+            app:slideMinimum="@integer/settings_custom_zoom_factor_portrait_slide_min" />
+
+        <net.evendanan.pixel.SlidePreference
+            android:defaultValue="@integer/settings_default_zoom_percent_in_landscape"
+            android:key="@string/settings_key_zoom_percent_in_landscape"
+            android:persistent="true"
+            android:title="@string/zoom_factor_keys_in_landscape"
+            app:valueStringTemplate="@string/keys_zoom_factor_template"
+            app:slideMaximum="@integer/settings_custom_zoom_factor_landscape_slide_max"
+            app:slideMinimum="@integer/settings_custom_zoom_factor_landscape_slide_min" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_default_split_state"
+            android:dialogTitle="@string/settings_split_state_title_portrait"
+            android:entries="@array/settings_key_default_split_state_names"
+            android:entryValues="@array/settings_key_default_split_state_values"
+            android:key="@string/settings_key_default_split_state_portrait"
+            android:summary="@string/settings_split_state_summary"
+            android:title="@string/settings_split_state_title_portrait" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_default_split_state"
+            android:dialogTitle="@string/settings_split_state_title_landscape"
+            android:entries="@array/settings_key_default_split_state_names"
+            android:entryValues="@array/settings_key_default_split_state_values"
+            android:key="@string/settings_key_default_split_state_landscape"
+            android:summary="@string/settings_split_state_summary"
+            android:title="@string/settings_split_state_title_landscape" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_portrait_fullscreen"
+            android:key="@string/settings_key_portrait_fullscreen"
+            android:persistent="true"
+            android:summaryOff="@string/fullscreen_portrait_input_connection_supported_off_summary"
+            android:summaryOn="@string/fullscreen_portrait_input_connection_supported_on_summary"
+            android:title="@string/fullscreen_portrait_input_connection_supported" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_landscape_fullscreen"
+            android:key="@string/settings_key_landscape_fullscreen"
+            android:persistent="true"
+            android:summaryOff="@string/fullscreen_input_connection_supported_off_summary"
+            android:summaryOn="@string/fullscreen_input_connection_supported_on_summary"
+            android:title="@string/fullscreen_input_connection_supported" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="look_bottom_spacing"
+        android:title="@string/settings_look_and_feel_bottom_spacing_title">
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_colorize_nav_bar"
+            android:key="@string/settings_key_colorize_nav_bar"
+            android:persistent="true"
+            android:summaryOff="@string/colorize_nav_bar_summary_off"
+            android:summaryOn="@string/colorize_nav_bar_summary_on"
+            android:title="@string/colorize_nav_bar_title" />
+
+        <net.evendanan.pixel.SlidePreference
+            android:defaultValue="@integer/settings_default_bottom_extra_padding_in_portrait"
+            android:key="@string/settings_key_bottom_extra_padding_in_portrait"
+            android:dependency="@string/settings_key_colorize_nav_bar"
+            android:persistent="true"
+            android:title="@string/bottom_padding_in_dp_title"
+            app:slideMaximum="@integer/settings_bottom_padding_max"
+            app:valueStringTemplate="@string/bottom_padding_in_dp_template"
+            app:slideMinimum="@integer/settings_bottom_padding_min" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="look_toolbar"
+        android:title="@string/settings_look_and_feel_toolbar_title">
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_extension_keyboard_enabled"
+            android:key="@string/settings_key_extension_keyboard_enabled"
+            android:persistent="true"
+            android:summaryOff="@string/extension_keyboard_enabled_off_summary"
+            android:summaryOn="@string/extension_keyboard_enabled_on_summary"
+            android:title="@string/is_extesion_keyboard_above_keyboard" />
+
+        <Preference
+            android:key="nav:toolbar_top_row_selector"
+            android:dependency="@string/settings_key_extension_keyboard_enabled"
+            android:title="@string/top_generic_row_group"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:toolbar_swipe_row_selector"
+            android:dependency="@string/settings_key_extension_keyboard_enabled"
+            android:title="@string/extension_generic_keyboard_group"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:toolbar_bottom_row_selector"
+            android:dependency="@string/settings_key_extension_keyboard_enabled"
+            android:title="@string/bottom_generic_row_group"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="nav:toolbar_input_field_modes"
+            android:dependency="@string/settings_key_extension_keyboard_enabled"
+            android:title="@string/supported_keyboard_row_modes_title"
+            android:summary="@string/supported_keyboard_row_modes_summary"
+            app:iconSpaceReserved="false" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_is_sticky_extesion_keyboard"
+            android:key="@string/settings_key_is_sticky_extesion_keyboard"
+            android:persistent="true"
+            android:dependency="@string/settings_key_extension_keyboard_enabled"
+            android:summaryOff="@string/is_sticky_extesion_keyboard_off_summary"
+            android:summaryOn="@string/is_sticky_extesion_keyboard_on_summary"
+            android:title="@string/is_sticky_extesion_keyboard" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_allow_layouts_to_provide_generic_rows"
+            android:key="@string/settings_key_allow_layouts_to_provide_generic_rows"
+            android:persistent="true"
+            android:dependency="@string/settings_key_extension_keyboard_enabled"
+            android:summaryOff="@string/allow_layouts_to_provide_generic_rows_off_summary"
+            android:summaryOn="@string/allow_layouts_to_provide_generic_rows_on_summary"
+            android:title="@string/allow_layouts_to_provide_generic_rows" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="look_feedback_previews"
+        android:title="@string/settings_look_and_feel_feedback_previews_title">
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_key_press_shows_preview_popup"
+            android:key="@string/settings_key_key_press_shows_preview_popup"
+            android:persistent="true"
+            android:summaryOff="@string/key_press_preview_popup_off_summary"
+            android:summaryOn="@string/key_press_preview_popup_on_summary"
+            android:title="@string/key_press_preview_popup" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_key_press_preview_popup_position"
+            android:dependency="@string/settings_key_key_press_shows_preview_popup"
+            android:dialogTitle="@string/key_preview_position_override"
+            android:entries="@array/settings_key_preview_position_override_names"
+            android:entryValues="@array/settings_key_preview_position_override_values"
+            android:key="@string/settings_key_key_press_preview_popup_position"
+            android:persistent="true"
+            android:summary="@string/key_preview_position_override_summary"
+            android:title="@string/key_preview_position_override" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_pop_text_option"
+            android:dialogTitle="@string/pop_text_type_title"
+            android:entries="@array/pop_text_types"
+            android:entryValues="@array/pop_text_types_values"
+            android:key="@string/settings_key_pop_text_option"
+            android:summary="@string/pop_text_type_summary"
+            android:title="@string/pop_text_type_dialog_title" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_use_system_vibration"
+            android:key="@string/settings_key_use_system_vibration"
+            android:persistent="true"
+            android:summaryOff="@string/use_system_vibration_off_summary"
+            android:summaryOn="@string/use_system_vibration_on_summary"
+            android:title="@string/use_system_vibration_title"
+            android:disableDependentsState="true" />
+
+        <net.evendanan.pixel.SlidePreference
+            android:defaultValue="@integer/settings_default_vibrate_on_key_press_duration_int"
+            android:dependency="@string/settings_key_use_system_vibration"
+            android:key="@string/settings_key_vibrate_on_key_press_duration_int"
+            app:slideMaximum="@integer/settings_default_vibrate_on_key_press_duration_max_value"
+            android:persistent="true"
+            android:title="@string/vibrate_on_key_press_title"
+            app:valueStringTemplate="@string/vibrate_on_key_press_value_template"
+            app:slideMinimum="@integer/settings_default_vibrate_on_key_press_duration_min_value" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_vibrate_on_long_press"
+            android:key="@string/settings_key_vibrate_on_long_press"
+            android:persistent="true"
+            android:summaryOff=""
+            android:summaryOn="@string/vibrate_on_long_press_summary_on"
+            android:title="@string/vibrate_on_long_press_title" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_sound_on"
+            android:key="@string/settings_key_sound_on"
+            android:persistent="true"
+            android:summaryOff=""
+            android:summaryOn="@string/sound_on_summary"
+            android:title="@string/sound_on" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/settings_key_use_custom_sound_volume"
+            android:persistent="true"
+            android:summaryOff="@string/use_custom_sound_volume_off_summary"
+            android:summaryOn="@string/use_custom_sound_volume_on_summary"
+            android:title="@string/use_custom_sound_volume" />
+
+        <net.evendanan.pixel.SlidePreference
+            android:defaultValue="@integer/settings_default_custom_volume_level"
+            android:dependency="use_custom_sound_volume"
+            android:key="custom_sound_volume"
+            android:persistent="true"
+            android:title="@string/custom_sound_volume"
+            app:slideMaximum="@integer/settings_custom_volume_level_slide_max"
+            app:slideMinimum="@integer/settings_custom_volume_level_slide_min" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_tweak_animations_level"
+            android:dialogTitle="@string/tweak_animations_level_title"
+            android:entries="@array/tweak_animations_level_types"
+            android:entryValues="@array/tweak_animations_level_values"
+            android:key="@string/settings_key_tweak_animations_level"
+            android:summary="@string/tweak_animations_level_summary"
+            android:title="@string/tweak_animations_level_title" />
+    </androidx.preference.PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
+

@@ -1,6 +1,7 @@
 package wtf.uhoh.newsoftkeyboard.app.ui.settings;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +44,7 @@ public class SpeechToTextSettingsFragment extends PreferenceFragmentCompat {
   public void onResume() {
     super.onResume();
     updateBackendSummaries();
+    scrollToRequestedPreferenceIfNeeded();
   }
 
   private void ensureBackendSelectionInitialized() {
@@ -77,10 +79,7 @@ public class SpeechToTextSettingsFragment extends PreferenceFragmentCompat {
     if (mOpenAiPreference != null) {
       mOpenAiPreference.setOnPreferenceClickListener(
           preference -> {
-            Navigation.findNavController(requireView())
-                .navigate(
-                    SpeechToTextSettingsFragmentDirections
-                        .actionSpeechToTextSettingsFragmentToOpenAISpeechSettingsFragment());
+            Navigation.findNavController(requireView()).navigate(R.id.openAISpeechSettingsFragment);
             return true;
           });
     }
@@ -89,9 +88,7 @@ public class SpeechToTextSettingsFragment extends PreferenceFragmentCompat {
       mElevenLabsPreference.setOnPreferenceClickListener(
           preference -> {
             Navigation.findNavController(requireView())
-                .navigate(
-                    SpeechToTextSettingsFragmentDirections
-                        .actionSpeechToTextSettingsFragmentToElevenLabsSpeechSettingsFragment());
+                .navigate(R.id.elevenLabsSpeechSettingsFragment);
             return true;
           });
     }
@@ -156,5 +153,14 @@ public class SpeechToTextSettingsFragment extends PreferenceFragmentCompat {
                   : R.string.speech_to_text_provider_status_missing_api_key);
     }
     return baseSummary + "\n" + getString(R.string.speech_to_text_provider_status_not_selected);
+  }
+
+  private void scrollToRequestedPreferenceIfNeeded() {
+    final Bundle args = getArguments();
+    if (args == null) return;
+    final String key = args.getString(SettingsSearchFragment.ARG_SCROLL_TO_PREFERENCE_KEY);
+    if (TextUtils.isEmpty(key)) return;
+    scrollToPreference(key);
+    args.remove(SettingsSearchFragment.ARG_SCROLL_TO_PREFERENCE_KEY);
   }
 }

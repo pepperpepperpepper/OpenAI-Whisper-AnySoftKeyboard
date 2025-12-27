@@ -19,16 +19,13 @@ package wtf.uhoh.newsoftkeyboard.app.ui.settings;
 import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.Objects;
 import net.evendanan.pixel.EdgeEffectHacker;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -48,6 +45,7 @@ public class MainSettingsActivity extends AppCompatActivity {
       "EXTRA_KEY_ACTION_REQUEST_PERMISSION_ACTIVITY";
 
   private CharSequence mTitle;
+  @Nullable private NavController mNavController;
 
   @Override
   protected void onCreate(Bundle icicle) {
@@ -56,13 +54,12 @@ public class MainSettingsActivity extends AppCompatActivity {
 
     mTitle = getTitle();
 
-    final NavController navController =
+    mNavController =
         ((NavHostFragment)
                 Objects.requireNonNull(
                     getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)))
             .getNavController();
-    final BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-    NavigationUI.setupWithNavController(bottomNavigationView, navController);
+    NavigationUI.setupActionBarWithNavController(this, mNavController);
   }
 
   @Override
@@ -140,11 +137,7 @@ public class MainSettingsActivity extends AppCompatActivity {
     android.util.Log.d(
         "MainSettingsActivity", "navigateToOpenAISettings called with prompt: " + promptText);
 
-    final NavController navController =
-        ((NavHostFragment)
-                Objects.requireNonNull(
-                    getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)))
-            .getNavController();
+    final NavController navController = requireNavController();
 
     // Mark intent so the fragment opens the prompt dialog when we arrive.
     getIntent().putExtra("open_prompt_dialog", true);
@@ -171,56 +164,7 @@ public class MainSettingsActivity extends AppCompatActivity {
       }
       return;
     }
-
-    BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-    if (bottomNavigationView == null) {
-      android.util.Log.e("MainSettingsActivity", "BottomNavigationView is null!");
-      return;
-    }
-
-    bottomNavigationView.setSelectedItemId(R.id.languageSettingsFragment);
-
-    Handler handler = new Handler();
-    handler.postDelayed(
-        () -> {
-          try {
-            navController.navigate(
-                R.id.action_languageSettingsFragment_to_additionalLanguageSettingsFragment);
-            navController.addOnDestinationChangedListener(
-                new NavController.OnDestinationChangedListener() {
-                  private boolean navigatedToSpeechSettings;
-
-                  @Override
-                  public void onDestinationChanged(
-                      @NonNull NavController controller,
-                      @NonNull NavDestination destination,
-                      @Nullable Bundle arguments) {
-                    if (destination.getId() == R.id.additionalLanguageSettingsFragment
-                        && !navigatedToSpeechSettings) {
-                      navigatedToSpeechSettings = true;
-                      handler.postDelayed(
-                          () ->
-                              navController.navigate(
-                                  R.id
-                                      .action_additionalLanguageSettingsFragment_to_speechToTextSettingsFragment),
-                          200);
-                    } else if (destination.getId() == R.id.speechToTextSettingsFragment) {
-                      controller.removeOnDestinationChangedListener(this);
-                      handler.postDelayed(
-                          () ->
-                              navController.navigate(
-                                  R.id
-                                      .action_speechToTextSettingsFragment_to_openAISpeechSettingsFragment),
-                          200);
-                    }
-                  }
-                });
-          } catch (Exception e) {
-            android.util.Log.e(
-                "MainSettingsActivity", "Error navigating to speech-to-text settings", e);
-          }
-        },
-        200);
+    navController.navigate(R.id.openAISpeechSettingsFragment);
   }
 
   @Override
@@ -234,6 +178,19 @@ public class MainSettingsActivity extends AppCompatActivity {
   @Override
   public void setTitle(CharSequence title) {
     mTitle = title;
-    getSupportActionBar().setTitle(mTitle);
+    if (getSupportActionBar() != null) getSupportActionBar().setTitle(mTitle);
+  }
+
+  @Override
+  public boolean onSupportNavigateUp() {
+    final NavController navController = mNavController;
+    return navController != null && navController.navigateUp();
+  }
+
+  @NonNull
+  private NavController requireNavController() {
+    final NavController controller = mNavController;
+    if (controller != null) return controller;
+    throw new IllegalStateException("NavController not initialized");
   }
 }

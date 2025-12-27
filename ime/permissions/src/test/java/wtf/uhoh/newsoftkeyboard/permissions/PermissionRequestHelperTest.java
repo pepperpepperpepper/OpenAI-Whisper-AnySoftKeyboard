@@ -28,6 +28,10 @@ public class PermissionRequestHelperTest {
         R.string.notifications_permissions_rationale,
         PermissionRequestHelper.getRationale(
             PermissionRequestHelper.NOTIFICATION_PERMISSION_REQUEST_CODE));
+    Assert.assertEquals(
+        R.string.microphone_permissions_rationale,
+        PermissionRequestHelper.getRationale(
+            PermissionRequestHelper.MICROPHONE_PERMISSION_REQUEST_CODE));
   }
 
   @Test
@@ -36,6 +40,14 @@ public class PermissionRequestHelperTest {
         new String[] {Manifest.permission.READ_CONTACTS},
         PermissionRequestHelper.getPermissionsStrings(
             PermissionRequestHelper.CONTACTS_PERMISSION_REQUEST_CODE));
+  }
+
+  @Test
+  public void testGetPermissionsStringsMicrophone() {
+    Assert.assertArrayEquals(
+        new String[] {Manifest.permission.RECORD_AUDIO},
+        PermissionRequestHelper.getPermissionsStrings(
+            PermissionRequestHelper.MICROPHONE_PERMISSION_REQUEST_CODE));
   }
 
   @Test
@@ -68,6 +80,9 @@ public class PermissionRequestHelperTest {
             Assert.assertTrue(
                 PermissionRequestHelper.check(
                     activity, PermissionRequestHelper.NOTIFICATION_PERMISSION_REQUEST_CODE));
+            Assert.assertTrue(
+                PermissionRequestHelper.check(
+                    activity, PermissionRequestHelper.MICROPHONE_PERMISSION_REQUEST_CODE));
           });
     }
   }
@@ -77,7 +92,9 @@ public class PermissionRequestHelperTest {
   public void testCheckAlreadyHasPermissionsWithM() {
     var appShadow = Shadows.shadowOf(RuntimeEnvironment.getApplication());
     appShadow.grantPermissions(
-        Manifest.permission.POST_NOTIFICATIONS, Manifest.permission.READ_CONTACTS);
+        Manifest.permission.POST_NOTIFICATIONS,
+        Manifest.permission.READ_CONTACTS,
+        Manifest.permission.RECORD_AUDIO);
     try (var scenario = ActivityScenario.launch(TestFragmentActivity.class)) {
       scenario.onActivity(
           activity -> {
@@ -87,6 +104,9 @@ public class PermissionRequestHelperTest {
             Assert.assertTrue(
                 PermissionRequestHelper.check(
                     activity, PermissionRequestHelper.NOTIFICATION_PERMISSION_REQUEST_CODE));
+            Assert.assertTrue(
+                PermissionRequestHelper.check(
+                    activity, PermissionRequestHelper.MICROPHONE_PERMISSION_REQUEST_CODE));
           });
     }
   }

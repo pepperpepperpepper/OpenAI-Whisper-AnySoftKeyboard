@@ -35,7 +35,7 @@
             android:title="@string/prediction_engine_mode_title"/>
 
         <Preference
-            android:key="@string/settings_key_manage_presage_models"
+            android:key="nav:nextword_models"
             android:title="@string/presage_models_manage_title"
             android:summary="@string/presage_models_manage_summary"/>
 
@@ -45,7 +45,7 @@
         android:key="next_word_stats"
         android:title="@string/next_word_stats_group" />
 
-    <Preference android:key="clear_next_word_data"
+    <Preference android:key="nav:nextword_clear_data"
                 android:title="@string/next_word_prefs_clear_data"
                 android:summary="@string/next_word_prefs_clear_data_summary" />
 </androidx.preference.PreferenceScreen>

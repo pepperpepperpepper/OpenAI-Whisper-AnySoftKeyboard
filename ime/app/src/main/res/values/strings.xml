@@ -1152,4 +1152,69 @@
     <string name="openai_copy_destination_summary">Directory path where audio files will be copied before sending to OpenAI API</string>
     <string name="openai_copy_destination_dialog_title">Enter Destination Directory Path</string>
     <string name="openai_copy_destination_default">Default (app external files directory)</string>
+
+    <!-- Settings UI overhaul (proposal.md v6) -->
+    <string name="settings_home_title">Settings</string>
+    <string name="settings_search_title">Search</string>
+    <string name="settings_search_summary">Find settings, actions, and managers</string>
+    <string name="settings_setup_permissions_title">Setup &amp; permissions</string>
+    <string name="settings_setup_wizard_title">Run setup wizard</string>
+    <string name="settings_enable_keyboard_title">Enable keyboard</string>
+    <string name="settings_set_default_keyboard_title">Set as default keyboard</string>
+    <string name="settings_fix_microphone_permission_title">Microphone permission needed</string>
+    <string name="settings_fix_microphone_permission_summary">Voice dictation is enabled, but microphone access is not granted.</string>
+    <string name="settings_fix_notification_permission_title">Notification permission needed</string>
+    <string name="settings_fix_notification_permission_summary">Crash notifications are enabled, but Android notifications are blocked.</string>
+    <string name="settings_setup_action_opens_system_settings">Opens system settings</string>
+    <string name="settings_setup_action_already_enabled">Already enabled</string>
+    <string name="settings_setup_action_already_default">Already set as default</string>
+    <string name="settings_categories_title">Categories</string>
+    <string name="settings_category_keyboards_language_packs">Keyboards &amp; language packs</string>
+    <string name="settings_category_typing">Typing</string>
+    <string name="settings_category_look_and_feel">Look &amp; feel</string>
+    <string name="settings_category_gestures_quick_keys">Gestures &amp; quick keys</string>
+    <string name="settings_category_clipboard">Clipboard</string>
+    <string name="settings_category_voice">Voice (dictation)</string>
+    <string name="settings_category_troubleshooting_backup">Troubleshooting &amp; backup</string>
+    <string name="settings_category_settings_ui_launcher">Settings UI &amp; launcher</string>
+    <string name="settings_category_help_about">Help &amp; about</string>
+
+    <string name="settings_language_packs_section_title">Language packs</string>
+    <string name="settings_install_language_packs_title">Install language packs</string>
+    <string name="settings_install_language_packs_summary">Download dictionaries for additional languages</string>
+    <string name="settings_keyboard_addons_section_title">Keyboard add-ons</string>
+    <string name="settings_manage_keyboards_title">Manage keyboards</string>
+    <string name="settings_switching_language_key_section_title">Switching &amp; language key</string>
+    <string name="settings_hardware_keyboard_section_title">Hardware keyboard</string>
+    <string name="settings_hardware_keyboard_gate_title">No hardware keyboard detected</string>
+    <string name="settings_hardware_keyboard_gate_summary">Connect a physical keyboard to enable these options.</string>
+
+    <string name="settings_typing_suggestions_correction_title">Suggestions &amp; correction</string>
+    <string name="settings_typing_next_word_title">Next-word prediction (AI)</string>
+    <string name="next_word_settings_entry_summary">Configure engines, strength, and language models</string>
+    <string name="settings_typing_punctuation_spacing_title">Punctuation &amp; spacing</string>
+    <string name="settings_typing_timing_title">Timing &amp; long-press</string>
+
+    <string name="settings_look_and_feel_theme_title">Theme</string>
+    <string name="settings_look_and_feel_key_text_hints_title">Key text &amp; hints</string>
+    <string name="settings_look_and_feel_layout_size_title">Layout &amp; size</string>
+    <string name="settings_look_and_feel_bottom_spacing_title">Bottom spacing &amp; system bars</string>
+    <string name="settings_look_and_feel_toolbar_title">Toolbar</string>
+    <string name="settings_look_and_feel_feedback_previews_title">Key feedback &amp; previews</string>
+
+    <string name="settings_gestures_swipe_pinch_title">Swipe &amp; pinch gestures</string>
+    <string name="settings_quick_keys_emoji_title">Quick keys &amp; emoji</string>
+    <string name="settings_manage_quick_keys_title">Manage quick keys</string>
+
+    <string name="settings_backup_restore_section_title">Backup &amp; restore</string>
+    <string name="settings_troubleshooting_compatibility_section_title">Troubleshooting &amp; compatibility</string>
+    <string name="settings_performance_battery_section_title">Performance &amp; battery</string>
+    <string name="settings_developer_diagnostics_section_title">Developer &amp; diagnostics</string>
+    <string name="settings_logcat_viewer_title">Logcat viewer</string>
+
+    <string name="settings_help_section_title">Help</string>
+    <string name="settings_about_section_title">About</string>
+    <string name="settings_report_issue_title">Report an issue</string>
+    <string name="settings_report_issue_url" translatable="false">https://github.com/pepperpepperpepper/NewSoftKeyboard/issues</string>
+    <string name="settings_full_changelog_title">Full changelog</string>
     </resources>

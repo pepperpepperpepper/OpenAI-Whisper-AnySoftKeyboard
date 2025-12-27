@@ -7,4 +7,5 @@
         similar words to auto-complete and auto-correct your typing.
     </string>
     <string name="notifications_permissions_rationale">NewSoftKeyboard may need to notify you about critical issues (such as missing permissions or crashes).</string>
+    <string name="microphone_permissions_rationale">NewSoftKeyboard needs microphone access for voice dictation.</string>
 </resources>

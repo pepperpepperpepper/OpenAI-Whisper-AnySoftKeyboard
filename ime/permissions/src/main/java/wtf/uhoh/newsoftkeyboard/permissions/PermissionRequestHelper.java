@@ -13,6 +13,7 @@ import pub.devrel.easypermissions.PermissionRequest;
 public abstract class PermissionRequestHelper {
   public static final int CONTACTS_PERMISSION_REQUEST_CODE = 892344;
   public static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 892345;
+  public static final int MICROPHONE_PERMISSION_REQUEST_CODE = 892346;
 
   public static boolean check(@NonNull Fragment fragment, int requestCode) {
     final String[] permissions = getPermissionsStrings(requestCode);
@@ -52,6 +53,7 @@ public abstract class PermissionRequestHelper {
     return switch (requestCode) {
       case CONTACTS_PERMISSION_REQUEST_CODE -> R.string.contacts_permissions_rationale;
       case NOTIFICATION_PERMISSION_REQUEST_CODE -> R.string.notifications_permissions_rationale;
+      case MICROPHONE_PERMISSION_REQUEST_CODE -> R.string.microphone_permissions_rationale;
       default -> throw new IllegalArgumentException("Unknown request code " + requestCode);
     };
   }
@@ -69,6 +71,9 @@ public abstract class PermissionRequestHelper {
         } else {
           return new String[0];
         }
+      }
+      case MICROPHONE_PERMISSION_REQUEST_CODE -> {
+        return new String[] {Manifest.permission.RECORD_AUDIO};
       }
       default -> throw new IllegalArgumentException("Unknown request code " + requestCode);
     }

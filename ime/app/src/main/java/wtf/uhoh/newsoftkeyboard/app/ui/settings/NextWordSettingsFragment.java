@@ -23,11 +23,16 @@ import wtf.uhoh.newsoftkeyboard.engine.models.ModelStore;
 
 public class NextWordSettingsFragment extends PreferenceFragmentCompat {
 
+  private static final String KEY_NAV_MANAGE_MODELS = "nav:nextword_models";
+  private static final String KEY_NAV_CLEAR_DATA = "nav:nextword_clear_data";
+  private static final String KEY_LEGACY_CLEAR_DATA = "clear_next_word_data";
+
   @NonNull private final CompositeDisposable mDisposable = new CompositeDisposable();
 
   @Nullable private SharedPreferences mSharedPreferences;
   @Nullable private ListPreference mPredictionEnginePreference;
   @Nullable private Preference mManageModelsPreference;
+  @Nullable private Preference mClearDataPreference;
   @Nullable private String mPredictionEnginePrefKey;
   @Nullable private String mNextWordModePrefKey;
   @Nullable private String mNeuralFailurePrefKey;
@@ -62,15 +67,24 @@ public class NextWordSettingsFragment extends PreferenceFragmentCompat {
     if (enginePreference instanceof ListPreference) {
       mPredictionEnginePreference = (ListPreference) enginePreference;
     }
-    mManageModelsPreference =
-        findPreference(getString(R.string.settings_key_manage_presage_models));
+    mManageModelsPreference = findPreference(KEY_NAV_MANAGE_MODELS);
+    if (mManageModelsPreference == null) {
+      mManageModelsPreference =
+          findPreference(getString(R.string.settings_key_manage_presage_models));
+    }
+    mClearDataPreference = findPreference(KEY_NAV_CLEAR_DATA);
+    if (mClearDataPreference == null) {
+      mClearDataPreference = findPreference(KEY_LEGACY_CLEAR_DATA);
+    }
   }
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setHasOptionsMenu(true);
-    findPreference("clear_next_word_data").setOnPreferenceClickListener(mClearDataListener);
+    if (mClearDataPreference != null) {
+      mClearDataPreference.setOnPreferenceClickListener(mClearDataListener);
+    }
 
     if (mManageModelsPreference != null) {
       mManageModelsPreference.setOnPreferenceClickListener(
@@ -96,6 +110,7 @@ public class NextWordSettingsFragment extends PreferenceFragmentCompat {
     updatePredictionEnginePreferenceSummary();
     updateManageModelsSummary();
     updatePredictionEnginePreferenceEnabled();
+    scrollToRequestedPreferenceIfNeeded();
   }
 
   @Override
@@ -327,13 +342,37 @@ public class NextWordSettingsFragment extends PreferenceFragmentCompat {
   }
 
   private void loadUsageStatistics() {
-    final Preference clearDataPreference = findPreference("clear_next_word_data");
+    final Preference clearDataPreference =
+        mClearDataPreference != null ? mClearDataPreference : findPreference(KEY_LEGACY_CLEAR_DATA);
     final PreferenceCategory statsCategory = (PreferenceCategory) findPreference("next_word_stats");
     if (clearDataPreference == null || statsCategory == null) {
       return;
     }
     NextWordUsageStatsLoader.load(
         requireContext(), clearDataPreference, statsCategory, mDisposable);
+  }
+
+  private void scrollToRequestedPreferenceIfNeeded() {
+    final Bundle args = getArguments();
+    if (args == null) return;
+    final String requestedKey = args.getString(SettingsSearchFragment.ARG_SCROLL_TO_PREFERENCE_KEY);
+    if (TextUtils.isEmpty(requestedKey)) return;
+
+    final String resolvedKey =
+        switch (requestedKey) {
+          case KEY_LEGACY_CLEAR_DATA -> KEY_NAV_CLEAR_DATA;
+          default -> {
+            final String legacyManageModelsKey =
+                getString(R.string.settings_key_manage_presage_models);
+            if (legacyManageModelsKey.equals(requestedKey)) {
+              yield KEY_NAV_MANAGE_MODELS;
+            }
+            yield requestedKey;
+          }
+        };
+
+    scrollToPreference(resolvedKey);
+    args.remove(SettingsSearchFragment.ARG_SCROLL_TO_PREFERENCE_KEY);
   }
 
   @Override

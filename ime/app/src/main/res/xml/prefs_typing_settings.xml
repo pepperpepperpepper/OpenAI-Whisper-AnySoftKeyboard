@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/settings_category_typing">
+
+    <androidx.preference.PreferenceCategory
+        android:key="typing_suggestions_correction"
+        android:title="@string/settings_typing_suggestions_correction_title">
+
+        <androidx.preference.SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="candidates_on"
+            android:persistent="true"
+            android:title="@string/candidates_on"
+            android:summaryOn="@string/candidates_on_summary"
+            android:summaryOff="@string/candidates_off_summary" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:key="auto_caps"
+            android:persistent="true"
+            android:title="@string/auto_caps" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="candidates_on"
+            android:key="@string/settings_key_quick_fix"
+            android:persistent="true"
+            android:summaryOff=""
+            android:summaryOn="@string/quick_fix_summary"
+            android:title="@string/quick_fix" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:dependency="@string/settings_key_quick_fix"
+            android:key="@string/settings_key_quick_fix_second_disabled"
+            android:persistent="true"
+            android:summaryOff="@string/quick_fix_secon_disabled_summ_off"
+            android:summaryOn="@string/quick_fix_secon_disabled_summ_on"
+            android:title="@string/quick_fix_secon_disabled" />
+
+        <androidx.preference.ListPreference
+            android:key="@string/settings_key_auto_pick_suggestion_aggressiveness"
+            android:dependency="candidates_on"
+            android:defaultValue="@string/settings_default_auto_pick_suggestion_aggressiveness"
+            android:dialogTitle="@string/auto_pick_suggestion_aggressiveness_title"
+            android:entries="@array/auto_pick_suggestion_aggressiveness_types"
+            android:entryValues="@array/auto_pick_suggestion_aggressiveness_values"
+            android:summary="@string/auto_pick_suggestion_aggressiveness_summary"
+            android:title="@string/auto_pick_suggestion_aggressiveness_title" />
+
+        <androidx.preference.ListPreference
+            android:key="@string/settings_key_auto_dictionary_threshold"
+            android:defaultValue="@string/settings_default_auto_dictionary_add_threshold"
+            android:dialogTitle="@string/use_auto_dictionary_dialog_title"
+            android:entries="@array/auto_dictionary_threshold_types"
+            android:entryValues="@array/auto_dictionary_threshold_values"
+            android:summary="@string/use_auto_dictionary_summary"
+            android:title="@string/use_auto_dictionary"
+            android:dependency="candidates_on" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:key="insert_space_after_word_suggestion_selection"
+            android:persistent="true"
+            android:summaryOff="@string/insert_space_after_word_suggestion_selection_off_summary"
+            android:summaryOn="@string/insert_space_after_word_suggestion_selection_on_summary"
+            android:title="@string/insert_space_after_word_suggestion_selection" />
+
+        <androidx.preference.CheckBoxPreference
+            android:key="@string/settings_key_use_user_dictionary"
+            android:title="@string/use_user_dictionary"
+            android:persistent="true"
+            android:defaultValue="@bool/settings_default_user_dictionary"
+            android:summaryOn="@string/use_user_dictionary_on_summary"
+            android:summaryOff="@string/use_user_dictionary_off_summary"
+            android:dependency="candidates_on" />
+
+        <androidx.preference.CheckBoxPreference
+            android:key="@string/settings_key_use_contacts_dictionary"
+            android:title="@string/use_contacts_dictionary"
+            android:persistent="true"
+            android:defaultValue="@bool/settings_default_contacts_dictionary"
+            android:summaryOn="@string/use_contacts_dictionary_on_summary"
+            android:summaryOff="@string/use_contacts_dictionary_off_summary"
+            android:dependency="candidates_on" />
+
+        <Preference
+            android:title="@string/user_dict_editor"
+            android:key="nav:user_dictionary_editor"
+            android:dependency="candidates_on" />
+
+        <Preference
+            android:title="@string/abbreviation_dict_editor"
+            android:key="nav:abbreviation_editor"
+            android:dependency="@string/settings_key_quick_fix" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_try_splitting_words_for_correction"
+            android:dependency="candidates_on"
+            android:key="@string/settings_key_try_splitting_words_for_correction"
+            android:persistent="true"
+            android:summaryOff="@string/try_split_words_for_correction_summary_off"
+            android:summaryOn="@string/try_split_words_for_correction_summary_on"
+            android:title="@string/try_split_words_for_correction" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="typing_next_word"
+        android:title="@string/settings_typing_next_word_title">
+
+        <Preference
+            android:key="nav:next_word_settings"
+            android:title="@string/next_word_dict_settings"
+            android:summary="@string/next_word_settings_entry_summary" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="typing_punctuation_spacing"
+        android:title="@string/settings_typing_punctuation_spacing_title">
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_bool_should_swap_punctuation_and_space"
+            android:key="@string/settings_key_bool_should_swap_punctuation_and_space"
+            android:persistent="true"
+            android:summaryOff="@string/should_swap_punctuation_and_space_off_summary"
+            android:summaryOn="@string/should_swap_punctuation_and_space_on_summary"
+            android:title="@string/should_swap_punctuation_and_space_title" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="true"
+            android:key="double_space_to_period"
+            android:persistent="true"
+            android:summaryOff=""
+            android:summaryOn="@string/double_space_to_period_summary"
+            android:title="@string/double_space_to_period" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_use_backword"
+            android:key="@string/settings_key_use_backword"
+            android:persistent="true"
+            android:summaryOff="@string/backword_support_off_summary"
+            android:summaryOn="@string/backword_support_on_summary"
+            android:title="@string/backword_support" />
+
+        <androidx.preference.CheckBoxPreference
+            android:defaultValue="@bool/settings_default_cycle_all_symbols"
+            android:key="@string/settings_key_cycle_all_symbols"
+            android:persistent="true"
+            android:summaryOff="@string/cycle_all_symbols_keyboards_off_summary"
+            android:summaryOn="@string/cycle_all_symbols_keyboards_on_summary"
+            android:title="@string/cycle_all_symbols_keyboards" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_keyboard_id"
+            android:dialogTitle="@string/keyboard_for_url_fields_title"
+            android:key="@string/settings_key_layout_for_internet_fields"
+            android:summary="@string/keyboard_for_url_fields_summary"
+            android:title="@string/keyboard_for_url_fields" />
+
+        <EditTextPreference
+            android:autoText="false"
+            android:capitalize="none"
+            android:defaultValue=".com"
+            android:dialogTitle="@string/default_domain_text"
+            android:key="default_domain_text"
+            android:lines="1"
+            android:persistent="true"
+            android:singleLine="true"
+            android:title="@string/default_domain_text" />
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:key="typing_timing"
+        android:title="@string/settings_typing_timing_title">
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_long_press_timeout"
+            android:dialogTitle="@string/long_press_timeout_title"
+            android:entries="@array/settings_key_long_press_timeout_names"
+            android:entryValues="@array/settings_key_long_press_timeout_values"
+            android:key="@string/settings_key_long_press_timeout"
+            android:summary="@string/long_press_timeout_summary"
+            android:title="@string/long_press_timeout_title" />
+
+        <androidx.preference.ListPreference
+            android:defaultValue="@string/settings_default_multitap_timeout"
+            android:dialogTitle="@string/multitap_timeout_title"
+            android:entries="@array/settings_key_multitap_timeout_names"
+            android:entryValues="@array/settings_key_multitap_timeout_values"
+            android:key="@string/settings_key_multitap_timeout"
+            android:summary="@string/multitap_timeout_summary"
+            android:title="@string/multitap_timeout_title" />
+    </androidx.preference.PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>
+
